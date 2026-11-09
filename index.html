@@ -192,48 +192,9 @@
   </nav>
 
   <script>
-    var AEROPUERTOS = {
-      "SKBO": { nombre: "BOGOTÁ (CATAM)", lat: 4.7016, lon: -74.1469 },
-      "SKMD": { nombre: "MEDELLÍN (ECHO)", lat: 6.2203, lon: -75.5906 },
-      "SKRG": { nombre: "RIONEGRO (JMC)", lat: 6.1645, lon: -75.4269 },
-      "SKSR": { nombre: "TRES ESQUINAS", lat: 0.7492, lon: -75.2333 },
-      "SKCL": { nombre: "CALI", lat: 3.5432, lon: -76.3816 },
-      "SKTL": { nombre: "TOLEMAIDA", lat: 4.2447, lon: -74.5297 },
-      "SKYP": { nombre: "YOPAL", lat: 5.3197, lon: -72.3844 },
-      "SKAP": { nombre: "APIAY", lat: 4.0758, lon: -73.5639 },
-      "SKVV": { nombre: "VILLAVICENCIO", lat: 4.1681, lon: -73.6139 },
-      "SKFL": { nombre: "FLORENCIA", lat: 1.5894, lon: -75.5647 },
-      "SKAR": { nombre: "ARAUCA", lat: 7.0689, lon: -70.7372 },
-      "SKSA": { nombre: "SARAVENA", lat: 6.9500, lon: -71.8667 },
-      "SKLT": { nombre: "LETICIA", lat: -4.1944, lon: -69.9431 },
-      "SKMR": { nombre: "MONTERÍA", lat: 8.8244, lon: -75.8278 },
-      "SKCC": { nombre: "CÚCUTA", lat: 7.9275, lon: -72.5117 },
-      "SKBQ": { nombre: "BARRANQUILLA", lat: 10.8897, lon: -74.7808 },
-      "SKSM": { nombre: "SANTA MARTA", lat: 11.1197, lon: -74.2306 },
-      "SKCG": { nombre: "CARTAGENA", lat: 10.4425, lon: -75.5131 },
-      "SKPE": { nombre: "PEREIRA", lat: 4.8125, lon: -75.7397 },
-      "SKBG": { nombre: "BUCARAMANGA", lat: 7.1264, lon: -73.1847 },
-      "SKNV": { nombre: "NEIVA", lat: 2.9503, lon: -75.2939 },
-      "SKPS": { nombre: "PASTO", lat: 1.3964, lon: -77.2911 },
-      "SKVP": { nombre: "VALLEDUPAR", lat: 10.4347, lon: -73.2494 },
-      "SKRH": { nombre: "RIOHACHA", lat: 11.5264, lon: -72.9261 },
-      "SKCO": { nombre: "CONDOTO", lat: 5.0717, lon: -76.6806 },
-      "SKUI": { nombre: "QUIBDÓ", lat: 5.6908, lon: -76.6414 },
-      "SKTM": { nombre: "TAME", lat: 6.4500, lon: -71.7583 },
-      "SKPZ": { nombre: "PAZ DE ARIPORO", lat: 5.8783, lon: -71.8903 },
-      "SKUC": { nombre: "ARARACUARA", lat: -0.6039, lon: -72.4000 },
-      "SKLG": { nombre: "TUMACO", lat: 1.8150, lon: -78.7500 },
-      "SKPC": { nombre: "PUERTO CARREÑO", lat: 6.1844, lon: -67.4928 },
-      "SKIN": { nombre: "INÍRIDA", lat: 3.8647, lon: -67.9236 },
-      "SKMU": { nombre: "MITÚ", lat: 1.2536, lon: -70.2339 },
-      "SKGB": { nombre: "GUABITO", lat: 3.8333, lon: -76.3000 },
-      "SKQU": { nombre: "Mariquita", lat: 5.2133, lon: -74.8833 },
-    "SKSJ": { nombre: "San José del Guaviare", lat: 2.5767, lon: -72.6397 },
-    "SKIB": { nombre: "Ibagué", lat: 4.4214, lon: -75.1333 },
-    "SKGI": { nombre: "Girardot", lat: 4.2764, lon: -74.7967 }
-    };
+    var AEROPUERTOS = {"SKAD": {"nombre": "Acandí", "lat": 8.4981, "lon": -77.2739}, "SKAG": {"nombre": "Aguachica", "lat": 8.246, "lon": -73.581}, "SKAP": {"nombre": "Apiay", "lat": 4.0761, "lon": -73.5627}, "SKAC": {"nombre": "Araracuara", "lat": 0.6007, "lon": -72.3981}, "SKUC": {"nombre": "Arauca", "lat": 7.0689, "lon": -70.737}, "SKAR": {"nombre": "Armenia", "lat": 4.4518, "lon": -75.7662}, "SKBS": {"nombre": "Bahía Solano", "lat": 6.2031, "lon": -77.395}, "SKEJ": {"nombre": "Barrancabermeja", "lat": 7.0244, "lon": -73.8068}, "SKBM": {"nombre": "Barranco Minas", "lat": 3.4906, "lon": -69.81}, "SKBQ": {"nombre": "Barranquilla", "lat": 10.8886, "lon": -74.7818}, "SKBO": {"nombre": "Bogotá", "lat": 4.7014, "lon": -74.147}, "SKBG": {"nombre": "Bucaramanga", "lat": 7.1266, "lon": -73.1848}, "SKBU": {"nombre": "Buenaventura", "lat": 3.8196, "lon": -76.9899}, "SKBN": {"nombre": "Buenavista", "lat": 10.886, "lon": -72.901}, "SKCL": {"nombre": "Cali", "lat": 3.5431, "lon": -76.3817}, "SKCA": {"nombre": "Carimagua", "lat": 4.5647, "lon": -71.335}, "SKCG": {"nombre": "Cartagena", "lat": 10.4425, "lon": -75.5131}, "SKCR": {"nombre": "Carurú", "lat": 1.025, "lon": -71.3142}, "SKCD": {"nombre": "Condoto", "lat": 5.0717, "lon": -76.6806}, "SKCO": {"nombre": "Tumaco", "lat": 1.815, "lon": -78.75}, "SKCC": {"nombre": "Cúcuta", "lat": 7.9275, "lon": -72.5117}, "SKCP": {"nombre": "Capiitanejo", "lat": 6.5275, "lon": -72.6958}, "SKCV": {"nombre": "Coveñas", "lat": 9.4011, "lon": -75.6983}, "SKCH": {"nombre": "Chigorodó", "lat": 7.6444, "lon": -76.6436}, "SKEB": {"nombre": "El Bagre", "lat": 7.5975, "lon": -74.8094}, "SKBC": {"nombre": "El Banco", "lat": 9.0264, "lon": -73.9744}, "SKFL": {"nombre": "Florencia", "lat": 1.5892, "lon": -75.5642}, "SKGI": {"nombre": "Girardot", "lat": 4.2764, "lon": -74.7967}, "SKGB": {"nombre": "Guabito", "lat": 3.4667, "lon": -76.5}, "SKGL": {"nombre": "Guapi", "lat": 2.57, "lon": -77.8978}, "SKIB": {"nombre": "Ibagué", "lat": 4.4214, "lon": -75.1333}, "SKIP": {"nombre": "Ipiales", "lat": 0.8622, "lon": -77.6719}, "SKLA": {"nombre": "La Chorrera", "lat": -1.455, "lon": -72.7919}, "SKLC": {"nombre": "La Macarena", "lat": 2.1794, "lon": -73.7881}, "SKLP": {"nombre": "La Pedrera", "lat": -1.3039, "lon": -69.4975}, "SKLR": {"nombre": "Larandia", "lat": 1.4783, "lon": -75.4853}, "SKLT": {"nombre": "Leticia", "lat": -4.1944, "lon": -69.9431}, "SKMD": {"nombre": "Medellín", "lat": 6.2204, "lon": -75.5904}, "SKRG": {"nombre": "Rionegro", "lat": 6.1645, "lon": -75.423}, "SKMR": {"nombre": "Montería", "lat": 8.8244, "lon": -75.8278}, "SKMU": {"nombre": "Mitú", "lat": 1.2535, "lon": -70.2341}, "SKNV": {"nombre": "Neiva", "lat": 2.9502, "lon": -75.294}, "SKOC": {"nombre": "Ocaña", "lat": 8.3147, "lon": -73.3589}, "SKOT": {"nombre": "Otú", "lat": 7.0108, "lon": -74.7156}, "SKPS": {"nombre": "Pasto", "lat": 1.3964, "lon": -77.2911}, "SKPZ": {"nombre": "Paz de Ariporo", "lat": 5.877, "lon": -71.8863}, "SKPE": {"nombre": "Pereira", "lat": 4.8125, "lon": -75.7397}, "SKPI": {"nombre": "Pitalito", "lat": 1.8569, "lon": -76.0858}, "SKPP": {"nombre": "Popayán", "lat": 2.4544, "lon": -76.6098}, "SKPC": {"nombre": "Puerto Carreño", "lat": 6.1851, "lon": -67.4926}, "SKPD": {"nombre": "Inírida", "lat": 3.8528, "lon": -67.9039}, "SKIN": {"nombre": "Inírida", "lat": 3.8528, "lon": -67.9039}, "SKLG": {"nombre": "Puerto Leguízamo", "lat": -0.182, "lon": -74.7712}, "SKUI": {"nombre": "Quibdó", "lat": 5.6908, "lon": -76.6414}, "SKRH": {"nombre": "Riohacha", "lat": 11.5262, "lon": -72.9267}, "SKSJ": {"nombre": "San José del Guaviare", "lat": 2.5767, "lon": -72.6397}, "SKSP": {"nombre": "San Pedro de Urabá", "lat": 8.2817, "lon": -76.3769}, "SKSA": {"nombre": "Saravena", "lat": 6.9504, "lon": -71.8562}, "SKSM": {"nombre": "Santa Marta", "lat": 11.1197, "lon": -74.2306}, "SKTM": {"nombre": "Tame", "lat": 6.451, "lon": -71.7601}, "SKTI": {"nombre": "Tolemaida", "lat": 4.2447, "lon": -74.6499}, "SKTL": {"nombre": "Tolemaida", "lat": 4.2447, "lon": -74.6499}, "SKTQ": {"nombre": "Tres Esquinas", "lat": 0.7492, "lon": -75.2333}, "SKSR": {"nombre": "Tres Esquinas", "lat": 0.7492, "lon": -75.2333}, "SKTU": {"nombre": "Turbo", "lat": 8.0772, "lon": -76.7289}, "SKQU": {"nombre": "Mariquita", "lat": 5.2133, "lon": -74.8833}, "SKUR": {"nombre": "Urrao", "lat": 6.3197, "lon": -76.1367}, "SKVP": {"nombre": "Valledupar", "lat": 10.4351, "lon": -73.2494}, "SKVV": {"nombre": "Villavicencio", "lat": 4.1684, "lon": -73.6147}, "SKYP": {"nombre": "Yopal", "lat": 5.3191, "lon": -72.3842}};
 
-    function distanciaNM(lat1, lon1, lat2, lon2) {
+  function distanciaNM(lat1, lon1, lat2, lon2) {
       var R = 3440.065;
       var dLat = (lat2 - lat1) * Math.PI / 180;
       var dLon = (lon2 - lon1) * Math.PI / 180;
