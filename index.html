@@ -2,135 +2,32 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>S3 Operaciones BAAV1</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#090d16">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body {
-      background-color: #090d16;
-      color: #f1f5f9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      padding: 14px 14px 90px 14px;
-    }
-    header {
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      padding: 12px 14px;
-      border-radius: 14px;
-      margin-bottom: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .badge {
-      background: #f59e0b;
-      color: #090d16;
-      font-weight: 900;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 13px;
-    }
-    .card {
-      background: #111827;
-      border: 1px solid #1f2937;
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
-    }
-    .card-title {
-      font-size: 11px;
-      font-weight: 800;
-      color: #94a3b8;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-    }
-    .section-header {
-      font-size: 12px;
-      font-weight: 900;
-      color: #f59e0b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 14px 0 8px 2px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .pill {
-      font-size: 10px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-family: monospace;
-      display: inline-block;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: #090d16; color: #f8fafc; padding-bottom: 75px; }
+    header { background: #0f172a; border-bottom: 1px solid #1e293b; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 40; }
+    .badge { background: #f59e0b; color: #000; font-weight: 900; font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+    .card { background: #131d31; border: 1px solid #1e293b; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+    .pill { display: inline-flex; align-items: center; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 9999px; text-transform: uppercase; }
     .pill-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
     .pill-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .pill-red { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+    .pill-red { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
     .pill-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
     .pill-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
-    .pill-gray { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.3); }
-    .bar-bg { background: #1e293b; height: 7px; border-radius: 99px; overflow: hidden; margin: 6px 0; }
-    .bar-fill { height: 100%; border-radius: 99px; }
-    .btn-gold {
-      background: #f59e0b; color: #090d16; font-weight: 800; border: none;
-      padding: 9px 12px; border-radius: 9px; font-size: 12px; cursor: pointer;
-    }
-    .btn-green {
-      background: #10b981; color: #ffffff; font-weight: 800; border: none;
-      padding: 12px; border-radius: 11px; font-size: 13px; width: 100%; cursor: pointer;
-    }
-    .btn-outline {
-      background: #1e293b; color: #cbd5e1; font-weight: 700; border: 1px solid #334155;
-      padding: 5px 9px; border-radius: 8px; font-size: 11px; cursor: pointer;
-    }
-    .input-box {
-      width: 100%; background: #0f172a; border: 1px solid #1e293b; color: #fff;
-      padding: 10px; border-radius: 10px; font-size: 14px; outline: none; margin-top: 4px;
-    }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .nav-bar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: #0f172a; border-top: 1px solid #1e293b;
-      display: flex; justify-content: space-around; padding: 10px 0;
-      z-index: 50;
-    }
-    .nav-btn {
-      background: none; border: none; color: #64748b; font-size: 11px;
-      font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer;
-    }
+    .pill-gray { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
+    .bar-bg { background: #1e293b; height: 6px; border-radius: 999px; overflow: hidden; margin: 6px 0; }
+    .bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s ease; }
+    .btn-outline { background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .btn-outline:active { background: #1e293b; }
+    nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-top: 1px solid #1e293b; display: flex; justify-content: space-around; padding: 10px 0; z-index: 50; }
+    .nav-btn { background: none; border: none; color: #64748b; font-size: 11px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
     .nav-btn.active { color: #f59e0b; }
-    .hidden { display: none; }
-    .autocomplete-container { position: relative; width: 100%; }
-    .suggestions-list {
-      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-      background: #1e293b; border: 1px solid #334155; border-radius: 10px;
-      max-height: 220px; overflow-y: auto; z-index: 100;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-    }
-    .suggestion-item {
-      padding: 10px 12px; border-bottom: 1px solid rgba(51, 65, 85, 0.6); cursor: pointer;
-      display: flex; justify-content: space-between; align-items: center; font-size: 12px;
-    }
-    .suggestion-item:active, .suggestion-item:hover { background: #0f172a; }
-    .tag-pierna {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #1e293b; border: 1px solid #334155; border-radius: 8px;
-      padding: 4px 8px; font-size: 11px; font-weight: 700; margin: 3px 2px;
-    }
-    .tag-pierna button {
-      background: none; border: none; color: #f87171; font-weight: 900;
-      cursor: pointer; font-size: 12px; line-height: 1; padding: 0 2px;
-    }
-    .mission-row {
-      background: #0f172a; border: 1px solid #1e293b; border-radius: 10px;
-      padding: 10px; margin-bottom: 8px; font-size: 12px;
-    }
+    .tab-content { display: none; padding: 12px 14px; }
+    .tab-content.active { display: block; }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -139,301 +36,568 @@
       <div class="badge">S3</div>
       <div>
         <div style="font-size:13px; font-weight:900; text-transform:uppercase;">OPERACIONES BAAV1</div>
-        <div style="font-size:10px; color:#10b981; font-family:monospace;">26 AERONAVES • BASE BAMAV-1 • DESPLIEGUE DIV</div>
+        <div style="font-size:10px; color:#10b981; font-family:monospace;">PARTE DIARIO OFICIAL</div>
       </div>
     </div>
-        <div style="display:flex; align-items:center; gap:6px;">
+    <div style="display:flex; align-items:center; gap:8px;">
       <input type="file" id="inputParteExcel" accept=".xlsx,.xls" style="display:none;" onchange="importarParteExcel(event)">
-      <button onclick="document.getElementById('inputParteExcel').click()" class="btn-outline" style="border-color:#10b981; color:#34d399; font-size:10px;">📂 Cargar Parte (.xlsx)</button>
+      <button onclick="document.getElementById('inputParteExcel').click()" class="btn-outline" style="border-color:#10b981; color:#34d399; font-weight:800; font-size:11px; padding:6px 10px; cursor:pointer;">📂 Cargar Parte (.xlsx)</button>
       <span class="pill pill-green">EN LÍNEA</span>
     </div>
   </header>
 
-  <!-- ==================== VISTA 1: FLOTA ==================== -->
-  <div id="view-flota">
-    <div class="card" style="background:#131c2e; border-color:#23324d;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <div class="card-title">Balance Operacional del Mes (Flota Total)</div>
-          <div style="font-size:24px; font-weight:900;" id="txtTotalDisp">0.0 <span style="font-size:12px; color:#94a3b8; font-weight:normal;">h disponibles</span></div>
-        </div>
-        <button onclick="nuevoMesPrompt()" class="btn-outline">Reiniciar Mes</button>
+  <!-- PESTAÑA 1: FLOTA & HORAS -->
+  <div id="viewFlota" class="tab-content active">
+    <div class="card" style="border-top: 3px solid #10b981;">
+      <div style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">BALANCE OPERACIONAL DEL MES (FLOTA TOTAL)</div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin:6px 0;">
+        <span style="font-size:26px; font-weight:900; color:#34d399;" id="txtTotalDisp">0.0 <span style="font-size:12px; color:#94a3b8; font-weight:normal;">h disponibles</span></span>
       </div>
-      <div class="grid-2" style="margin-top:10px; border-top:1px solid #1e293b; padding-top:8px;">
-        <div>
-          <div style="font-size:10px; color:#94a3b8;">CUPO TOTAL ASIGNADO</div>
-          <div style="font-size:14px; font-weight:800;" id="txtTotalAsig">0.0 h</div>
-        </div>
-        <div>
-          <div style="font-size:10px; color:#94a3b8;">VOLADAS EN EL MES</div>
-          <div style="font-size:14px; font-weight:800; color:#f59e0b;" id="txtTotalVol">0.0 h</div>
-        </div>
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; border-top:1px solid #1e293b; padding-top:6px; margin-top:4px;">
+        <span>CUPO ASIGNADO: <b id="txtTotalAsig" style="color:#f1f5f9;">0.0 h</b></span>
+        <span>VOLADAS EN EL MES: <b id="txtTotalVol" style="color:#fbbf24;">0.0 h</b></span>
       </div>
     </div>
 
-    <div class="section-header">
-      <span>🛫 Flota Base Bogotá (Línea de Vuelo)</span>
-      <span id="badgeCountBogota" class="pill pill-green">0</span>
+    <!-- SECCIÓN BOGOTÁ -->
+    <div style="margin: 14px 0 8px; font-size:11px; font-weight:900; color:#38bdf8; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center;">
+      <span>✈️ FLOTA BASE BOGOTÁ (LÍNEA DE VUELO)</span>
+      <span class="pill pill-blue" id="badgeCountBogota">0</span>
     </div>
     <div id="listaBogota"></div>
 
-    <div class="section-header">
-      <span>📍 Destacadas en División (Pernocta en Área)</span>
-      <span id="badgeCountDiv" class="pill pill-blue">0</span>
+    <!-- SECCIÓN DIVISIÓN / ÁREA -->
+    <div style="margin: 18px 0 8px; font-size:11px; font-weight:900; color:#f59e0b; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center;">
+      <span>📍 DESTACADAS EN DIVISIÓN (PERNOCTA EN ÁREA)</span>
+      <span class="pill pill-amber" id="badgeCountDiv">0</span>
     </div>
     <div id="listaDivision"></div>
 
-    <div class="section-header" style="color:#fb7185;">
-      <span>🔧 Hangar BAMAV-1 (AMP / EVA / PAR / APB)</span>
-      <button onclick="toggleHangar()" id="btnToggleHangar" class="btn-outline" style="font-size:10px;">Ver 11 Aeronaves ▼</button>
+    <!-- SECCIÓN HANGAR BAMAV-1 -->
+    <div style="margin: 20px 0 8px; font-size:11px; font-weight:900; color:#f43f5e; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleHangar()">
+      <span>🛠️ HANGAR BAMAV-1 (MANTENIMIENTO / BAJA)</span>
+      <span style="font-size:10px; color:#94a3b8;" id="txtToggleHangar">▲ Ocultar</span>
     </div>
-    <div id="listaHangar" class="hidden"></div>
+    <div id="listaHangar"></div>
+  </div>
 
-    <div id="modalEdicion" class="card hidden" style="border:1px solid #f59e0b; background:#0c1322;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <span style="font-size:13px; font-weight:900; color:#f59e0b;" id="modalAvionTitulo">Editar Aeronave</span>
-        <button onclick="cerrarModal()" class="btn-outline" style="padding:2px 8px;">✕</button>
+  <!-- PESTAÑA 2: SIMULADOR S-3 (DIRECTO: RUTA RÁPIDA, SIN TAREAS) -->
+  <div id="viewSimulador" class="tab-content">
+    <div class="card" style="border-top:3px solid #38bdf8; margin-bottom:14px;">
+      <div style="font-weight:900; font-size:14px; text-transform:uppercase; color:#38bdf8; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+        <span>⚡ SIMULADOR S-3 • PLANIFICACIÓN DE MISIÓN</span>
+        <span class="pill pill-green" id="badgeTotalACL">0 DISPONIBLES</span>
       </div>
-      <input type="hidden" id="editAvionId">
-      
-      <div class="grid-2" style="margin-bottom:8px;">
+
+      <div style="display:grid; grid-template-columns:1fr; gap:12px;">
         <div>
-          <label style="font-size:10px; color:#94a3b8; font-weight:700;">ESTADO TÉCNICO</label>
-          <select id="editEstado" class="input-box">
-            <option value="ACL">🟢 ACL - Lista para Vuelo</option>
-            <option value="LRM">🟡 LRM - Lista c/ Restricción</option>
-            <option value="AMP">🔴 AMP - Manto Programado</option>
-            <option value="AMI">🔴 AMI - Manto Imprevisto</option>
-            <option value="EVA">🟣 EVA - En Evaluación</option>
-            <option value="PAR">🟠 PAR - Pendiente Recursos</option>
-            <option value="APB">⚪ APB - Proceso de Baja</option>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">1. Aeronave Operativa (Solo ACL)</label>
+          <select id="simSelAvion" onchange="calcularSimulacionRapida()" style="width:100%; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+            <option value="">-- Seleccionar Aeronave ACL --</option>
           </select>
         </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div>
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">2. Hora Salida (ETD)</label>
+            <input type="time" id="simETD" value="08:00" onchange="calcularSimulacionRapida()" style="width:100%; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">3. PAX / Carga</label>
+            <input type="number" id="simPax" placeholder="Ej: 6" min="0" oninput="calcularSimulacionRapida()" style="width:100%; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+          </div>
+        </div>
+
         <div>
-          <label style="font-size:10px; color:#94a3b8; font-weight:700;">PERNOCTA / BASE</label>
-          <input type="text" id="editPernocta" class="input-box">
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">4. Ruta (Escribe rápido: skbo skmd sksr)</label>
+          <input type="text" id="simInputRuta" placeholder="Ej: skbo skmd sksr" oninput="calcularSimulacionRapida()" style="width:100%; background:#0f172a; border:1px solid #38bdf8; color:#f8fafc; padding:12px; border-radius:8px; font-weight:900; font-family:monospace; font-size:14px; text-transform:uppercase; margin-top:4px;">
+          <div style="font-size:10px; color:#64748b; margin-top:4px;">Escribe los ICAO separados por espacio o guión. Calcula distancias, tiempos de vuelo y horas de llegada.</div>
         </div>
       </div>
+    </div>
 
-      <div style="margin-bottom:8px;">
-        <label style="font-size:10px; color:#94a3b8; font-weight:700;">DIVISIÓN AGREGADA (DIV ASIG)</label>
-        <input type="text" id="editDivAsig" class="input-box">
-      </div>
+    <!-- RESULTADO DINÁMICO -->
+    <div id="simResultado" style="display:none;" class="card"></div>
+  </div>
 
-      <div class="grid-2" style="margin-bottom:8px;">
+  <!-- PESTAÑA 3: RAMPA (SOLO ACTIVAS FUERA DE BAMAV-1) -->
+  <div id="viewRampa" class="tab-content">
+    <div class="card" style="border-top:3px solid #f59e0b;">
+      <div style="font-size:12px; font-weight:900; color:#f59e0b; text-transform:uppercase; margin-bottom:8px;">SELECCIONAR AERONAVE PARA DESCUENTO</div>
+      <div id="selectorRampa" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:6px; margin-bottom:12px;"></div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
         <div>
-          <label style="font-size:10px; color:#94a3b8; font-weight:700;">CUPO MES (HORAS)</label>
-          <input type="number" step="0.1" id="editAsignadas" class="input-box">
+          <label style="font-size:10px; color:#94a3b8; text-transform:uppercase; font-weight:700;">Horas a descontar</label>
+          <div style="display:flex; gap:4px; margin-top:4px;">
+            <button onclick="ajustarHoras(-0.5)" class="btn-outline">-0.5</button>
+            <input type="number" id="rampaHoras" value="1.5" step="0.1" style="width:100%; background:#0f172a; border:1px solid #334155; color:#f1f5f9; text-align:center; font-weight:900; border-radius:6px; padding:6px;">
+            <button onclick="ajustarHoras(0.5)" class="btn-outline">+0.5</button>
+          </div>
         </div>
         <div>
-          <label style="font-size:10px; color:#94a3b8; font-weight:700;">VOLADAS EN EL MES</label>
-          <input type="number" step="0.1" id="editVoladasMes" class="input-box">
+          <label style="font-size:10px; color:#94a3b8; text-transform:uppercase; font-weight:700;">Misión / Ruta</label>
+          <input type="text" id="rampaRuta" value="Vuelo de Operaciones" style="width:100%; background:#0f172a; border:1px solid #334155; color:#f1f5f9; border-radius:6px; padding:8px; font-size:12px; margin-top:4px;">
         </div>
       </div>
+      <button onclick="descontarHoras()" style="width:100%; background:#10b981; border:none; color:#000; font-weight:900; padding:12px; border-radius:8px; cursor:pointer; font-size:13px; text-transform:uppercase;">⚡ Registrar Horas Voladas</button>
+    </div>
 
-      <div class="grid-2" style="margin-bottom:8px;">
-        <div>
-          <label style="font-size:10px; color:#94a3b8; font-weight:700;">HORAS ACTUALES CÉLULA</label>
-          <input type="number" step="0.1" id="editHorasActuales" class="input-box">
-        </div>
-        <div>
-          <label style="font-size:10px; color:#94a3b8; font-weight:700;">PRÓXIMA FASE / INSP.</label>
-          <input type="number" step="0.1" id="editProximaFase" class="input-box">
-        </div>
-      </div>
-
-      <div style="margin-bottom:12px;">
-        <label style="font-size:10px; color:#94a3b8; font-weight:700;">NOVEDAD / OBSERVACIÓN TÉCNICA</label>
-        <input type="text" id="editObs" class="input-box">
-      </div>
-
-      <button onclick="guardarEdicionManual()" class="btn-green">GUARDAR DATOS TÉCNICOS</button>
+    <div class="card">
+      <div style="font-size:11px; font-weight:900; color:#94a3b8; text-transform:uppercase; margin-bottom:8px;">HISTORIAL RECIENTE DE OPERACIONES</div>
+      <div id="listaHistorial"></div>
     </div>
   </div>
 
-  <!-- ==================== VISTA 2: SIMULADOR & DICTADO ==================== -->
-  <div id="view-simulador" class="hidden">
-    <div class="card">
-      <div class="card-title">1. Entrada Rápida de Misión (Llamada División)</div>
-
-      <div style="background:#0b1322; border:1px solid #f59e0b; border-radius:10px; padding:10px; margin-bottom:12px;">
-        <label style="font-size:10px; color:#f59e0b; font-weight:800; display:flex; align-items:center; gap:4px;">
-          ⚡ MODO DICTADO RÁPIDO (LLAMADA NOCTURNA)
-        </label>
-        <div style="display:flex; gap:6px; margin-top:4px;">
-          <input type="text" id="inputDictadoRapido" placeholder="Ej: 0700 SKBO-SKTI-SKBO 6pax C2 Apoyo COEJ" class="input-box" style="margin-top:0; font-size:13px;" onkeydown="if(event.key==='Enter') procesarDictadoRapido()">
-          <button onclick="procesarDictadoRapido()" class="btn-gold" style="white-space:nowrap; padding:0 14px;">⚡ Procesar</button>
-        </div>
-        <div style="font-size:9px; color:#64748b; margin-top:4px;">Tip: Escribe hora, ruta con guiones, pax (ej: 6pax), sigla doctrinal (ej: C2, SA) y motivo. Presiona Enter.</div>
-      </div>
-
-      <div class="grid-2" style="margin-bottom:8px;">
-        <div>
-          <label style="font-size:10px; color:#94a3b8; font-weight:700;">HORA SALIDA (ETD)</label>
-          <input type="text" id="progHora" value="07:00R" placeholder="07:00R" class="input-box">
-        </div>
-        <div>
-          <label style="font-size:10px; color:#94a3b8; font-weight:700;">PASAJEROS (PAX)</label>
-          <input type="number" id="progPax" value="4" class="input-box" oninput="evaluarMision()">
-        </div>
-      </div>
-
-      <div style="margin-bottom:8px;">
-        <label style="font-size:10px; color:#94a3b8; font-weight:700;">TAREA DE AVIACIÓN DOCTRINAL</label>
-        <select id="progTarea" class="input-box">
-          <optgroup label="1. Misiones Tácticas - Combate (C)">
-            <option value="R - Reconocimiento y Vigilancia">R — Reconocimiento y Vigilancia</option>
-            <option value="SE - Seguridad">SE — Seguridad</option>
-            <option value="AT - Ataque">AT — Ataque</option>
-            <option value="AA - Asalto Aéreo">AA — Asalto Aéreo</option>
-            <option value="ME - Misiones Especiales">ME — Misiones Especiales</option>
-            <option value="AF - Apoyo de Fuego">AF — Apoyo de Fuego</option>
-          </optgroup>
-          <optgroup label="2. Misiones Tácticas - Apoyo de Combate (AC)">
-            <option value="C2 - Comando y Control" selected>C2 — Comando y Control</option>
-            <option value="MA - Movimiento Aéreo">MA — Movimiento Aéreo</option>
-            <option value="INT - Inteligencia Técnica">INT — Inteligencia Técnica</option>
-            <option value="ATS - Tránsito Aéreo">ATS — Servicios de Tránsito Aéreo</option>
-            <option value="C-SAR - Búsqueda y Rescate Combate">C-SAR — Búsqueda y Rescate en Combate</option>
-          </optgroup>
-          <optgroup label="3. Tácticas - Apoyo y Servicios (ASPC)">
-            <option value="CASEVAC - Evacuación Propias Tropas">CASEVAC — Evacuación de Propias Tropas</option>
-            <option value="SA - Sostenimiento de Aviación">SA — Sostenimiento de Aviación</option>
-            <option value="RAV - Recuperación de Aeronaves">RAV — Recuperación de Aeronaves</option>
-            <option value="MEDEVAC - Evacuación Aeromédica">MEDEVAC — Evacuación Aeromédica</option>
-          </optgroup>
-          <optgroup label="4. Misiones Generales de Aviación">
-            <option value="I - Instrucción">I — Instrucción</option>
-            <option value="E - Entrenamiento">E — Entrenamiento</option>
-            <option value="M - Mantenimiento">M — Mantenimiento</option>
-            <option value="TRP - Transporte de Prisioneros">TRP — Transporte de Prisioneros</option>
-            <option value="SAR - Búsqueda y Rescate">SAR — Búsqueda y Rescate</option>
-            <option value="RA - Reposicionamiento">RA — Reposicionamiento</option>
-            <option value="AX - Vuelos de Aceptación">AX — Aceptación y Experimentales</option>
-            <option value="ID - Investigación y Desarrollo">ID — Investigación y Desarrollo</option>
-            <option value="AH - Apoyo Humanitario">AH — Apoyo Humanitario</option>
-          </optgroup>
-          <optgroup label="5. Otros Usos Oficiales">
-            <option value="AEG - Apoyo Entidades Gubernamentales">AEG — Apoyo a Entidades Gubernamentales</option>
-            <option value="CDM - Ceremonias y Ferias">CDM — Ceremonias y Demostraciones</option>
-            <option value="EMI - Ejercicios Integrados">EMI — Ejercicios Militares Integrados</option>
-            <option value="OAR - Otras Actividades">OAR — Otras Actividades Requeridas</option>
-          </optgroup>
-        </select>
-      </div>
-
-      <div style="margin-bottom:8px;">
-        <label style="font-size:10px; color:#94a3b8; font-weight:700;">DETALLE / USUARIO</label>
-        <input type="text" id="progDetalle" value="Apoyo Comandante Ejército" placeholder="Ej: Apoyo COEJ, Relevo tropa, Vuelo logístico..." class="input-box">
-      </div>
-
-      <div style="margin-bottom:8px;">
-        <label style="font-size:10px; color:#94a3b8; font-weight:700;">AGREGAR PIERNA (OACI O MUNICIPIO)</label>
-        <div class="autocomplete-container">
-          <input type="text" id="inputBuscarAero" placeholder="Escriba: medellin, skmd, tolemaida, skuc..." class="input-box" autocomplete="off" oninput="filtrarAeropuertos(this.value)">
-          <div id="sugerenciasAero" class="suggestions-list hidden"></div>
-        </div>
-      </div>
-
-      <div>
-        <div style="font-size:10px; color:#94a3b8; margin-bottom:4px; text-transform:uppercase;">Ruta Actual:</div>
-        <div id="contenedorPiernas" style="display:flex; flex-wrap:wrap; gap:4px; min-height:30px; align-items:center;"></div>
-      </div>
-
-      <div style="background:#0f172a; padding:10px; border-radius:10px; margin-top:10px; border:1px solid #1e293b; display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <div style="font-size:10px; color:#94a3b8;">DISTANCIA ORTODRÓMICA:</div>
-          <div style="font-size:15px; font-weight:900; color:#f59e0b;" id="txtDistanciaTotal">0 NM</div>
-        </div>
-        <button onclick="limpiarRuta()" class="btn-outline">Reiniciar Ruta</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">2. Recomendación Operacional S-3 (Prioridad Base & Pernocta)</div>
-      <div id="resultadosSim" style="display:flex; flex-direction:column; gap:8px;"></div>
-    </div>
-
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <div class="card-title" style="margin:0;">3. Orden de Vuelo del Día</div>
-        <button onclick="copiarBorradorWhatsApp()" class="btn-gold" style="padding:6px 10px; font-size:11px;">📋 Copiar para Radioperador</button>
-      </div>
-      <div id="listaMisiones" style="display:flex; flex-direction:column; gap:6px;"></div>
-    </div>
-  </div>
-
-  <!-- ==================== VISTA 3: RAMPA ==================== -->
-  <div id="view-rampa" class="hidden">
-    <div class="card">
-      <div class="card-title">1. Seleccionar Aeronave</div>
-      <div id="selectorRampa" class="grid-2" style="margin-bottom:12px;"></div>
-
-      <div class="card-title">2. Ruta Ejecutada</div>
-      <input type="text" id="rampaRuta" value="Bogotá - Tolemaida - Bogotá" class="input-box" style="margin-bottom:12px;">
-
-      <div class="card-title">3. Horas Voladas Reales (Décimas)</div>
-      <div style="display:flex; gap:8px; align-items:center; margin-bottom:14px;">
-        <button onclick="ajustarHoras(-0.1)" class="btn-gold" style="width:48px; font-size:18px;">-</button>
-        <input type="number" step="0.1" id="rampaHoras" value="1.5" class="input-box" style="text-align:center; font-size:20px; font-weight:900; color:#10b981; margin:0;">
-        <button onclick="ajustarHoras(0.1)" class="btn-gold" style="width:48px; font-size:18px;">+</button>
-      </div>
-
-      <button onclick="descontarHoras()" class="btn-green">REGISTRAR EN LIBRO Y DESCONTAR HORAS</button>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Historial de Reportes en Rampa</div>
-      <div id="listaHistorial" style="font-size:12px; display:flex; flex-direction:column; gap:6px;"></div>
-    </div>
-  </div>
-
-  <div class="nav-bar">
-    <button class="nav-btn active" id="btn-flota" onclick="cambiarVista('flota')">
-      <span>✈️</span>
-      <span>Flota & Horas</span>
-    </button>
-    <button class="nav-btn" id="btn-simulador" onclick="cambiarVista('simulador')">
-      <span>🧭</span>
-      <span>Simulador S-3</span>
-    </button>
-    <button class="nav-btn" id="btn-rampa" onclick="cambiarVista('rampa')">
-      <span>⏱️</span>
-      <span>Rampa</span>
-    </button>
-  </div>
+  <nav>
+    <button class="nav-btn active" onclick="cambiarVista('flota')">✈️<span>Flota & Horas</span></button>
+    <button class="nav-btn" onclick="cambiarVista('simulador')">⚡<span>Simulador S-3</span></button>
+    <button class="nav-btn" onclick="cambiarVista('rampa')">⏱️<span>Rampa</span></button>
+  </nav>
 
   <script>
-    var AEROPUERTOS = [{"id": "SKAD", "oaci": "SKAD", "ub": "ACANDI", "nom": "ACANDI", "lat": 8.4981, "lon": -77.2739, "rwy": 1189}, {"id": "SKAG", "oaci": "SKAG", "ub": "AGUACHICA", "nom": "HACARITAMA", "lat": 8.246, "lon": -73.581, "rwy": 1310}, {"id": "APT_2", "oaci": "SKXX", "ub": "AGUACHICA-BITER 5", "nom": "LA SABANA", "lat": 8.1956, "lon": -73.6141, "rwy": 1100}, {"id": "APT_3", "oaci": "", "ub": "ALTAMIRA OROCUE", "nom": "ALTAMIRA", "lat": 4.7586, "lon": -71.6386, "rwy": 1140}, {"id": "SKAP", "oaci": "SKAP", "ub": "APIAY", "nom": "APIAY - FAC", "lat": 4.0761, "lon": -73.5627, "rwy": 2500}, {"id": "SKAC", "oaci": "SKAC", "ub": "ARARACUARA", "nom": "ARARACUARA", "lat": 0.6007, "lon": -72.3981, "rwy": 1262}, {"id": "SKUC", "oaci": "SKUC", "ub": "ARAUCA", "nom": "SANTIAGO PEREZ QUIROZ", "lat": 7.0689, "lon": -70.737, "rwy": 2100}, {"id": "APT_7", "oaci": "SKXX", "ub": "ARBOLETES", "nom": "ARBOLETES", "lat": 8.8667, "lon": -76.4333, "rwy": 1100}, {"id": "SKAR", "oaci": "SKAR", "ub": "ARMENIA", "nom": "EL EDEN", "lat": 4.4518, "lon": -75.7662, "rwy": 2320}, {"id": "SKBS", "oaci": "SKBS", "ub": "BAHIA SOLANO", "nom": "JOSE C. MUTIS", "lat": 6.2031, "lon": -77.395, "rwy": 1200}, {"id": "SKEJ", "oaci": "SKEJ", "ub": "BARRANCABERMEJA", "nom": "YARIGUIES", "lat": 7.0244, "lon": -73.8068, "rwy": 1800}, {"id": "SKBM", "oaci": "SKBM", "ub": "BARRANCO MINAS", "nom": "BARRANCO MINAS", "lat": 3.4906, "lon": -69.81, "rwy": 1303}, {"id": "SKBQ", "oaci": "SKBQ", "ub": "BARRANQUILLA", "nom": "ERNESTO CORTISSOZ", "lat": 10.8886, "lon": -74.7818, "rwy": 3000}, {"id": "SKBO", "oaci": "SKBO", "ub": "BOGOTA", "nom": "ELDORADO", "lat": 4.7014, "lon": -74.147, "rwy": 3800}, {"id": "SKBG", "oaci": "SKBG", "ub": "BUCARAMANGA", "nom": "PALONEGRO", "lat": 7.1266, "lon": -73.1848, "rwy": 2159}, {"id": "SKBU", "oaci": "SKBU", "ub": "BUENAVENTURA", "nom": "GERARDO TOBAR LOPEZ", "lat": 3.8196, "lon": -76.9899, "rwy": 1200}, {"id": "SKBN", "oaci": "SKBN", "ub": "BUENAVISTA", "nom": "BUENAVISTA", "lat": 10.886, "lon": -72.901, "rwy": 1420}, {"id": "SKCL", "oaci": "SKCL", "ub": "CALI", "nom": "ALFONSO BONILLA ARAGON", "lat": 3.5431, "lon": -76.3817, "rwy": 3000}, {"id": "SKLC", "oaci": "SKLC", "ub": "CAREPA", "nom": "ANTONIO ROLDAN BETANCOURT", "lat": 7.8117, "lon": -76.7164, "rwy": 1964}, {"id": "SKCI", "oaci": "SKCI", "ub": "CARIMAGUA", "nom": "CARIMAGUA", "lat": 4.5647, "lon": -71.3373, "rwy": 1204}, {"id": "APT_20", "oaci": "SKXX", "ub": "CARMEN DE BOLIVAR", "nom": "CARMEN DE BOLIVAR", "lat": 9.6842, "lon": -75.1261, "rwy": 1500}, {"id": "SKCG", "oaci": "SKCG", "ub": "CARTAGENA", "nom": "RAFAEL NUÑEZ", "lat": 10.442, "lon": -75.5128, "rwy": 2540}, {"id": "SKGO", "oaci": "SKGO", "ub": "CARTAGO", "nom": "SANTA ANA", "lat": 4.7584, "lon": -75.9561, "rwy": 2140}, {"id": "SKCU", "oaci": "SKCU", "ub": "CAUCASIA", "nom": "CAUCASIA", "lat": 7.968, "lon": -75.198, "rwy": 1156}, {"id": "SKHA", "oaci": "SKHA", "ub": "CHAPARRAL", "nom": "NAVAS PARDO", "lat": 3.7238, "lon": -75.4654, "rwy": 1200}, {"id": "SKGY", "oaci": "SKGY", "ub": "CHIA", "nom": "FLAMINIO SUAREZ CAMACHO", "lat": 4.8125, "lon": -74.0651, "rwy": 1720}, {"id": "APT_26", "oaci": "SKXX", "ub": "CICUCO", "nom": "CAMPAMENTO PETROLERO", "lat": 9.2711, "lon": -74.6564, "rwy": 1270}, {"id": "SKBR", "oaci": "SKBR", "ub": "CIENAGA DE ORO", "nom": "BERASTEGUI", "lat": 8.884, "lon": -75.683, "rwy": 1500}, {"id": "SKCM", "oaci": "SKCM", "ub": "CIMITARRA", "nom": "CIMITARRA", "lat": 6.45, "lon": -74.0167, "rwy": 1500}, {"id": "APT_29", "oaci": "SKXX", "ub": "CODAZZI", "nom": "LAS FLORES", "lat": 10.095, "lon": -73.2456, "rwy": 1100}, {"id": "SKCD", "oaci": "SKCD", "ub": "CONDOTO", "nom": "MANDINGA", "lat": 5.072, "lon": -76.676, "rwy": 1150}, {"id": "SKCZ", "oaci": "SKCZ", "ub": "COROZAL", "nom": "LAS BRUJAS", "lat": 9.3326, "lon": -75.2852, "rwy": 1445}, {"id": "SKCV", "oaci": "SKCV", "ub": "COVEÑAS", "nom": "COVEÑAS", "lat": 9.401, "lon": -75.6913, "rwy": 1230}, {"id": "SKCN", "oaci": "SKCN", "ub": "CRAVO NORTE", "nom": "CRAVO NORTE", "lat": 6.3169, "lon": -70.2108, "rwy": 1122}, {"id": "SKCC", "oaci": "SKCC", "ub": "CUCUTA", "nom": "CAMILO DAZA", "lat": 7.9274, "lon": -72.5116, "rwy": 2320}, {"id": "SKUM", "oaci": "SKUM", "ub": "CUMARIBO", "nom": "CUMARIBO", "lat": 4.4464, "lon": -69.7815, "rwy": 1100}, {"id": "SKBC", "oaci": "SKBC", "ub": "EL BANCO", "nom": "EL BANCO", "lat": 9.044, "lon": -73.973, "rwy": 1200}, {"id": "APT_37", "oaci": "", "ub": "EL CIMARRON", "nom": "EL CIMARRON", "lat": 5.9397, "lon": -69.2645, "rwy": 1200}, {"id": "SKYP", "oaci": "SKYP", "ub": "EL YOPAL", "nom": "EL YOPAL (ALCARABAN)", "lat": 5.3191, "lon": -72.3842, "rwy": 2250}, {"id": "APT_39", "oaci": "", "ub": "FIRAVITOBA", "nom": "SOGAMOSO - ALBERTO LLERAS C.", "lat": 5.6756, "lon": -72.9705, "rwy": 1881}, {"id": "SKFL", "oaci": "SKFL", "ub": "FLORENCIA", "nom": "GUSTAVO ARTUNDUAGA PAREDES", "lat": 1.5892, "lon": -75.5642, "rwy": 1500}, {"id": "SKGI", "oaci": "SKGI", "ub": "GIRARDOT", "nom": "SANTIAGO VILA", "lat": 4.2753, "lon": -74.7961, "rwy": 1600}, {"id": "SKGB", "oaci": "SKGB", "ub": "GUABITO", "nom": "MARCO FIDEL SUAREZ", "lat": 3.4585, "lon": -76.4972, "rwy": 1887}, {"id": "SKGP", "oaci": "SKGP", "ub": "GUAPI", "nom": "JUAN CASIANO", "lat": 2.57, "lon": -77.898, "rwy": 1300}, {"id": "APT_44", "oaci": "SKXX", "ub": "GUERIMA", "nom": "GUERIMA", "lat": 3.6299, "lon": -70.3231, "rwy": 1220}, {"id": "SKIB", "oaci": "SKIB", "ub": "IBAGUE", "nom": "PERALES", "lat": 4.4217, "lon": -75.1336, "rwy": 1800}, {"id": "SKIP", "oaci": "SKIP", "ub": "IPIALES", "nom": "SAN LUIS", "lat": 0.8619, "lon": -77.6718, "rwy": 2500}, {"id": "SKLB", "oaci": "SKLB", "ub": "JAGUA DE IBIRICO", "nom": "EL BORREGO", "lat": 9.5851, "lon": -73.452, "rwy": 1500}, {"id": "APT_48", "oaci": "", "ub": "JIBICI", "nom": "JIBICI", "lat": 4.8839, "lon": -68.3564, "rwy": 1140}, {"id": "SKJC", "oaci": "SKJC", "ub": "JUANCHACO", "nom": "JUANCHACO", "lat": 3.9347, "lon": -77.3619, "rwy": 1200}, {"id": "APT_50", "oaci": "SKXX", "ub": "LA CHORRERA", "nom": "LA CHORRERA", "lat": 1.4577, "lon": -72.8019, "rwy": 1598}, {"id": "SKGA", "oaci": "SKGA", "ub": "LA GAVIOTA-VICHADA", "nom": "LA GAVIOTA", "lat": 4.5507, "lon": -70.9253, "rwy": 1180}, {"id": "SKNA", "oaci": "SKNA", "ub": "LA MACARENA", "nom": "EL REFUGIO", "lat": 2.1735, "lon": -73.7862, "rwy": 1581}, {"id": "SKLM", "oaci": "SKLM", "ub": "LA MINA", "nom": "MAICAO-JORGE ISAAC", "lat": 11.2326, "lon": -72.4893, "rwy": 1700}, {"id": "SKLR", "oaci": "SKLR", "ub": "LARANDIA", "nom": "LARANDIA", "lat": 1.4795, "lon": -75.4869, "rwy": 1577}, {"id": "SKLT", "oaci": "SKLT", "ub": "LETICIA", "nom": "ALFREDO VASQUEZ COBO", "lat": -4.1919, "lon": -69.9422, "rwy": 2010}, {"id": "APT_56", "oaci": "", "ub": "LOS MORROS", "nom": "LOS MORROS", "lat": 9.7231, "lon": -75.7194, "rwy": 1190}, {"id": "SKMA", "oaci": "SKMA", "ub": "MADRID", "nom": "JUSTINO MARIÑO CUESTA", "lat": 4.728, "lon": -74.2755, "rwy": 1838}, {"id": "SKMG", "oaci": "SKMG", "ub": "MAGANGUE", "nom": "BARACOA", "lat": 9.2861, "lon": -74.8528, "rwy": 1410}, {"id": "SKMJ", "oaci": "SKMJ", "ub": "MAICAO", "nom": "MAICAO", "lat": 11.391, "lon": -72.2365, "rwy": 1615}, {"id": "APT_60", "oaci": "SKXX", "ub": "MANAURE", "nom": "MANAURE", "lat": 11.7861, "lon": -72.4167, "rwy": 1332}, {"id": "APT_61", "oaci": "SKXX", "ub": "MANI", "nom": "MANI", "lat": 4.8333, "lon": -72.2667, "rwy": 1200}, {"id": "SKMZ", "oaci": "SKMZ", "ub": "MANIZALES", "nom": "LA NUBIA", "lat": 5.03, "lon": -75.4655, "rwy": 1400}, {"id": "SKQU", "oaci": "SKQU", "ub": "MARIQUITA", "nom": "JOSE CELESTINO MUTIS", "lat": 5.2126, "lon": -74.8837, "rwy": 1790}, {"id": "SKMD", "oaci": "SKMD", "ub": "MEDELLIN", "nom": "OLAYA HERRERA", "lat": 6.2204, "lon": -75.5904, "rwy": 2050}, {"id": "SKME", "oaci": "SKME", "ub": "MELGAR", "nom": "TC. LUIS F. PINTO", "lat": 4.217, "lon": -74.6358, "rwy": 1264}, {"id": "SKMF", "oaci": "SKMF", "ub": "MIRAFLORES", "nom": "MIRAFLORES", "lat": 1.3386, "lon": -71.9521, "rwy": 1320}, {"id": "SKMU", "oaci": "SKMU", "ub": "MITU", "nom": "FABIO A.LEON BENTLEY", "lat": 1.2535, "lon": -70.2341, "rwy": 1880}, {"id": "SKMP", "oaci": "SKMP", "ub": "MOMPOS", "nom": "SAN BERNARDO", "lat": 9.2583, "lon": -74.4383, "rwy": 1175}, {"id": "SKMR", "oaci": "SKMR", "ub": "MONTERIA", "nom": "LOS GARZONES", "lat": 8.8229, "lon": -75.8252, "rwy": 2298}, {"id": "SKMO", "oaci": "SKMO", "ub": "MORELIA", "nom": "MORELIA", "lat": 3.7563, "lon": -71.4571, "rwy": 1100}, {"id": "SKNV", "oaci": "SKNV", "ub": "NEIVA", "nom": "BENITO SALAS", "lat": 2.9502, "lon": -75.294, "rwy": 1688}, {"id": "APT_72", "oaci": "SKXX", "ub": "NUEVA ANTIOQUIA", "nom": "LA PRIMAVERA", "lat": 6.0873, "lon": -69.4282, "rwy": 1202}, {"id": "SKNQ", "oaci": "SKNQ", "ub": "NUQUI", "nom": "REYES MURILLO", "lat": 5.7104, "lon": -77.2618, "rwy": 1200}, {"id": "SKOC", "oaci": "SKOC", "ub": "OCAÑA", "nom": "AGUAS CLARAS", "lat": 8.3156, "lon": -73.3583, "rwy": 1200}, {"id": "SKOE", "oaci": "SKOE", "ub": "OROCUE", "nom": "OROCUE", "lat": 4.7922, "lon": -71.3564, "rwy": 1480}, {"id": "APT_76", "oaci": "", "ub": "PADILLA", "nom": "SAN JACINTO", "lat": 3.1858, "lon": -76.3261, "rwy": 1100}, {"id": "SKPA", "oaci": "SKPA", "ub": "PAIPA", "nom": "JUAN JOSE RONDON", "lat": 5.7648, "lon": -73.1055, "rwy": 1600}, {"id": "SKPQ", "oaci": "SKPQ", "ub": "PALANQUERO", "nom": "CT. GERMAN OLANO", "lat": 5.4835, "lon": -74.6574, "rwy": 3037}, {"id": "APT_79", "oaci": "", "ub": "PALESTINA", "nom": "LA PALESTINA", "lat": 5.0304, "lon": -75.6168, "rwy": 2500}, {"id": "SKPS", "oaci": "SKPS", "ub": "PASTO", "nom": "ANTONIO NARIÑO", "lat": 1.3965, "lon": -77.2911, "rwy": 2277}, {"id": "SKPZ", "oaci": "SKPZ", "ub": "PAZ DE ARIPORO", "nom": "PAZ DE ARIPORO", "lat": 5.877, "lon": -71.8863, "rwy": 1420}, {"id": "SKPE", "oaci": "SKPE", "ub": "PEREIRA", "nom": "MATECAÑA", "lat": 4.8128, "lon": -75.7393, "rwy": 2020}, {"id": "SKPI", "oaci": "SKPI", "ub": "PITALITO", "nom": "CONTADOR", "lat": 1.8573, "lon": -76.0856, "rwy": 1500}, {"id": "SKPP", "oaci": "SKPP", "ub": "POPAYAN", "nom": "GUILLERMO LEON VALENCIA", "lat": 2.4544, "lon": -76.6098, "rwy": 1910}, {"id": "SKPV", "oaci": "SKPV", "ub": "PROVIDENCIA", "nom": "EL EMBRUJO", "lat": 13.3572, "lon": -81.3579, "rwy": 1290}, {"id": "SKAS", "oaci": "SKAS", "ub": "PUERTO ASIS", "nom": "TRES DE MAYO", "lat": 0.5057, "lon": -76.5008, "rwy": 1462}, {"id": "SKPB", "oaci": "SKPB", "ub": "PUERTO BOLIVAR", "nom": "PORTETE", "lat": 12.2217, "lon": -71.9842, "rwy": 1600}, {"id": "SKPC", "oaci": "SKPC", "ub": "PUERTO CARREÑO", "nom": "GERMAN OLANO", "lat": 6.1851, "lon": -67.4926, "rwy": 1800}, {"id": "SKPG", "oaci": "SKPG", "ub": "PUERTO GAITAN", "nom": "PUERTO GAITAN", "lat": 4.3044, "lon": -72.0844, "rwy": 1380}, {"id": "SKPD", "oaci": "SKPD", "ub": "PUERTO INIRIDA", "nom": "CESAR GAVIRIA TRUJILLO", "lat": 3.8528, "lon": -67.9039, "rwy": 1800}, {"id": "SKLG", "oaci": "SKLG", "ub": "PUERTO LEGUIZAMO", "nom": "PUERTO LEGUÍZAMO", "lat": -0.182, "lon": -74.7712, "rwy": 1199}, {"id": "APT_92", "oaci": "SKXX", "ub": "PUERTO TRIUNFO", "nom": "HACIENDA NAPOLES", "lat": 5.9222, "lon": -74.7258, "rwy": 1150}, {"id": "SKUI", "oaci": "SKUI", "ub": "QUIBDO", "nom": "EL CARAÑO", "lat": 5.6908, "lon": -76.6412, "rwy": 1400}, {"id": "SKRH", "oaci": "SKRH", "ub": "RIOHACHA", "nom": "ALMIRANTE PADILLA", "lat": 11.5262, "lon": -72.9267, "rwy": 1900}, {"id": "SKRG", "oaci": "SKRG", "ub": "RIONEGRO", "nom": "JOSE MARIA CORDOVA", "lat": 6.1645, "lon": -75.423, "rwy": 3500}, {"id": "SKRU", "oaci": "SKRU", "ub": "SABANA DE TORRES", "nom": "LAS CRUCES", "lat": 7.3859, "lon": -73.5095, "rwy": 1202}, {"id": "SKSP", "oaci": "SKSP", "ub": "SAN ANDRES", "nom": "GUSTAVO ROJAS PINILLA", "lat": 12.5837, "lon": -81.7113, "rwy": 2375}, {"id": "APT_98", "oaci": "SKXX", "ub": "SAN FELIPE", "nom": "SAN FELIPE", "lat": 1.915, "lon": -67.0776, "rwy": 1100}, {"id": "APT_99", "oaci": "", "ub": "SAN GIL", "nom": "SAN GIL - LOS POZOS", "lat": 6.5844, "lon": -73.1283, "rwy": 1240}, {"id": "SKSJ", "oaci": "SKSJ", "ub": "SAN JOSE DEL GUAVIARE", "nom": "JORGE E. GONZALEZ T.", "lat": 2.5797, "lon": -72.6391, "rwy": 1500}, {"id": "APT_101", "oaci": "", "ub": "SAN MARCOS", "nom": "SAN MARCOS", "lat": 8.65, "lon": -75.1667, "rwy": 1580}, {"id": "SKSV", "oaci": "SKSV", "ub": "SAN VICENTE DEL CAGUAN", "nom": "EDUARDO FALLA SOLANO", "lat": 2.152, "lon": -74.7662, "rwy": 1450}, {"id": "SKSM", "oaci": "SKSM", "ub": "SANTA MARTA", "nom": "SIMON BOLIVAR", "lat": 11.1197, "lon": -74.2306, "rwy": 1700}, {"id": "APT_104", "oaci": "", "ub": "SANTA RITA", "nom": "CENTRO ADM. \"MARANDUA\"", "lat": 5.3167, "lon": -67.9, "rwy": 1780}, {"id": "SKSA", "oaci": "SKSA", "ub": "SARAVENA", "nom": "LOS COLONIZADORES", "lat": 6.9504, "lon": -71.8562, "rwy": 1200}, {"id": "SKSO", "oaci": "SKSO", "ub": "SOGAMOSO", "nom": "ALBERTO LLERAS CAMARGO", "lat": 5.7049, "lon": -72.9981, "rwy": 1877}, {"id": "SKTM", "oaci": "SKTM", "ub": "TAME", "nom": "GUSTAVO VARGAS", "lat": 6.451, "lon": -71.7601, "rwy": 2000}, {"id": "SKTR", "oaci": "SKTR", "ub": "TARAIRA", "nom": "TARAIRA", "lat": 0.5679, "lon": -69.6382, "rwy": 1130}, {"id": "SKTB", "oaci": "SKTB", "ub": "TIBU", "nom": "TIBU", "lat": 8.632, "lon": -72.731, "rwy": 1400}, {"id": "APT_110", "oaci": "", "ub": "TIERRALTA", "nom": "URRA", "lat": 8.0053, "lon": -76.2275, "rwy": 1120}, {"id": "SKTI", "oaci": "SKTI", "ub": "TOLEMAIDA", "nom": "GUSTAVO ROJAS PINILLA", "lat": 4.2448, "lon": -74.6499, "rwy": 2800}, {"id": "SKTL", "oaci": "SKTL", "ub": "TOLU", "nom": "TOLU", "lat": 9.5095, "lon": -75.5859, "rwy": 1350}, {"id": "SKTQ", "oaci": "SKTQ", "ub": "TRES ESQUINAS", "nom": "CT. ERNESTO ESGUERRA CUBIDES", "lat": 0.7459, "lon": -75.2341, "rwy": 1900}, {"id": "SKTD", "oaci": "SKTD", "ub": "TRINIDAD", "nom": "TRINIDAD", "lat": 5.431, "lon": -71.658, "rwy": 1148}, {"id": "SKCO", "oaci": "SKCO", "ub": "TUMACO", "nom": "LA FLORIDA", "lat": 1.8144, "lon": -78.749, "rwy": 1600}, {"id": "APT_116", "oaci": "SKXX", "ub": "URIBIA", "nom": "PUERTO ESTRELLA", "lat": 12.3462, "lon": -71.3089, "rwy": 1180}, {"id": "SKVP", "oaci": "SKVP", "ub": "VALLEDUPAR", "nom": "ALFONSO LOPEZ PUMAREJO", "lat": 10.4351, "lon": -73.2494, "rwy": 2100}, {"id": "SKVG", "oaci": "SKVG", "ub": "VILLA GARZON", "nom": "CANANGUCHAL", "lat": 0.9812, "lon": -76.6038, "rwy": 1476}, {"id": "APT_119", "oaci": "", "ub": "VILLA GLADYS", "nom": "VILLA GLADYS", "lat": 0.2606, "lon": -71.3564, "rwy": 1100}, {"id": "SKVN", "oaci": "SKVN", "ub": "VILLANUEVA-CASANARE", "nom": "VILLANUEVA", "lat": 4.6371, "lon": -72.9498, "rwy": 1260}, {"id": "SKVV", "oaci": "SKVV", "ub": "VILLAVICENCIO", "nom": "VANGUARDIA", "lat": 4.1684, "lon": -73.6147, "rwy": 1940}];
+    var AEROPUERTOS = {
+      "SKBO": { nombre: "BOGOTÁ (CATAM)", lat: 4.7016, lon: -74.1469 },
+      "SKMD": { nombre: "MEDELLÍN (ECHO)", lat: 6.2203, lon: -75.5906 },
+      "SKRG": { nombre: "RIONEGRO (JMC)", lat: 6.1645, lon: -75.4269 },
+      "SKSR": { nombre: "TRES ESQUINAS", lat: 0.7492, lon: -75.2333 },
+      "SKCL": { nombre: "CALI", lat: 3.5432, lon: -76.3816 },
+      "SKTL": { nombre: "TOLEMAIDA", lat: 4.2447, lon: -74.5297 },
+      "SKYP": { nombre: "YOPAL", lat: 5.3197, lon: -72.3844 },
+      "SKAP": { nombre: "APIAY", lat: 4.0758, lon: -73.5639 },
+      "SKVV": { nombre: "VILLAVICENCIO", lat: 4.1681, lon: -73.6139 },
+      "SKFL": { nombre: "FLORENCIA", lat: 1.5894, lon: -75.5647 },
+      "SKAR": { nombre: "ARAUCA", lat: 7.0689, lon: -70.7372 },
+      "SKSA": { nombre: "SARAVENA", lat: 6.9500, lon: -71.8667 },
+      "SKLT": { nombre: "LETICIA", lat: -4.1944, lon: -69.9431 },
+      "SKMR": { nombre: "MONTERÍA", lat: 8.8244, lon: -75.8278 },
+      "SKCC": { nombre: "CÚCUTA", lat: 7.9275, lon: -72.5117 },
+      "SKBQ": { nombre: "BARRANQUILLA", lat: 10.8897, lon: -74.7808 },
+      "SKSM": { nombre: "SANTA MARTA", lat: 11.1197, lon: -74.2306 },
+      "SKCG": { nombre: "CARTAGENA", lat: 10.4425, lon: -75.5131 },
+      "SKPE": { nombre: "PEREIRA", lat: 4.8125, lon: -75.7397 },
+      "SKBG": { nombre: "BUCARAMANGA", lat: 7.1264, lon: -73.1847 },
+      "SKNV": { nombre: "NEIVA", lat: 2.9503, lon: -75.2939 },
+      "SKPS": { nombre: "PASTO", lat: 1.3964, lon: -77.2911 },
+      "SKVP": { nombre: "VALLEDUPAR", lat: 10.4347, lon: -73.2494 },
+      "SKRH": { nombre: "RIOHACHA", lat: 11.5264, lon: -72.9261 },
+      "SKCO": { nombre: "CONDOTO", lat: 5.0717, lon: -76.6806 },
+      "SKUI": { nombre: "QUIBDÓ", lat: 5.6908, lon: -76.6414 },
+      "SKTM": { nombre: "TAME", lat: 6.4500, lon: -71.7583 },
+      "SKPZ": { nombre: "PAZ DE ARIPORO", lat: 5.8783, lon: -71.8903 },
+      "SKUC": { nombre: "ARARACUARA", lat: -0.6039, lon: -72.4000 },
+      "SKLG": { nombre: "TUMACO", lat: 1.8150, lon: -78.7500 },
+      "SKPC": { nombre: "PUERTO CARREÑO", lat: 6.1844, lon: -67.4928 },
+      "SKIN": { nombre: "INÍRIDA", lat: 3.8647, lon: -67.9236 },
+      "SKMU": { nombre: "MITÚ", lat: 1.2536, lon: -70.2339 },
+      "SKGB": { nombre: "GUABITO", lat: 3.8333, lon: -76.3000 },
+      "SKQU": { nombre: "MARIQUITA", lat: 5.2133, lon: -74.8833 }
+    };
+
+    function distanciaNM(lat1, lon1, lat2, lon2) {
+      var R = 3440.065;
+      var dLat = (lat2 - lat1) * Math.PI / 180;
+      var dLon = (lon2 - lon1) * Math.PI / 180;
+      var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
     var CONFIG = {
-    "B-350": { nombre: "King Air 350", maxPax: 8, velKT: 240, techoFT: 35000, rwyMinM: 1000 },
-    "B-200": { nombre: "King Air 200", maxPax: 7, velKT: 220, techoFT: 30000, rwyMinM: 900 },
-    "C-90":  { nombre: "King Air C90", maxPax: 5, velKT: 200, techoFT: 25000, rwyMinM: 800 },
-    "TC-690": { nombre: "Turbo Commander", maxPax: 6, velKT: 245, techoFT: 28000, rwyMinM: 850 },
-    "C-208B": { nombre: "Cessna 208B Caravan", maxPax: 9, velKT: 140, techoFT: 20000, rwyMinM: 700 },
-    "AN-32": { nombre: "Antonov An-32", maxPax: 42, velKT: 230, techoFT: 28000, rwyMinM: 1200 },
-    "C-212": { nombre: "CASA C-212 Aviocar", maxPax: 18, velKT: 160, techoFT: 18000, rwyMinM: 800 }
-  };
-    var FLOTA_DEFAULT = [{"id": "EJC1101", "matricula": "EJC-1101", "modelo": "B-350", "tipoSpecs": "B-350", "estado": "ACL", "horasActuales": 2743.8, "proximaFase": 2850.0, "tipoInsp": "FASE 6", "remFase": 106.2, "asignadas": 40.0, "voladasMes": 8.9, "dispMes": 31.1, "pernocta": "BOGOTA", "divAsig": "", "obs": ""}, {"id": "EJC1106", "matricula": "EJC-1106", "modelo": "TC-690C", "tipoSpecs": "TC-690", "estado": "ACL", "horasActuales": 7217.2, "proximaFase": 7217.3, "tipoInsp": "150 HORAS", "remFase": 0.1, "asignadas": 15.0, "voladasMes": 2.8, "dispMes": 12.2, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""}, {"id": "EJC1108", "matricula": "EJC-1108", "modelo": "TC-690D", "tipoSpecs": "TC-690", "estado": "ACL", "horasActuales": 7185.6, "proximaFase": 7258.1, "tipoInsp": "150 HORAS", "remFase": 72.5, "asignadas": 35.0, "voladasMes": 10.6, "dispMes": 24.4, "pernocta": "BOGOTA", "divAsig": "", "obs": ""}, {"id": "EJC1116", "matricula": "EJC-1116", "modelo": "C-90", "tipoSpecs": "C-90", "estado": "ACL", "horasActuales": 9835.0, "proximaFase": 9951.5, "tipoInsp": "FASE I Y II", "remFase": 116.5, "asignadas": 40.0, "voladasMes": 21.8, "dispMes": 18.2, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""}, {"id": "EJC1118", "matricula": "EJC-1118", "modelo": "B-200", "tipoSpecs": "B-200", "estado": "ACL", "horasActuales": 8157.8, "proximaFase": 8268.2, "tipoInsp": "FASE III Y IV", "remFase": 110.4, "asignadas": 35.0, "voladasMes": 3.1, "dispMes": 31.9, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""}, {"id": "EJC1120", "matricula": "EJC-1120", "modelo": "B-350", "tipoSpecs": "B-350", "estado": "ACL", "horasActuales": 6088.1, "proximaFase": 6132.0, "tipoInsp": "FASE 6", "remFase": 43.9, "asignadas": 35.0, "voladasMes": 21.1, "dispMes": 13.9, "pernocta": "GUABITO", "divAsig": "", "obs": ""}, {"id": "EJC1124", "matricula": "EJC-1124", "modelo": "B-200", "tipoSpecs": "B-200", "estado": "ACL", "horasActuales": 11601.4, "proximaFase": 11601.4, "tipoInsp": "FASE I Y II", "remFase": 0.0, "asignadas": 16.6, "voladasMes": 8.7, "dispMes": 7.9, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""}, {"id": "EJC1125", "matricula": "EJC-1125", "modelo": "B-350", "tipoSpecs": "B-350", "estado": "ACL", "horasActuales": 3881.7, "proximaFase": 4066.9, "tipoInsp": "FASE 5", "remFase": 185.2, "asignadas": 45.0, "voladasMes": 2.9, "dispMes": 42.1, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""}, {"id": "EJC1133", "matricula": "EJC-1133", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 6253.9, "proximaFase": 6300.0, "tipoInsp": "FASE OWNER", "remFase": 46.1, "asignadas": 30.0, "voladasMes": 3.9, "dispMes": 26.1, "pernocta": "BOGOTÁ", "divAsig": "I-II", "obs": ""}, {"id": "EJC1134", "matricula": "EJC-1134", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 6513.5, "proximaFase": 6600.0, "tipoInsp": "FASE OWNER", "remFase": 86.5, "asignadas": 35.0, "voladasMes": 2.8, "dispMes": 32.2, "pernocta": "APIAY", "divAsig": "IV-VI", "obs": ""}, {"id": "EJC1135", "matricula": "EJC-1135", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 6078.9, "proximaFase": 6100.0, "tipoInsp": "FASE D6", "remFase": 21.1, "asignadas": 27.3, "voladasMes": 6.2, "dispMes": 21.1, "pernocta": "TOLEMAIDA", "divAsig": "", "obs": ""}, {"id": "EJC1138", "matricula": "EJC-1138", "modelo": "C-208B EX", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 3356.2, "proximaFase": 3400.0, "tipoInsp": "FASE D6", "remFase": 43.8, "asignadas": 30.0, "voladasMes": 13.1, "dispMes": 16.9, "pernocta": "MEDELLÍN", "divAsig": "III-VII", "obs": ""}, {"id": "EJC1140", "matricula": "EJC-1140", "modelo": "C-208B EX", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 2517.6, "proximaFase": 2600.0, "tipoInsp": "FASE D6", "remFase": 82.4, "asignadas": 35.0, "voladasMes": 13.9, "dispMes": 21.1, "pernocta": "YOPAL", "divAsig": "VIII", "obs": ""}, {"id": "EJC1146", "matricula": "EJC-1146", "modelo": "AN-32 A", "tipoSpecs": "AN-32", "estado": "ACL", "horasActuales": 10976.5, "proximaFase": 11000.0, "tipoInsp": "FASE 100 HORAS", "remFase": 23.5, "asignadas": 25.0, "voladasMes": 11.4, "dispMes": 13.6, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""}, {"id": "EJC1147", "matricula": "EJC-1147", "modelo": "AN-32 B", "tipoSpecs": "AN-32", "estado": "ACL", "horasActuales": 6750.0, "proximaFase": 6750.0, "tipoInsp": "FASE 50 HORAS", "remFase": 0.0, "asignadas": 20.0, "voladasMes": 14.3, "dispMes": 5.7, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""}, {"id": "EJC1132", "matricula": "EJC-1132", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "AMP", "horasActuales": 6209.9, "proximaFase": 6210.0, "tipoInsp": "FASE D6", "remFase": 0.1, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "FASE DOC 6 (Avance: 43%)"}, {"id": "EJC1136", "matricula": "EJC-1136", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "AMP", "horasActuales": 4000.0, "proximaFase": 4000.0, "tipoInsp": "FASE D6", "remFase": 0.0, "asignadas": 20.1, "voladasMes": 1.4, "dispMes": 18.7, "pernocta": "BAMAV-1", "divAsig": "", "obs": "FASE (Avance: 13%)"}, {"id": "EJC1117", "matricula": "EJC-1117", "modelo": "B-200", "tipoSpecs": "B-200", "estado": "PAR", "horasActuales": 12727.1, "proximaFase": 12793.4, "tipoInsp": "FASE I Y II", "remFase": 66.3, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "TBO"}, {"id": "EJC1126", "matricula": "EJC-1126", "modelo": "B-350", "tipoSpecs": "B-350", "estado": "PAR", "horasActuales": 3579.1, "proximaFase": 3777.5, "tipoInsp": "FASE 6", "remFase": 198.4, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "IMPREVISTO"}, {"id": "EJC1139", "matricula": "EJC-1139", "modelo": "C-208B EX", "tipoSpecs": "C-208B", "estado": "PAR", "horasActuales": 2996.9, "proximaFase": 3000.0, "tipoInsp": "FASE D6", "remFase": 3.1, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "FASE D6 Y PINTURA (Avance: 7%)"}, {"id": "EJC1109", "matricula": "EJC-1109", "modelo": "TC-690B", "tipoSpecs": "TC-690", "estado": "APB", "horasActuales": 7088.8, "proximaFase": 7207.2, "tipoInsp": "150 HORAS", "remFase": 118.4, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "PROCESO DE BAJA"}, {"id": "EJC1111", "matricula": "EJC-1111", "modelo": "TC-690", "tipoSpecs": "TC-690", "estado": "APB", "horasActuales": 9589.9, "proximaFase": 9706.6, "tipoInsp": "150 HORAS", "remFase": 116.7, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00104787 DAVAA"}, {"id": "EJC1115", "matricula": "EJC-1115", "modelo": "TC-690", "tipoSpecs": "TC-690", "estado": "APB", "horasActuales": 10081.5, "proximaFase": 10082.5, "tipoInsp": "150 HORAS", "remFase": 1.0, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00104787 DAVAA"}, {"id": "EJC1122", "matricula": "EJC-1122", "modelo": "C-212", "tipoSpecs": "C-212", "estado": "APB", "horasActuales": 14155.0, "proximaFase": 14214.3, "tipoInsp": "150 HORAS", "remFase": 59.3, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00003332 DAVAA"}, {"id": "EJC1123", "matricula": "EJC-1123", "modelo": "C-212", "tipoSpecs": "C-212", "estado": "APB", "horasActuales": 11245.8, "proximaFase": 11320.0, "tipoInsp": "750 HORAS", "remFase": 74.2, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00003332 DAVAA"}, {"id": "EJC1129", "matricula": "EJC-1129", "modelo": "C-212", "tipoSpecs": "C-212", "estado": "APB", "horasActuales": 9053.4, "proximaFase": 9096.1, "tipoInsp": "FASE A 150 HORAS", "remFase": 42.7, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00022392 DAVAA"}];
+      "B-350": { nombre: "King Air 350", maxPax: 8, velKT: 240 },
+      "B-200": { nombre: "King Air 200", maxPax: 7, velKT: 220 },
+      "C-90":  { nombre: "King Air C90", maxPax: 5, velKT: 200 },
+      "TC-690": { nombre: "Turbo Commander", maxPax: 6, velKT: 245 },
+      "C-208B": { nombre: "Cessna 208B Caravan", maxPax: 9, velKT: 140 },
+      "AN-32": { nombre: "Antonov An-32", maxPax: 42, velKT: 230 },
+      "C-212": { nombre: "CASA C-212 Aviocar", maxPax: 18, velKT: 160 }
+    };
 
-    var flota = FLOTA_DEFAULT;
+    var FLOTA_DEFAULT = [
+      {"id": "EJC1101", "matricula": "EJC-1101", "modelo": "B-350", "tipoSpecs": "B-350", "estado": "ACL", "horasActuales": 2743.8, "proximaFase": 2850.0, "tipoInsp": "FASE 6", "remFase": 106.2, "asignadas": 40.0, "voladasMes": 8.9, "dispMes": 31.1, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1106", "matricula": "EJC-1106", "modelo": "TC-690C", "tipoSpecs": "TC-690", "estado": "ACL", "horasActuales": 7217.2, "proximaFase": 7217.3, "tipoInsp": "150 HORAS", "remFase": 0.1, "asignadas": 15.0, "voladasMes": 2.8, "dispMes": 12.2, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1108", "matricula": "EJC-1108", "modelo": "TC-690D", "tipoSpecs": "TC-690", "estado": "ACL", "horasActuales": 7185.6, "proximaFase": 7258.1, "tipoInsp": "150 HORAS", "remFase": 72.5, "asignadas": 35.0, "voladasMes": 10.6, "dispMes": 24.4, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1116", "matricula": "EJC-1116", "modelo": "C-90", "tipoSpecs": "C-90", "estado": "ACL", "horasActuales": 9835.0, "proximaFase": 9951.5, "tipoInsp": "FASE I Y II", "remFase": 116.5, "asignadas": 40.0, "voladasMes": 21.8, "dispMes": 18.2, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1118", "matricula": "EJC-1118", "modelo": "B-200", "tipoSpecs": "B-200", "estado": "ACL", "horasActuales": 8157.8, "proximaFase": 8268.2, "tipoInsp": "FASE III Y IV", "remFase": 110.4, "asignadas": 35.0, "voladasMes": 3.1, "dispMes": 31.9, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1120", "matricula": "EJC-1120", "modelo": "B-350", "tipoSpecs": "B-350", "estado": "ACL", "horasActuales": 6088.1, "proximaFase": 6132.0, "tipoInsp": "FASE 6", "remFase": 43.9, "asignadas": 35.0, "voladasMes": 21.1, "dispMes": 13.9, "pernocta": "GUABITO", "divAsig": "", "obs": ""},
+      {"id": "EJC1124", "matricula": "EJC-1124", "modelo": "B-200", "tipoSpecs": "B-200", "estado": "ACL", "horasActuales": 11601.4, "proximaFase": 11601.4, "tipoInsp": "FASE I Y II", "remFase": 0.0, "asignadas": 16.6, "voladasMes": 8.7, "dispMes": 7.9, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1125", "matricula": "EJC-1125", "modelo": "B-350", "tipoSpecs": "B-350", "estado": "ACL", "horasActuales": 3881.7, "proximaFase": 4066.9, "tipoInsp": "FASE 5", "remFase": 185.2, "asignadas": 45.0, "voladasMes": 2.9, "dispMes": 42.1, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1133", "matricula": "EJC-1133", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 6253.9, "proximaFase": 6300.0, "tipoInsp": "FASE OWNER", "remFase": 46.1, "asignadas": 30.0, "voladasMes": 3.9, "dispMes": 26.1, "pernocta": "BOGOTÁ", "divAsig": "I-II", "obs": ""},
+      {"id": "EJC1134", "matricula": "EJC-1134", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 6513.5, "proximaFase": 6600.0, "tipoInsp": "FASE OWNER", "remFase": 86.5, "asignadas": 35.0, "voladasMes": 2.8, "dispMes": 32.2, "pernocta": "APIAY", "divAsig": "IV-VI", "obs": ""},
+      {"id": "EJC1135", "matricula": "EJC-1135", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 6078.9, "proximaFase": 6100.0, "tipoInsp": "FASE D6", "remFase": 21.1, "asignadas": 27.3, "voladasMes": 6.2, "dispMes": 21.1, "pernocta": "TOLEMAIDA", "divAsig": "", "obs": ""},
+      {"id": "EJC1138", "matricula": "EJC-1138", "modelo": "C-208B EX", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 3356.2, "proximaFase": 3400.0, "tipoInsp": "FASE D6", "remFase": 43.8, "asignadas": 30.0, "voladasMes": 13.1, "dispMes": 16.9, "pernocta": "MEDELLÍN", "divAsig": "III-VII", "obs": ""},
+      {"id": "EJC1140", "matricula": "EJC-1140", "modelo": "C-208B EX", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 2517.6, "proximaFase": 2600.0, "tipoInsp": "FASE D6", "remFase": 82.4, "asignadas": 35.0, "voladasMes": 13.9, "dispMes": 21.1, "pernocta": "YOPAL", "divAsig": "VIII", "obs": ""},
+      {"id": "EJC1146", "matricula": "EJC-1146", "modelo": "AN-32 A", "tipoSpecs": "AN-32", "estado": "ACL", "horasActuales": 10976.5, "proximaFase": 11000.0, "tipoInsp": "FASE 100 HORAS", "remFase": 23.5, "asignadas": 25.0, "voladasMes": 11.4, "dispMes": 13.6, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1147", "matricula": "EJC-1147", "modelo": "AN-32 B", "tipoSpecs": "AN-32", "estado": "ACL", "horasActuales": 6750.0, "proximaFase": 6750.0, "tipoInsp": "FASE 50 HORAS", "remFase": 0.0, "asignadas": 20.0, "voladasMes": 14.3, "dispMes": 5.7, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1132", "matricula": "EJC-1132", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "AMP", "horasActuales": 6209.9, "proximaFase": 6210.0, "tipoInsp": "FASE D6", "remFase": 0.1, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "FASE DOC 6 (Avance: 43%)"},
+      {"id": "EJC1136", "matricula": "EJC-1136", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "AMP", "horasActuales": 4000.0, "proximaFase": 4000.0, "tipoInsp": "FASE D6", "remFase": 0.0, "asignadas": 20.1, "voladasMes": 1.4, "dispMes": 18.7, "pernocta": "BAMAV-1", "divAsig": "", "obs": "FASE (Avance: 13%)"},
+      {"id": "EJC1117", "matricula": "EJC-1117", "modelo": "B-200", "tipoSpecs": "B-200", "estado": "PAR", "horasActuales": 12727.1, "proximaFase": 12793.4, "tipoInsp": "FASE I Y II", "remFase": 66.3, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "TBO"},
+      {"id": "EJC1126", "matricula": "EJC-1126", "modelo": "B-350", "tipoSpecs": "B-350", "estado": "PAR", "horasActuales": 3579.1, "proximaFase": 3777.5, "tipoInsp": "FASE 6", "remFase": 198.4, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "IMPREVISTO"},
+      {"id": "EJC1139", "matricula": "EJC-1139", "modelo": "C-208B EX", "tipoSpecs": "C-208B", "estado": "PAR", "horasActuales": 2996.9, "proximaFase": 3000.0, "tipoInsp": "FASE D6", "remFase": 3.1, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "FASE D6 Y PINTURA (Avance: 7%)"},
+      {"id": "EJC1109", "matricula": "EJC-1109", "modelo": "TC-690B", "tipoSpecs": "TC-690", "estado": "APB", "horasActuales": 7088.8, "proximaFase": 7207.2, "tipoInsp": "150 HORAS", "remFase": 118.4, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "PROCESO DE BAJA"},
+      {"id": "EJC1111", "matricula": "EJC-1111", "modelo": "TC-690", "tipoSpecs": "TC-690", "estado": "APB", "horasActuales": 9589.9, "proximaFase": 9706.6, "tipoInsp": "150 HORAS", "remFase": 116.7, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00104787 DAVAA"},
+      {"id": "EJC1115", "matricula": "EJC-1115", "modelo": "TC-690", "tipoSpecs": "TC-690", "estado": "APB", "horasActuales": 10081.5, "proximaFase": 10082.5, "tipoInsp": "150 HORAS", "remFase": 1.0, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00104787 DAVAA"},
+      {"id": "EJC1122", "matricula": "EJC-1122", "modelo": "C-212", "tipoSpecs": "C-212", "estado": "APB", "horasActuales": 14155.0, "proximaFase": 14214.3, "tipoInsp": "150 HORAS", "remFase": 59.3, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00003332 DAVAA"},
+      {"id": "EJC1123", "matricula": "EJC-1123", "modelo": "C-212", "tipoSpecs": "C-212", "estado": "APB", "horasActuales": 11245.8, "proximaFase": 11320.0, "tipoInsp": "750 HORAS", "remFase": 74.2, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00003332 DAVAA"},
+      {"id": "EJC1129", "matricula": "EJC-1129", "modelo": "C-212", "tipoSpecs": "C-212", "estado": "APB", "horasActuales": 9053.4, "proximaFase": 9096.1, "tipoInsp": "FASE A 150 HORAS", "remFase": 42.7, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00022392 DAVAA"}
+    ];
+
+    // Limpieza forzada de versiones antiguas de cache
     try {
-      var g = localStorage.getItem("BAAV1_FLOTA_DATA_V5");
-      if (g) flota = JSON.parse(g);
-    } catch (e) {}
+      localStorage.removeItem("BAAV1_FLOTA_DATA");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V1");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V2");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V3");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V4");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V5");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V6");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V7");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V8");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V9");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V10");
+    } catch(e) {}
 
-    var misionesProgramadas = [];
-    try {
-      var mp = localStorage.getItem("BAAV1_MISIONES_DATA_V5");
-      if (mp) misionesProgramadas = JSON.parse(mp);
-    } catch (e) {}
+    var CLAVE_STORE = "BAAV1_FLOTA_DATA_PROD_1";
+    var flota = JSON.parse(localStorage.getItem(CLAVE_STORE)) || FLOTA_DEFAULT;
+    var avionSeleccionado = null;
+    var historial = JSON.parse(localStorage.getItem("BAAV1_HIST_PROD_1")) || [];
+    var hangarOculto = false;
 
-    var historial = [];
-    var rutaSeleccionada = [obtenerAeroPorOaci("SKBO"), obtenerAeroPorOaci("SKTI"), obtenerAeroPorOaci("SKBO")].filter(Boolean);
-    var avionSeleccionado = flota[0].id;
-    var verHangarCompleto = false;
+    function guardarDatos() {
+      try {
+        localStorage.setItem(CLAVE_STORE, JSON.stringify(flota));
+        localStorage.setItem("BAAV1_HIST_PROD_1", JSON.stringify(historial));
+      } catch(e) {}
+      renderFlota();
+      renderRampa();
+      poblarSelectorSimulador();
+    }
 
-    
+    function normalizarTexto(txt) {
+      if (!txt) return "";
+      return String(txt).toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    }
+
+    function esDeBAMAV1(a) {
+      if (!a) return false;
+      var p = normalizarTexto(a.pernocta);
+      var e = normalizarTexto(a.estado);
+      var enHangar = p.indexOf("BAMAV") !== -1 || p.indexOf("HANGAR") !== -1;
+      var enManto = ["AMP", "AMI", "EVA", "PAR", "APB"].indexOf(e) !== -1;
+      return enHangar || enManto;
+    }
+
+    function renderFlota() {
+      var contBog = document.getElementById("listaBogota");
+      var contDiv = document.getElementById("listaDivision");
+      var contHangar = document.getElementById("listaHangar");
+      if (!contBog || !contDiv || !contHangar) return;
+
+      contBog.innerHTML = "";
+      contDiv.innerHTML = "";
+      contHangar.innerHTML = "";
+
+      var totAsig = 0, totVol = 0;
+      var cBog = 0, cDiv = 0;
+
+      for (var i = 0; i < flota.length; i++) {
+        var a = flota[i];
+        totAsig += a.asignadas;
+        totVol += a.voladasMes;
+        var sp = CONFIG[a.tipoSpecs] || { nombre: a.modelo, maxPax: 8, velKT: 180 };
+
+        var remFase = Math.max(0, a.proximaFase - a.horasActuales).toFixed(1);
+        var dispMes = Math.max(0, a.asignadas - a.voladasMes).toFixed(1);
+        var pctMes = a.asignadas > 0 ? Math.min(100, (a.voladasMes / a.asignadas) * 100) : 0;
+
+        var est = (a.estado || "").toUpperCase().trim();
+        var pillEstado = '<span class="pill pill-green">🟢 ACL</span>';
+        if (est === "LRM") pillEstado = '<span class="pill pill-amber">🟡 LRM</span>';
+        else if (est === "AMP" || est === "AMI") pillEstado = '<span class="pill pill-red">🔴 ' + est + '</span>';
+        else if (est === "EVA") pillEstado = '<span class="pill pill-purple">🟣 EVA</span>';
+        else if (est === "PAR") pillEstado = '<span class="pill pill-amber">🟠 PAR</span>';
+        else if (est === "APB") pillEstado = '<span class="pill pill-gray">⚪ APB</span>';
+
+        var pillFase = "pill-green";
+        if (parseFloat(remFase) <= 5.0) pillFase = "pill-red";
+        else if (parseFloat(remFase) <= 15.0) pillFase = "pill-amber";
+
+        var pernoctaTag = '<span class="pill pill-blue">📍 ' + a.pernocta + '</span>';
+        var divTag = a.divAsig ? '<span class="pill pill-purple" style="margin-left:4px;">Div ' + a.divAsig + '</span>' : '';
+
+        var card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = 
+          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">' +
+            '<div>' +
+              '<div style="font-size:14px; font-weight:900;">' + a.matricula + ' <span style="font-size:11px; color:#94a3b8; font-weight:normal;">(' + sp.nombre + ')</span></div>' +
+              '<div style="margin-top:3px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">' + pillEstado + pernoctaTag + divTag + '</div>' +
+            '</div>' +
+          '</div>' +
+          (a.obs ? '<div style="font-size:10px; color:#fbbf24; background:rgba(245, 158, 11, 0.1); border-left:2px solid #f59e0b; padding:4px 8px; border-radius:4px; margin:6px 0;">⚠️ ' + a.obs + '</div>' : '') +
+          '<div style="background:#0f172a; padding:8px 10px; border-radius:8px; border:1px solid #1e293b; margin-top:6px;">' +
+            '<div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">' +
+              '<span style="color:#94a3b8;">Cupo: <b style="color:#f1f5f9;">' + a.asignadas.toFixed(1) + ' h</b></span>' +
+              '<span style="color:#fbbf24;">Voladas: <b style="color:#f59e0b;">' + a.voladasMes.toFixed(1) + ' h</b></span>' +
+              '<span style="color:#34d399; font-weight:800;">Restan: ' + dispMes + ' h</span>' +
+            '</div>' +
+            '<div class="bar-bg"><div class="bar-fill" style="width:' + pctMes + '%; background:' + (dispMes <= 3.0 ? '#f43f5e' : '#10b981') + ';"></div></div>' +
+            '<div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8;">' +
+              '<span>Célula: <b>' + a.horasActuales.toFixed(1) + ' h</b> (Próx: ' + a.proximaFase.toFixed(1) + ' h)</span>' +
+              '<span class="pill ' + pillFase + '">Rem: ' + remFase + ' h</span>' +
+            '</div>' +
+          '</div>';
+
+        // REGLA OPERACIONAL INFALIBLE:
+        // 1. Si es de BAMAV-1 / Hangar -> Contenedor Hangar
+        // 2. Si dice BOGOTA (con o sin tilde, con o sin división) -> BASE BOGOTÁ
+        // 3. Solo si pernocta físicamente fuera de Bogotá -> DESTACADAS EN DIVISIÓN
+        var pTexto = normalizarTexto(a.pernocta);
+        if (esDeBAMAV1(a)) {
+          contHangar.appendChild(card);
+        } else if (pTexto.indexOf("BOGOTA") !== -1 || pTexto === "") {
+          contBog.appendChild(card);
+          cBog++;
+        } else {
+          contDiv.appendChild(card);
+          cDiv++;
+        }
+      }
+
+      document.getElementById("badgeCountBogota").innerText = cBog;
+      document.getElementById("badgeCountDiv").innerText = cDiv;
+      document.getElementById("txtTotalAsig").innerText = totAsig.toFixed(1) + " h";
+      document.getElementById("txtTotalVol").innerText = totVol.toFixed(1) + " h";
+      document.getElementById("txtTotalDisp").innerHTML = Math.max(0, totAsig - totVol).toFixed(1) + ' <span style="font-size:12px; color:#94a3b8; font-weight:normal;">h disponibles</span>';
+    }
+
+    function toggleHangar() {
+      var h = document.getElementById("listaHangar");
+      hangarOculto = !hangarOculto;
+      h.style.display = hangarOculto ? "none" : "block";
+      document.getElementById("txtToggleHangar").innerText = hangarOculto ? "▼ Mostrar" : "▲ Ocultar";
+    }
+
+    // SIMULADOR S-3 DIRECTO: SOLO ACL, SIN TAREAS, CÁLCULO DE RUTA RÁPIDA
+    function poblarSelectorSimulador() {
+      var sel = document.getElementById("simSelAvion");
+      if (!sel) return;
+      sel.innerHTML = "<option value=\"\">-- Seleccionar Aeronave ACL --</option>";
+      var cAcl = 0;
+      for (var i = 0; i < flota.length; i++) {
+        var a = flota[i];
+        if (a.estado !== "ACL" || esDeBAMAV1(a)) continue;
+        var sp = CONFIG[a.tipoSpecs] || { nombre: a.modelo };
+        var opt = document.createElement("option");
+        opt.value = a.id;
+        opt.innerText = a.matricula + " (" + sp.nombre + ") • " + a.pernocta + " [Disp: " + a.dispMes.toFixed(1) + " h]";
+        sel.appendChild(opt);
+        cAcl++;
+      }
+      var bAcl = document.getElementById("badgeTotalACL");
+      if (bAcl) bAcl.innerText = cAcl + " DISPONIBLES ACL";
+    }
+
+    function calcularSimulacionRapida() {
+      var selAvionId = document.getElementById("simSelAvion").value;
+      var rawRuta = document.getElementById("simInputRuta").value.trim();
+      var etdVal = document.getElementById("simETD").value || "08:00";
+      var paxVal = parseInt(document.getElementById("simPax").value) || 0;
+      var contRes = document.getElementById("simResultado");
+
+      if (!selAvionId || !rawRuta) {
+        contRes.style.display = "none";
+        return;
+      }
+
+      var avion = flota.find(function(x) { return x.id === selAvionId; });
+      if (!avion) return;
+      var sp = CONFIG[avion.tipoSpecs] || { nombre: avion.modelo, velKT: 220, maxPax: 8 };
+
+      var tokens = rawRuta.toUpperCase().replace(/[-,;]/g, " ").split(/\s+/).filter(Boolean);
+      if (tokens.length < 2) {
+        contRes.style.display = "none";
+        return;
+      }
+
+      var distTotalNM = 0;
+      var tramos = [];
+      var partesETD = etdVal.split(":");
+      var minutosReloj = parseInt(partesETD[0]) * 60 + parseInt(partesETD[1]);
+
+      for (var i = 0; i < tokens.length - 1; i++) {
+        var orig = tokens[i];
+        var dest = tokens[i+1];
+        var infoO = AEROPUERTOS[orig];
+        var infoD = AEROPUERTOS[dest];
+
+        var distTramo = 120;
+        if (infoO && infoD) {
+          distTramo = Math.round(distanciaNM(infoO.lat, infoO.lon, infoD.lat, infoD.lon));
+        }
+
+        distTotalNM += distTramo;
+        var velCrucero = sp.velKT || 200;
+        var minutosVuelo = Math.round((distTramo / velCrucero) * 60) + 15;
+        var horasVueloTramo = Math.round((minutosVuelo / 60) * 10) / 10;
+
+        var hSal = pad(Math.floor(minutosReloj / 60) % 24) + ":" + pad(minutosReloj % 60);
+        minutosReloj += minutosVuelo;
+        var hLleg = pad(Math.floor(minutosReloj / 60) % 24) + ":" + pad(minutosReloj % 60);
+        minutosReloj += 30;
+
+        tramos.push({
+          de: orig,
+          a: dest,
+          nomOrig: infoO ? infoO.nombre : orig,
+          nomDest: infoD ? infoD.nombre : dest,
+          dist: distTramo,
+          hSal: hSal,
+          hLleg: hLleg,
+          tiempoH: horasVueloTramo
+        });
+      }
+
+      var totalHorasMision = tramos.reduce(function(acc, t) { return acc + t.tiempoH; }, 0);
+      totalHorasMision = Math.round(totalHorasMision * 10) / 10;
+
+      var alertaPax = "";
+      if (sp.maxPax && paxVal > sp.maxPax) {
+        alertaPax = '<div style="background:rgba(244,63,94,0.15); border-left:3px solid #f43f5e; padding:6px 10px; border-radius:4px; font-size:11px; color:#fda4af; margin-top:8px;">⚠️ <b>ALERTA DE CAPACIDAD:</b> PAX (' + paxVal + ') superan configuración máxima de ' + sp.nombre + ' (' + sp.maxPax + ' PAX).</div>';
+      }
+
+      var alertaCupo = "";
+      if (totalHorasMision > avion.dispMes) {
+        alertaCupo = '<div style="background:rgba(244,63,94,0.15); border-left:3px solid #f43f5e; padding:6px 10px; border-radius:4px; font-size:11px; color:#fda4af; margin-top:6px;">⚠️ <b>ALERTA DE CUPO:</b> Misión (' + totalHorasMision + ' h) excede el cupo disponible (' + avion.dispMes.toFixed(1) + ' h).</div>';
+      }
+
+      var htmlTramos = "";
+      for (var j = 0; j < tramos.length; j++) {
+        var tr = tramos[j];
+        htmlTramos += '<div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:8px 12px; border-radius:6px; margin-top:6px; border:1px solid #1e293b;">' +
+                        '<div>' +
+                          '<div style="font-weight:900; font-size:12px; color:#38bdf8;">' + tr.de + ' ➔ ' + tr.a + '</div>' +
+                          '<div style="font-size:10px; color:#94a3b8;">' + tr.nomOrig + ' a ' + tr.nomDest + ' (' + tr.dist + ' NM)</div>' +
+                        '</div>' +
+                        '<div style="text-align:right;">' +
+                          '<div style="font-weight:900; font-size:12px; color:#f1f5f9;">' + tr.hSal + ' - ' + tr.hLleg + '</div>' +
+                          '<div style="font-size:10px; color:#10b981; font-weight:700;">' + tr.tiempoH.toFixed(1) + ' h</div>' +
+                        '</div>' +
+                      '</div>';
+      }
+
+      contRes.innerHTML = 
+        '<div style="border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">' +
+          '<div>' +
+            '<div style="font-size:11px; color:#94a3b8; font-weight:700;">PLAN DE VUELO S-3 CALCULADO</div>' +
+            '<div style="font-size:14px; font-weight:900; color:#f8fafc;">' + tokens.join(" ➔ ") + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<div style="font-size:10px; color:#94a3b8;">TIEMPO TOTAL</div>' +
+            '<div style="font-size:16px; font-weight:900; color:#34d399;">' + totalHorasMision.toFixed(1) + ' h</div>' +
+          '</div>' +
+        '</div>' +
+        htmlTramos +
+        alertaPax +
+        alertaCupo +
+        '<div style="margin-top:12px; display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; background:#0f172a; padding:8px 10px; border-radius:6px;">' +
+          '<span>Distancia: <b style="color:#f1f5f9;">' + distTotalNM + ' NM</b></span>' +
+          '<span>PAX: <b style="color:#f1f5f9;">' + paxVal + '</b></span>' +
+          '<span>Aeronave: <b style="color:#f1f5f9;">' + avion.matricula + '</b></span>' +
+        '</div>';
+
+      contRes.style.display = "block";
+    }
+
+    function pad(n) { return n < 10 ? "0" + n : n; }
+
+    // RAMPA (SOLO ACTIVAS)
+    function renderRampa() {
+      var cont = document.getElementById("selectorRampa");
+      if (!cont) return;
+      cont.innerHTML = "";
+
+      for (var i = 0; i < flota.length; i++) {
+        var a = flota[i];
+        if (esDeBAMAV1(a)) continue; // EXCLUIR BAMAV-1
+
+        (function(avion) {
+          var sp = CONFIG[avion.tipoSpecs] || { nombre: avion.modelo };
+          var b = document.createElement("button");
+          b.className = "btn-outline";
+          b.style.cssText = "padding:10px; text-align:left; border-radius:10px; cursor:pointer;" + (avionSeleccionado === avion.id ? " border-color:#f59e0b; background:#1e293b;" : "");
+          b.onclick = function() { avionSeleccionado = avion.id; renderRampa(); };
+          b.innerHTML = "<div style=\"font-weight:900; font-size:13px; color:#f1f5f9;\">" + avion.matricula + "</div>" +
+                        "<div style=\"font-size:10px; color:#94a3b8;\">" + sp.nombre + " • <span style=\"color:#38bdf8;\">" + avion.pernocta + "</span></div>";
+          cont.appendChild(b);
+        })(a);
+      }
+    }
+
+    function ajustarHoras(delta) {
+      var el = document.getElementById("rampaHoras");
+      el.value = Math.max(0.1, parseFloat(el.value) + delta).toFixed(1);
+    }
+
+    function descontarHoras() {
+      var a = null;
+      for (var i = 0; i < flota.length; i++) {
+        if (flota[i].id === avionSeleccionado) { a = flota[i]; break; }
+      }
+      var h = parseFloat(document.getElementById("rampaHoras").value) || 0;
+      var r = document.getElementById("rampaRuta").value || "Vuelo de Operaciones";
+
+      if (!a || h <= 0) {
+        alert("Por favor selecciona una aeronave activa en rampa.");
+        return;
+      }
+      a.voladasMes += h;
+      a.horasActuales += h;
+
+      var d = new Date();
+      var hora = pad(d.getHours()) + ":" + pad(d.getMinutes());
+      historial.unshift({ hora: hora, avion: a.matricula, horas: h.toFixed(1), ruta: r });
+      if (historial.length > 8) historial.pop();
+
+      guardarDatos();
+      renderHistorial();
+      alert("✅ Registradas +" + h.toFixed(1) + " h a " + a.matricula);
+    }
+
+    function renderHistorial() {
+      var cont = document.getElementById("listaHistorial");
+      if (!cont) return;
+      cont.innerHTML = "";
+      if (!historial.length) {
+        cont.innerHTML = '<span style="color:#64748b; font-size:11px;">No hay reportes recientes</span>';
+        return;
+      }
+      for (var i = 0; i < historial.length; i++) {
+        var h = historial[i];
+        var el = document.createElement("div");
+        el.style.cssText = "display:flex; justify-content:space-between; border-bottom:1px solid #1e293b; padding:4px 0; font-size:11px;";
+        el.innerHTML = '<span>' + h.hora + ' • <b>' + h.avion + '</b> (' + h.ruta + ')</span><b style="color:#34d399;">+' + h.horas + ' h</b>';
+        cont.appendChild(el);
+      }
+    }
+
+    function cambiarVista(vista) {
+      var tabs = ["flota", "simulador", "rampa"];
+      var mapViews = { "flota": "viewFlota", "simulador": "viewSimulador", "rampa": "viewRampa" };
+      for (var i = 0; i < tabs.length; i++) {
+        var t = tabs[i];
+        document.getElementById(mapViews[t]).className = "tab-content" + (t === vista ? " active" : "");
+      }
+      var btns = document.querySelectorAll("nav .nav-btn");
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].className = "nav-btn" + (tabs[j] === vista ? " active" : "");
+      }
+      if (vista === "simulador") poblarSelectorSimulador();
+      if (vista === "rampa") renderRampa();
+    }
+
+    // IMPORTADOR EXCEL AUTOMÁTICO CON NORMALIZACIÓN
     function importarParteExcel(event) {
       var file = event.target.files[0];
       if (!file) return;
@@ -453,8 +617,8 @@
             if (!r || r.length < 5) continue;
 
             var cola = "";
-            for (var c = 0; c < Math.min(4, r.length); c++) {
-              var celda = String(r[c]).trim().toUpperCase();
+            for (var colIdx = 0; colIdx < Math.min(4, r.length); colIdx++) {
+              var celda = String(r[colIdx]).trim().toUpperCase();
               if (/^EJC[- ]?\d{4}$/.test(celda)) {
                 cola = celda.replace(" ", "-");
                 break;
@@ -465,6 +629,7 @@
             for (var j = 0; j < flota.length; j++) {
               if (flota[j].matricula.replace(" ", "-") === cola) {
                 var a = flota[j];
+
                 var estado = String(r[3] || a.estado).trim().toUpperCase();
                 if (estado) a.estado = estado;
 
@@ -486,23 +651,34 @@
                 var disp = parseFloat(r[12]);
                 if (!isNaN(disp)) a.dispMes = Math.round(disp * 10) / 10;
 
-                var pernocta = String(r[16] || "").trim().toUpperCase();
-                if (pernocta && pernocta !== "NAN") a.pernocta = pernocta;
+                var rawPernocta = String(r[16] || "").trim();
+                var normPernocta = normalizarTexto(rawPernocta);
+                if (normPernocta.indexOf("BOGOTA") !== -1) {
+                  a.pernocta = "BOGOTÁ";
+                } else if (normPernocta.indexOf("BAMAV") !== -1 || normPernocta.indexOf("HANGAR") !== -1) {
+                  a.pernocta = "BAMAV-1";
+                } else if (rawPernocta && normPernocta !== "NAN") {
+                  a.pernocta = rawPernocta.toUpperCase();
+                }
 
-                var divAsig = String(r[17] || "").trim().toUpperCase();
-                if (divAsig && divAsig !== "NAN") a.divAsig = divAsig;
-                else if (r[17] === "") a.divAsig = "";
+                var divRaw = String(r[17] || "").trim().toUpperCase();
+                if (divRaw && divRaw !== "NAN" && divRaw !== "NONE") {
+                  a.divAsig = divRaw;
+                } else {
+                  a.divAsig = "";
+                }
 
                 var obsFase = String(r[21] || "").trim();
                 var avance = parseFloat(r[22]);
                 var obsFinal = "";
                 if (obsFase && obsFase !== "nan" && obsFase !== "0") {
                   obsFinal = obsFase;
-                  if (!isNaN(avance) && avance > 0) obsFinal += " (Avance: " + Math.round(avance * 100) + "%)";
+                  if (!isNaN(avance) && avance > 0) {
+                    obsFinal += " (Avance: " + Math.round(avance * 100) + "%)";
+                  }
                 }
                 if (obsFinal) a.obs = obsFinal;
 
-                // Se conservan intactos a.modelo y a.tipoSpecs
                 actualizados++;
                 break;
               }
@@ -517,604 +693,6 @@
         }
       };
       reader.readAsArrayBuffer(file);
-    }
-
-    function toggleHangar() {
-      verHangarCompleto = !verHangarCompleto;
-      var el = document.getElementById("listaHangar");
-      var btn = document.getElementById("btnToggleHangar");
-      if (verHangarCompleto) {
-        el.classList.remove("hidden");
-        btn.innerText = "Ocultar Hangar ▲";
-      } else {
-        el.classList.add("hidden");
-        btn.innerText = "Ver 11 Aeronaves ▼";
-      }
-    }
-
-    function obtenerAeroPorOaci(oaci) {
-      for (var i = 0; i < AEROPUERTOS.length; i++) {
-        if (AEROPUERTOS[i].oaci === oaci) return AEROPUERTOS[i];
-      }
-      return null;
-    }
-
-    function haversineNM(lat1, lon1, lat2, lon2) {
-      var R = 3440.065;
-      var dLat = (lat2 - lat1) * Math.PI / 180;
-      var dLon = (lon2 - lon1) * Math.PI / 180;
-      var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
-
-    function guardarDatos() {
-      try {
-        localStorage.setItem("BAAV1_FLOTA_DATA_V5", JSON.stringify(flota));
-        localStorage.setItem("BAAV1_MISIONES_DATA_V5", JSON.stringify(misionesProgramadas));
-      } catch (e) {}
-      renderFlota();
-      renderRampa();
-      evaluarMision();
-      renderMisiones();
-    }
-
-    function renderFlota() {
-      var contBog = document.getElementById("listaBogota");
-      var contDiv = document.getElementById("listaDivision");
-      var contHangar = document.getElementById("listaHangar");
-
-      if (!contBog || !contDiv || !contHangar) return;
-      contBog.innerHTML = "";
-      contDiv.innerHTML = "";
-      contHangar.innerHTML = "";
-
-      var totAsig = 0, totVol = 0;
-      var cBog = 0, cDiv = 0;
-
-      for (var i = 0; i < flota.length; i++) {
-        var a = flota[i];
-        totAsig += a.asignadas;
-        totVol += a.voladasMes;
-        var sp = CONFIG[a.tipoSpecs] || { nombre: a.modelo, maxPax: 8, velKT: 180 };
-
-        var remFase = Math.max(0, a.proximaFase - a.horasActuales).toFixed(1);
-        var dispMes = Math.max(0, a.asignadas - a.voladasMes).toFixed(1);
-        var pctMes = a.asignadas > 0 ? Math.min(100, (a.voladasMes / a.asignadas) * 100) : 0;
-
-        var pillEstado = "";
-        if (a.estado === "ACL") pillEstado = '<span class="pill pill-green">🟢 ACL</span>';
-        else if (a.estado === "LRM") pillEstado = '<span class="pill pill-amber">🟡 LRM (Restricción)</span>';
-        else if (a.estado === "AMP" || a.estado === "AMI") pillEstado = '<span class="pill pill-red">🔴 ' + a.estado + ' (Manto)</span>';
-        else if (a.estado === "EVA") pillEstado = '<span class="pill pill-purple">🟣 EVA (Evaluación)</span>';
-        else if (a.estado === "PAR") pillEstado = '<span class="pill pill-amber">🟠 PAR (Overhaul)</span>';
-        else pillEstado = '<span class="pill pill-gray">⚪ ' + a.estado + '</span>';
-
-        var pillFase = "pill-green";
-        if (parseFloat(remFase) <= 5.0) pillFase = "pill-red";
-        else if (parseFloat(remFase) <= 15.0) pillFase = "pill-amber";
-
-        var pernoctaTag = '<span class="pill pill-blue">📍 ' + a.pernocta + '</span>';
-        var divTag = a.divAsig ? '<span class="pill pill-purple" style="margin-left:4px;">Div ' + a.divAsig + '</span>' : '';
-
-        var card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = 
-          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">' +
-            '<div>' +
-              '<div style="font-size:14px; font-weight:900;">' + a.matricula + ' <span style="font-size:11px; color:#94a3b8; font-weight:normal;">(' + sp.nombre + ')</span></div>' +
-              '<div style="margin-top:3px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">' + pillEstado + pernoctaTag + divTag + '</div>' +
-            '</div>' +
-            '<button onclick="abrirModalEdicion(\'' + a.id + '\')" class="btn-outline">⚙️ Editar</button>' +
-          '</div>' +
-
-          (a.obs ? '<div style="font-size:10px; color:#fbbf24; background:rgba(245, 158, 11, 0.1); border-left:2px solid #f59e0b; padding:4px 8px; border-radius:4px; margin:6px 0;">⚠️ ' + a.obs + '</div>' : '') +
-
-          '<div style="background:#0f172a; padding:8px 10px; border-radius:8px; border:1px solid #1e293b; margin-top:6px;">' +
-            '<div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">' +
-              '<span style="color:#94a3b8;">Cupo: <b style="color:#f1f5f9;">' + a.asignadas.toFixed(1) + ' h</b></span>' +
-              '<span style="color:#fbbf24;">Voladas: <b style="color:#f59e0b;">' + a.voladasMes.toFixed(1) + ' h</b></span>' +
-              '<span style="color:#34d399; font-weight:800;">Restan: ' + dispMes + ' h</span>' +
-            '</div>' +
-            '<div class="bar-bg"><div class="bar-fill" style="width:' + pctMes + '%; background:' + (dispMes <= 3.0 ? '#f43f5e' : '#10b981') + ';"></div></div>' +
-            '<div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8;">' +
-              '<span>Célula: <b>' + a.horasActuales.toFixed(1) + ' h</b> (Próx: ' + a.proximaFase.toFixed(1) + ' h)</span>' +
-              '<span class="pill ' + pillFase + '">Rem: ' + remFase + ' h</span>' +
-            '</div>' +
-          '</div>';
-
-        var esHangar = (a.estado === "AMP" || a.estado === "AMI" || a.estado === "EVA" || a.estado === "PAR" || a.estado === "APB" || a.pernocta === "BAMAV-1");
-        var esDivision = (a.divAsig !== "" || (a.pernocta !== "BOGOTÁ" && !esHangar));
-
-        if (esHangar) {
-          contHangar.appendChild(card);
-        } else if (esDivision) {
-          contDiv.appendChild(card);
-          cDiv++;
-        } else {
-          contBog.appendChild(card);
-          cBog++;
-        }
-      }
-
-      document.getElementById("badgeCountBogota").innerText = cBog;
-      document.getElementById("badgeCountDiv").innerText = cDiv;
-
-      document.getElementById("txtTotalAsig").innerText = totAsig.toFixed(1) + " h";
-      document.getElementById("txtTotalVol").innerText = totVol.toFixed(1) + " h";
-      document.getElementById("txtTotalDisp").innerHTML = Math.max(0, totAsig - totVol).toFixed(1) + ' <span style="font-size:12px; color:#94a3b8; font-weight:normal;">h disponibles</span>';
-    }
-
-    function abrirModalEdicion(id) {
-      var a = null;
-      for (var i = 0; i < flota.length; i++) if (flota[i].id === id) { a = flota[i]; break; }
-      if (!a) return;
-
-      document.getElementById("editAvionId").value = a.id;
-      document.getElementById("modalAvionTitulo").innerText = "Editar Aeronave: " + a.matricula;
-      document.getElementById("editEstado").value = a.estado;
-      document.getElementById("editPernocta").value = a.pernocta;
-      document.getElementById("editDivAsig").value = a.divAsig || "";
-      document.getElementById("editAsignadas").value = a.asignadas.toFixed(1);
-      document.getElementById("editVoladasMes").value = a.voladasMes.toFixed(1);
-      document.getElementById("editHorasActuales").value = a.horasActuales.toFixed(1);
-      document.getElementById("editProximaFase").value = a.proximaFase.toFixed(1);
-      document.getElementById("editObs").value = a.obs || "";
-
-      document.getElementById("modalEdicion").classList.remove("hidden");
-      document.getElementById("modalEdicion").scrollIntoView({ behavior: "smooth" });
-    }
-
-    function cerrarModal() {
-      document.getElementById("modalEdicion").classList.add("hidden");
-    }
-
-    function guardarEdicionManual() {
-      var id = document.getElementById("editAvionId").value;
-      for (var i = 0; i < flota.length; i++) {
-        if (flota[i].id === id) {
-          flota[i].estado = document.getElementById("editEstado").value;
-          flota[i].pernocta = document.getElementById("editPernocta").value.trim().toUpperCase() || "BOGOTÁ";
-          flota[i].divAsig = document.getElementById("editDivAsig").value.trim().toUpperCase();
-          flota[i].asignadas = parseFloat(document.getElementById("editAsignadas").value) || 0;
-          flota[i].voladasMes = parseFloat(document.getElementById("editVoladasMes").value) || 0;
-          flota[i].horasActuales = parseFloat(document.getElementById("editHorasActuales").value) || 0;
-          flota[i].proximaFase = parseFloat(document.getElementById("editProximaFase").value) || 0;
-          flota[i].obs = document.getElementById("editObs").value.trim();
-          break;
-        }
-      }
-      cerrarModal();
-      guardarDatos();
-    }
-
-    function nuevoMesPrompt() {
-      if (confirm("¿Desea reiniciar el mes? Las horas voladas en el mes volverán a 0.0 para toda la flota. Las horas de célula y fases se mantendrán intactas.")) {
-        for (var i = 0; i < flota.length; i++) flota[i].voladasMes = 0.0;
-        guardarDatos();
-      }
-    }
-
-    function procesarDictadoRapido() {
-      var t = document.getElementById('inputDictadoRapido').value.trim();
-      if (!t) return;
-      var tokens = t.split(/\s+/);
-      var rutaDetectada = [];
-      var horaDetectada = '';
-      var paxDetectado = '';
-      var tareaDetectada = '';
-      var detalleTokens = [];
-
-      for (var i = 0; i < tokens.length; i++) {
-        var tok = tokens[i];
-        var tokUpper = tok.toUpperCase();
-
-        if (!horaDetectada && /^(\d{2}:?\d{2})R?$/i.test(tokUpper)) {
-          var m = tokUpper.match(/^(\d{2}):?(\d{2})/);
-          horaDetectada = m[1] + ':' + m[2] + 'R';
-          continue;
-        }
-
-        if (tokUpper.indexOf('-') !== -1 || tokUpper.indexOf('/') !== -1) {
-          var pts = tokUpper.split(/[-/]/);
-          var ptsApt = [];
-          for (var p = 0; p < pts.length; p++) {
-            var ap = obtenerAeroPorOaci(pts[p]);
-            if (ap) ptsApt.push(ap);
-          }
-          if (ptsApt.length >= 2) {
-            rutaDetectada = ptsApt;
-            continue;
-          }
-        }
-
-        if (!paxDetectado && /^(\d+)(PAX|P)?$/i.test(tokUpper)) {
-          var mp = tokUpper.match(/^(\d+)/);
-          paxDetectado = mp[1];
-          continue;
-        }
-
-        var tareasMap = {
-          'R': 'R - Reconocimiento y Vigilancia', 'SE': 'SE - Seguridad', 'AT': 'AT - Ataque',
-          'AA': 'AA - Asalto Aéreo', 'ME': 'ME - Misiones Especiales', 'AF': 'AF - Apoyo de Fuego',
-          'C2': 'C2 - Comando y Control', 'MA': 'MA - Movimiento Aéreo', 'INT': 'INT - Inteligencia Técnica',
-          'ATS': 'ATS - Tránsito Aéreo', 'C-SAR': 'C-SAR - Búsqueda y Rescate Combate', 'CSAR': 'C-SAR - Búsqueda y Rescate Combate',
-          'CASEVAC': 'CASEVAC - Evacuación Propias Tropas', 'SA': 'SA - Sostenimiento de Aviación',
-          'RAV': 'RAV - Recuperación de Aeronaves', 'MEDEVAC': 'MEDEVAC - Evacuación Aeromédica',
-          'I': 'I - Instrucción', 'E': 'E - Entrenamiento', 'M': 'M - Mantenimiento',
-          'TRP': 'TRP - Transporte de Prisioneros', 'SAR': 'SAR - Búsqueda y Rescate', 'RA': 'RA - Reposicionamiento',
-          'AX': 'AX - Vuelos de Aceptación', 'ID': 'ID - Investigación y Desarrollo', 'AH': 'AH - Apoyo Humanitario',
-          'AEG': 'AEG - Apoyo Entidades Gubernamentales', 'CDM': 'CDM - Ceremonias y Ferias',
-          'EMI': 'EMI - Ejercicios Integrados', 'OAR': 'OAR - Otras Actividades'
-        };
-
-        if (!tareaDetectada && tareasMap[tokUpper]) {
-          tareaDetectada = tareasMap[tokUpper];
-          continue;
-        }
-
-        detalleTokens.push(tok);
-      }
-
-      if (horaDetectada) document.getElementById('progHora').value = horaDetectada;
-      if (paxDetectado) document.getElementById('progPax').value = paxDetectado;
-      if (tareaDetectada) document.getElementById('progTarea').value = tareaDetectada;
-      if (detalleTokens.length) document.getElementById('progDetalle').value = detalleTokens.join(' ');
-      if (rutaDetectada.length >= 2) rutaSeleccionada = rutaDetectada;
-
-      evaluarMision();
-      document.getElementById('inputDictadoRapido').value = '';
-    }
-
-    function filtrarAeropuertos(texto) {
-      var box = document.getElementById("sugerenciasAero");
-      var q = texto.trim().toLowerCase();
-      if (q.length < 2) {
-        box.classList.add("hidden");
-        box.innerHTML = "";
-        return;
-      }
-      var matches = [];
-      for (var i = 0; i < AEROPUERTOS.length; i++) {
-        var ap = AEROPUERTOS[i];
-        if (ap.oaci.toLowerCase().indexOf(q) !== -1 || ap.ub.toLowerCase().indexOf(q) !== -1 || ap.nom.toLowerCase().indexOf(q) !== -1) {
-          matches.push(ap);
-          if (matches.length >= 8) break;
-        }
-      }
-      if (!matches.length) {
-        box.innerHTML = '<div style="padding:10px; font-size:11px; color:#94a3b8; text-align:center;">Sin coincidencias</div>';
-        box.classList.remove("hidden");
-        return;
-      }
-      var html = "";
-      for (var j = 0; j < matches.length; j++) {
-        var m = matches[j];
-        var o = m.oaci ? '<b style="color:#f59e0b; margin-right:6px;">' + m.oaci + '</b>' : '';
-        html += '<div class="suggestion-item" onclick="seleccionarAeropuerto(\'' + m.id + '\')"><div>' + o + '<span>' + m.ub + '</span> <span style="font-size:10px; color:#94a3b8;">(' + m.nom + ')</span></div><span style="font-size:10px; color:#38bdf8; font-family:monospace;">' + m.rwy + 'm</span></div>';
-      }
-      box.innerHTML = html;
-      box.classList.remove("hidden");
-    }
-
-    function seleccionarAeropuerto(id) {
-      for (var i = 0; i < AEROPUERTOS.length; i++) {
-        if (AEROPUERTOS[i].id === id) {
-          rutaSeleccionada.push(AEROPUERTOS[i]);
-          break;
-        }
-      }
-      document.getElementById("inputBuscarAero").value = "";
-      document.getElementById("sugerenciasAero").classList.add("hidden");
-      evaluarMision();
-    }
-
-    function removerPierna(index) {
-      rutaSeleccionada.splice(index, 1);
-      evaluarMision();
-    }
-
-    function limpiarRuta() {
-      rutaSeleccionada = [obtenerAeroPorOaci("SKBO")].filter(Boolean);
-      evaluarMision();
-    }
-
-    function renderPiernas() {
-      var cont = document.getElementById("contenedorPiernas");
-      cont.innerHTML = "";
-      if (!rutaSeleccionada.length) {
-        cont.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">Agregue aeródromos a la ruta...</span>';
-        return;
-      }
-      for (var i = 0; i < rutaSeleccionada.length; i++) {
-        var ap = rutaSeleccionada[i];
-        var tag = document.createElement("div");
-        tag.className = "tag-pierna";
-        tag.innerHTML = '<span>' + (i + 1) + '. ' + (ap.oaci || ap.ub) + '</span><button onclick="removerPierna(' + i + ')">✕</button>';
-        cont.appendChild(tag);
-      }
-    }
-
-    function evaluarMision() {
-      renderPiernas();
-      var pax = parseInt(document.getElementById("progPax").value) || 0;
-      var distTotal = 0, minPista = 9999;
-
-      for (var p = 0; p < rutaSeleccionada.length; p++) {
-        if (rutaSeleccionada[p].rwy < minPista) minPista = rutaSeleccionada[p].rwy;
-      }
-
-      if (rutaSeleccionada.length > 1) {
-        for (var i = 0; i < rutaSeleccionada.length - 1; i++) {
-          distTotal += haversineNM(rutaSeleccionada[i].lat, rutaSeleccionada[i].lon, rutaSeleccionada[i+1].lat, rutaSeleccionada[i+1].lon);
-        }
-      }
-
-      document.getElementById("txtDistanciaTotal").innerText = Math.round(distTotal) + " NM";
-      var cont = document.getElementById("resultadosSim");
-      cont.innerHTML = "";
-
-      if (rutaSeleccionada.length < 2) {
-        cont.innerHTML = '<div style="font-size:11px; color:#94a3b8; text-align:center; padding:10px;">Agregue al menos 2 puntos para evaluar la flota.</div>';
-        return;
-      }
-
-      var origen = rutaSeleccionada[0];
-      var oaciOrigen = origen.oaci || origen.ub;
-      var piernas = rutaSeleccionada.length - 1;
-
-      var evaluadas = [];
-      for (var j = 0; j < flota.length; j++) {
-        var a = flota[j];
-        var sp = CONFIG[a.tipoSpecs] || { nombre: a.modelo, maxPax: 8, velKT: 180, minPista: 1200, noPrep: false };
-        var ete = (distTotal / sp.velKT) + (piernas * 0.2);
-        
-        var remFase = a.proximaFase - a.horasActuales;
-        var dispMes = a.asignadas - a.voladasMes;
-        var esACL = (a.estado === "ACL");
-        var esLRM = (a.estado === "LRM");
-        var esVolable = (esACL || esLRM);
-
-        var okPax = pax <= sp.maxPax;
-        var okPista = minPista >= sp.minPista;
-        var okFase = remFase >= ete;
-        var okMes = dispMes >= ete;
-        var apto = esVolable && okPax && okPista && okFase && okMes;
-
-        var matchBase = false;
-        var advertenciaBase = "";
-        
-        if (oaciOrigen === "SKBO" && a.pernocta === "BOGOTÁ") matchBase = true;
-        else if (oaciOrigen === "SKCC" && a.pernocta === "CÚCUTA") matchBase = true;
-        else if (oaciOrigen === "SKSJ" && a.pernocta === "SAN JOSÉ") matchBase = true;
-        else if (oaciOrigen === "SKYP" && a.pernocta === "YOPAL") matchBase = true;
-        else if (oaciOrigen === "SKTI" && a.pernocta === "TOLEMAIDA") matchBase = true;
-        else {
-          if (a.pernocta !== "BOGOTÁ" && a.pernocta !== "BAMAV-1") {
-            advertenciaBase = "📍 Pernocta en " + a.pernocta + (a.divAsig ? " (Div " + a.divAsig + ")" : "") + " ➔ Requiere traslado";
-          } else if (oaciOrigen !== "SKBO") {
-            advertenciaBase = "📍 En Bogotá ➔ Misión inicia en " + oaciOrigen;
-          }
-        }
-
-        var prioridad = 0;
-        if (apto && matchBase) prioridad = 100;
-        else if (apto && !matchBase && !a.divAsig) prioridad = 80;
-        else if (apto && a.divAsig) prioridad = 60;
-        else if (esVolable) prioridad = 40;
-        else prioridad = 10;
-
-        evaluadas.push({
-          a: a, sp: sp, ete: ete, remFase: remFase, dispMes: dispMes,
-          apto: apto, matchBase: matchBase, advertenciaBase: advertenciaBase,
-          okPax: okPax, okPista: okPista, okFase: okFase, okMes: okMes,
-          prioridad: prioridad
-        });
-      }
-
-      evaluadas.sort(function(x, y) { return (y.prioridad - x.prioridad) || (x.ete - y.ete); });
-
-      for (var k = 0; k < evaluadas.length; k++) {
-        var item = evaluadas[k];
-        var a = item.a;
-        var sp = item.sp;
-        var rec = (k === 0 && item.apto);
-
-        var d = document.createElement("div");
-        d.style.cssText = "background:#0f172a; padding:10px; border-radius:10px; border:1px solid " + (rec ? "#f59e0b" : (item.apto ? "#10b981" : "#1e293b")) + ";";
-
-        var remPost = (item.remFase - item.ete).toFixed(1);
-        var mesPost = (item.dispMes - item.ete).toFixed(1);
-
-        var badges = [];
-        if (a.estado === "ACL") badges.push('<span style="color:#34d399;">🟢 ACL Línea</span>');
-        else if (a.estado === "LRM") badges.push('<span style="color:#fbbf24;">🟡 LRM (Restricción)</span>');
-        else badges.push('<span style="color:#fb7185;">🔴 ' + a.estado + ' (No Operativo)</span>');
-
-        badges.push('<span style="color:#38bdf8;">📍 ' + a.pernocta + '</span>');
-        if (a.divAsig) badges.push('<span style="color:#c084fc;">Div ' + a.divAsig + '</span>');
-
-        if (!item.okFase && (a.estado === "ACL" || a.estado === "LRM")) badges.push('<span style="color:#f59e0b;">⚠️ Excede Fase por ' + (item.ete - item.remFase).toFixed(1) + 'h</span>');
-        if (!item.okMes && (a.estado === "ACL" || a.estado === "LRM")) badges.push('<span style="color:#fb7185;">⚠️ Falta cupo mes</span>');
-        if (item.advertenciaBase) badges.push('<span style="color:#f59e0b;">' + item.advertenciaBase + '</span>');
-
-        d.innerHTML = 
-          '<div style="display:flex; justify-content:space-between; align-items:flex-start;">' +
-            '<div>' +
-              '<div style="font-size:14px; font-weight:900; color:' + (rec ? '#f59e0b' : '#f1f5f9') + ';">' + a.matricula + ' <span style="font-size:11px; color:#94a3b8;">(' + sp.nombre + ')</span> ' + (rec ? '<span style="background:#f59e0b; color:#000; font-size:9px; font-weight:900; padding:1px 5px; border-radius:4px;">RECOMENDADO S-3</span>' : '') + '</div>' +
-              '<div style="font-size:11px; color:#cbd5e1; margin-top:2px;">ETE: <b>' + item.ete.toFixed(1) + ' h</b> (' + sp.velKT + ' KT) • Pax máx: ' + sp.maxPax + '</div>' +
-            '</div>' +
-            (item.apto ? '<button onclick="asignarMision(\'' + a.id + '\', ' + item.ete.toFixed(1) + ')" class="btn-gold" style="font-size:11px; padding:6px 10px;">+ Programar</button>' : 
-             ((a.estado === "ACL" || a.estado === "LRM") && !item.okFase ? '<button onclick="asignarMision(\'' + a.id + '\', ' + item.ete.toFixed(1) + ')" class="btn-outline" style="border-color:#f59e0b; color:#fbbf24; font-size:10px;">Prog. c/ Extensión</button>' : '')) +
-          '</div>' +
-          '<div style="font-size:10px; margin-top:6px; display:flex; flex-wrap:wrap; gap:6px;">' +
-            '<span>Rem Fase: ' + item.remFase.toFixed(1) + 'h ➔ <b>' + remPost + 'h</b></span> • ' +
-            '<span>Saldo Mes: ' + item.dispMes.toFixed(1) + 'h ➔ <b>' + mesPost + 'h</b></span>' +
-          '</div>' +
-          '<div style="font-size:10px; margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">' + badges.join(" • ") + '</div>' +
-          (a.obs ? '<div style="font-size:9px; color:#94a3b8; margin-top:3px; font-style:italic;">Nota técnica: ' + a.obs + '</div>' : '');
-
-        cont.appendChild(d);
-      }
-    }
-
-    function asignarMision(avionId, ete) {
-      var a = null;
-      for (var i = 0; i < flota.length; i++) if (flota[i].id === avionId) { a = flota[i]; break; }
-      if (!a) return;
-
-      var hora = document.getElementById("progHora").value || "07:00R";
-      var pax = document.getElementById("progPax").value || "4";
-      var tarea = document.getElementById("progTarea").value;
-      var detalle = document.getElementById("progDetalle").value || "Misión de Operaciones";
-      
-      var textoRuta = [];
-      for (var r = 0; r < rutaSeleccionada.length; r++) textoRuta.push(rutaSeleccionada[r].oaci || rutaSeleccionada[r].ub);
-      var rutaStr = textoRuta.join(" - ");
-
-      var remFase = (a.proximaFase - a.horasActuales).toFixed(1);
-      var alertaExt = (parseFloat(remFase) < ete) ? " (REQUIERE EXTENSIÓN)" : "";
-
-      misionesProgramadas.push({
-        id: Date.now(),
-        hora: hora,
-        avion: a.matricula,
-        modelo: a.modelo,
-        pernocta: a.pernocta,
-        divAsig: a.divAsig,
-        tarea: tarea,
-        detalle: detalle,
-        pax: pax,
-        ruta: rutaStr,
-        ete: ete,
-        remFasePost: (parseFloat(remFase) - ete).toFixed(1) + alertaExt
-      });
-
-      guardarDatos();
-      alert("Misión asignada a " + a.matricula);
-    }
-
-    function borrarMision(idx) {
-      misionesProgramadas.splice(idx, 1);
-      guardarDatos();
-    }
-
-    function renderMisiones() {
-      var cont = document.getElementById("listaMisiones");
-      if (!cont) return;
-      cont.innerHTML = "";
-      if (!misionesProgramadas.length) {
-        cont.innerHTML = '<div style="text-align:center; color:#64748b; font-size:11px; padding:10px;">No hay misiones programadas aún para esta noche.</div>';
-        return;
-      }
-
-      for (var i = 0; i < misionesProgramadas.length; i++) {
-        var m = misionesProgramadas[i];
-        var d = document.createElement("div");
-        d.className = "mission-row";
-        d.innerHTML = 
-          '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-            '<span style="color:#f59e0b; font-weight:900;">' + m.hora + ' | ' + m.avion + ' (' + m.modelo + ')</span>' +
-            '<button onclick="borrarMision(' + i + ')" class="btn-outline" style="color:#f87171; padding:2px 6px;">✕</button>' +
-          '</div>' +
-          '<div style="margin-top:2px;"><b>Tarea:</b> ' + m.tarea + '</div>' +
-          '<div style="color:#94a3b8;"><b>Ruta:</b> ' + m.ruta + ' (' + m.ete + ' h) • ' + m.pax + ' Pax • Base: ' + m.pernocta + (m.divAsig ? ' (Div ' + m.divAsig + ')' : '') + '</div>' +
-          '<div style="color:#94a3b8;"><b>Detalle:</b> ' + m.detalle + '</div>' +
-          '<div style="font-size:10px; color:#34d399; margin-top:2px;">Remanente Fase post-vuelo: ' + m.remFasePost + ' h</div>';
-        cont.appendChild(d);
-      }
-    }
-
-    function copiarBorradorWhatsApp() {
-      if (!misionesProgramadas.length) {
-        alert("Primero agregue misiones a la orden de vuelo.");
-        return;
-      }
-      var txt = "*BORRADOR PROGRAMACIÓN BAAV1 (Para elaboración de mensaje)*\n";
-      txt += "--------------------------------------------------\n";
-      for (var i = 0; i < misionesProgramadas.length; i++) {
-        var m = misionesProgramadas[i];
-        txt += "MISIÓN " + (i + 1) + ":\n";
-        txt += "• Hora: " + m.hora + "\n";
-        txt += "• Avión: " + m.avion + " (" + m.modelo + ")\n";
-        txt += "• Base / Despliegue: " + m.pernocta + (m.divAsig ? " (Div " + m.divAsig + ")" : "") + "\n";
-        txt += "• Tarea: " + m.tarea + "\n";
-        txt += "• Detalle: " + m.detalle + " (" + m.pax + " Pax)\n";
-        txt += "• Ruta: " + m.ruta + "\n";
-        txt += "• ETE Proyectado: " + m.ete + " h\n";
-        txt += "• Situación Técnica: Rem Fase Post-vuelo: " + m.remFasePost + " h\n\n";
-      }
-      txt += "--------------------------------------------------\n";
-      txt += "*Reportado por Oficial de Operaciones S-3 BAAV1*";
-
-      navigator.clipboard.writeText(txt).then(function() {
-        alert("¡Borrador copiado al portapapeles! Listo para enviar por WhatsApp.");
-      }).catch(function() {
-        prompt("Copie el borrador:", txt);
-      });
-    }
-
-    function renderRampa() {
-      var cont = document.getElementById("selectorRampa");
-      cont.innerHTML = "";
-      for (var i = 0; i < flota.length; i++) {
-        (function(a) {
-          var act = (a.id === avionSeleccionado);
-          var b = document.createElement("button");
-          b.style.cssText = "padding:10px; border-radius:10px; text-align:left; border:1px solid " + (act ? "#f59e0b" : "#1e293b") + "; background:" + (act ? "rgba(245, 158, 11, 0.15)" : "#0f172a") + "; color:#f1f5f9; cursor:pointer;";
-          b.onclick = function() { avionSeleccionado = a.id; renderRampa(); };
-          b.innerHTML = '<div style="font-weight:800; font-size:12px;">' + a.matricula + ' (' + a.modelo + ')</div><div style="font-size:10px; color:#94a3b8;">' + a.pernocta + ' • ' + a.estado + '</div>';
-          cont.appendChild(b);
-        })(flota[i]);
-      }
-    }
-
-    function ajustarHoras(delta) {
-      var el = document.getElementById("rampaHoras");
-      el.value = Math.max(0.1, parseFloat(el.value) + delta).toFixed(1);
-    }
-
-    function descontarHoras() {
-      var a = null;
-      for (var i = 0; i < flota.length; i++) if (flota[i].id === avionSeleccionado) { a = flota[i]; break; }
-      var h = parseFloat(document.getElementById("rampaHoras").value) || 0;
-      var r = document.getElementById("rampaRuta").value || "Vuelo de Operaciones";
-
-      if (!a || h <= 0) return;
-      a.voladasMes += h;
-      a.horasActuales += h;
-
-      var d = new Date();
-      var hora = d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
-      historial.unshift({ hora: hora, avion: a.matricula, horas: h.toFixed(1), ruta: r });
-      if (historial.length > 6) historial.pop();
-
-      guardarDatos();
-      renderHistorial();
-      alert("Registradas +" + h.toFixed(1) + " h a " + a.matricula + ".");
-    }
-
-    function renderHistorial() {
-      var cont = document.getElementById("listaHistorial");
-      cont.innerHTML = "";
-      if (!historial.length) {
-        cont.innerHTML = '<span style="color:#64748b;">No hay reportes recientes</span>';
-        return;
-      }
-      for (var i = 0; i < historial.length; i++) {
-        var h = historial[i];
-        var el = document.createElement("div");
-        el.style.cssText = "display:flex; justify-content:space-between; border-bottom:1px solid #1e293b; padding:4px 0;";
-        el.innerHTML = '<span>' + h.hora + ' • <b>' + h.avion + '</b> (' + h.ruta + ')</span><b style="color:#34d399;">+' + h.horas + ' h</b>';
-        cont.appendChild(el);
-      }
-    }
-
-    function cambiarVista(vista) {
-      var v = ["flota", "simulador", "rampa"];
-      for (var i = 0; i < v.length; i++) {
-        document.getElementById("view-" + v[i]).className = (v[i] === vista ? "" : "hidden");
-        document.getElementById("btn-" + v[i]).className = "nav-btn" + (v[i] === vista ? " active" : "");
-      }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
