@@ -81,43 +81,78 @@
     <div id="listaHangar"></div>
   </div>
 
-  <!-- PESTAÑA 2: SIMULADOR S-3 (DIRECTO: RUTA RÁPIDA, SIN TAREAS) -->
+    <!-- PESTAÑA 2: SIMULADOR S-3 (MULTI-AERONAVE, PAX, CARGA, OBSERVACIONES) -->
   <div id="viewSimulador" class="tab-content">
-    <div class="card" style="border-top:3px solid #38bdf8; margin-bottom:14px;">
-      <div style="font-weight:900; font-size:14px; text-transform:uppercase; color:#38bdf8; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-        <span>⚡ SIMULADOR S-3 • PLANIFICACIÓN DE MISIÓN</span>
-        <span class="pill pill-green" id="badgeTotalACL">0 DISPONIBLES</span>
+    <div class="card" style="border-top:3px solid #38bdf8; margin-bottom:12px;">
+      <div style="font-weight:900; font-size:13px; text-transform:uppercase; color:#38bdf8; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+        <span>⚡ SIMULADOR S-3 • PLANIFICACIÓN</span>
+        <span class="pill pill-green" id="badgeTotalACL">0 DISPONIBLES ACL</span>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+      <div style="display:flex; flex-direction:column; gap:10px;">
         <div>
           <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">1. Aeronave Operativa (Solo ACL)</label>
-          <select id="simSelAvion" onchange="calcularSimulacionRapida()" style="width:100%; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+          <select id="simSelAvion" onchange="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
             <option value="">-- Seleccionar Aeronave ACL --</option>
           </select>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <!-- Fila con Hora Salida y Pasajeros separados -->
+        <div style="display:flex; gap:10px; width:100%;">
+          <div style="flex:1; min-width:0;">
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block;">2. Hora Salida (ETD)</label>
+            <input type="time" id="simETD" value="08:00" onchange="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+          </div>
+          <div style="flex:1; min-width:0;">
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block;">3. Pasajeros (PAX)</label>
+            <input type="number" id="simPax" placeholder="Ej: 8" min="0" oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+          </div>
+        </div>
+
+        <!-- Fila con Carga y Observaciones / Motivo de Vuelo -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
           <div>
-            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">2. Hora Salida (ETD)</label>
-            <input type="time" id="simETD" value="08:00" onchange="calcularSimulacionRapida()" style="width:100%; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">4. Carga Transportada</label>
+            <input type="text" id="simCarga" placeholder="Ej: 150 kg repuestos, valijas, etc." oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-size:12px; margin-top:4px;">
           </div>
           <div>
-            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">3. PAX / Carga</label>
-            <input type="number" id="simPax" placeholder="Ej: 6" min="0" oninput="calcularSimulacionRapida()" style="width:100%; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">5. Observaciones / Motivo de Vuelo</label>
+            <input type="text" id="simObsMision" placeholder="Ej: Transporte Comandante del Ejército, Apoyo División" oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-size:12px; margin-top:4px;">
           </div>
         </div>
 
         <div>
-          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">4. Ruta (Escribe rápido: skbo skmd sksr)</label>
-          <input type="text" id="simInputRuta" placeholder="Ej: skbo skmd sksr" oninput="calcularSimulacionRapida()" style="width:100%; background:#0f172a; border:1px solid #38bdf8; color:#f8fafc; padding:12px; border-radius:8px; font-weight:900; font-family:monospace; font-size:14px; text-transform:uppercase; margin-top:4px;">
-          <div style="font-size:10px; color:#64748b; margin-top:4px;">Escribe los ICAO separados por espacio o guión. Calcula distancias, tiempos de vuelo y horas de llegada.</div>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">6. Ruta (Escribe rápido: skbo skmd sksr)</label>
+          <input type="text" id="simInputRuta" placeholder="Ej: skbo skmd sktq" oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #38bdf8; color:#f8fafc; padding:12px; border-radius:8px; font-weight:900; font-family:monospace; font-size:14px; text-transform:uppercase; margin-top:4px;">
+          <div style="font-size:10px; color:#64748b; margin-top:3px;">Escribe los ICAO separados por espacio o guión.</div>
         </div>
       </div>
     </div>
 
-    <!-- RESULTADO DINÁMICO -->
-    <div id="simResultado" style="display:none;" class="card"></div>
+    <!-- PREVISUALIZACIÓN DE LA MISIÓN ACTUAL -->
+    <div id="simResultado" style="display:none; margin-bottom:12px;" class="card"></div>
+
+    <!-- CONSOLIDADO DE ORDEN DE VUELO MULTI-AERONAVE -->
+    <div class="card" style="border-top:3px solid #10b981;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-size:12px; font-weight:900; color:#34d399; text-transform:uppercase;">📋 ORDEN DE VUELO CONSOLIDADA (<span id="countMisionesProg">0</span>)</span>
+        <button onclick="limpiarOrdenVuelo()" class="btn-outline" style="border-color:#f43f5e; color:#f87171; font-size:10px; padding:3px 8px;">Vaciar Todo</button>
+      </div>
+
+      <div id="listaMisionesProgramadas" style="display:flex; flex-direction:column; gap:8px;">
+        <div style="color:#64748b; font-size:11px; text-align:center; padding:12px 0;">No has agregado aeronaves a la orden aún. Planifica arriba y pulsa "Agregar a la Orden".</div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN PARA EL RADIOPERADOR -->
+      <div id="panelEnvioRadio" style="display:none; margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+        <button onclick="enviarWhatsAppRadioperador()" style="width:100%; background:#25D366; border:none; color:#000; font-weight:900; padding:12px; border-radius:8px; cursor:pointer; font-size:13px; text-transform:uppercase; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <span>📲 Enviar Orden al Radioperador (WhatsApp)</span>
+        </button>
+        <button onclick="copiarTextoRadioperador()" class="btn-outline" style="width:100%; padding:10px; font-size:12px; font-weight:800; border-color:#38bdf8; color:#38bdf8; text-transform:uppercase;">
+          📋 Copiar Formato al Portapapeles
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- PESTAÑA 3: RAMPA (SOLO ACTIVAS FUERA DE BAMAV-1) -->
@@ -399,15 +434,130 @@
       if (bAcl) bAcl.innerText = cAcl + " DISPONIBLES ACL";
     }
 
+    var misionesS3 = JSON.parse(localStorage.getItem("BAAV1_MISIONES_S3_PROD")) || [];
+    var misionActualTemp = null;
+
+    function renderListaMisionesS3() {
+      var cont = document.getElementById("listaMisionesProgramadas");
+      var panel = document.getElementById("panelEnvioRadio");
+      var badge = document.getElementById("countMisionesProg");
+      if (!cont) return;
+
+      badge.innerText = misionesS3.length;
+      if (misionesS3.length === 0) {
+        cont.innerHTML = '<div style="color:#64748b; font-size:11px; text-align:center; padding:12px 0;">No has agregado aeronaves a la orden aún. Planifica arriba y pulsa "Agregar a la Orden".</div>';
+        if (panel) panel.style.display = "none";
+        return;
+      }
+
+      if (panel) panel.style.display = "flex";
+      cont.innerHTML = "";
+
+      for (var i = 0; i < misionesS3.length; i++) {
+        (function(idx) {
+          var m = misionesS3[idx];
+          var card = document.createElement("div");
+          card.style.cssText = "background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:10px;";
+          card.innerHTML = 
+            '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">' +
+              '<div>' +
+                '<span style="font-weight:900; font-size:13px; color:#38bdf8;">' + m.matricula + ' (' + m.modelo + ')</span>' +
+                '<div style="font-size:11px; color:#f8fafc; font-weight:700; margin-top:2px;">' + m.rutaStr + '</div>' +
+              '</div>' +
+              '<button onclick="eliminarMisionS3(' + idx + ')" class="btn-outline" style="border-color:#f43f5e; color:#f87171; padding:2px 6px; font-size:10px;">✕ Quitar</button>' +
+            '</div>' +
+            (m.obs ? '<div style="font-size:11px; color:#fbbf24; background:rgba(245,158,11,0.1); border-left:2px solid #f59e0b; padding:4px 8px; border-radius:4px; margin-bottom:6px;"><b>Obs:</b> ' + m.obs + '</div>' : '') +
+            '<div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; background:#131d31; padding:6px 8px; border-radius:6px;">' +
+              '<span>ETD: <b style="color:#f1f5f9;">' + m.etd + '</b></span>' +
+              '<span>PAX: <b style="color:#f1f5f9;">' + m.pax + '</b></span>' +
+              (m.carga ? '<span>Carga: <b style="color:#f1f5f9;">' + m.carga + '</b></span>' : '') +
+              '<span>Dist: <b style="color:#f1f5f9;">' + m.dist + ' NM</b></span>' +
+              '<span>Vuelo: <b style="color:#34d399;">' + m.tiempoH + ' h</b></span>' +
+            '</div>';
+          cont.appendChild(card);
+        })(i);
+      }
+    }
+
+    function agregarMisionALaOrden() {
+      if (!misionActualTemp) return;
+      misionesS3.push(misionActualTemp);
+      localStorage.setItem("BAAV1_MISIONES_S3_PROD", JSON.stringify(misionesS3));
+      misionActualTemp = null;
+      document.getElementById("simInputRuta").value = "";
+      document.getElementById("simCarga").value = "";
+      document.getElementById("simObsMision").value = "";
+      document.getElementById("simResultado").style.display = "none";
+      renderListaMisionesS3();
+    }
+
+    function eliminarMisionS3(idx) {
+      misionesS3.splice(idx, 1);
+      localStorage.setItem("BAAV1_MISIONES_S3_PROD", JSON.stringify(misionesS3));
+      renderListaMisionesS3();
+    }
+
+    function limpiarOrdenVuelo() {
+      if (confirm("¿Vaciar todas las aeronaves de la orden de vuelo?")) {
+        misionesS3 = [];
+        localStorage.removeItem("BAAV1_MISIONES_S3_PROD");
+        renderListaMisionesS3();
+      }
+    }
+
+    function generarTextoOrdenRadioperador() {
+      var d = new Date();
+      var fStr = pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + d.getFullYear();
+      var txt = "*ORDEN DE VUELO S-3 BAAV1*\n";
+      txt += "📅 *Fecha:* " + fStr + "\n";
+      txt += "📋 *Total Aeronaves Programadas:* " + misionesS3.length + "\n\n";
+
+      for (var i = 0; i < misionesS3.length; i++) {
+        var m = misionesS3[i];
+        txt += "✈️ *MISIÓN " + (i + 1) + ": " + m.matricula + "* (" + m.modelo + ")\n";
+        txt += "• *ETD:* " + m.etd + "R\n";
+        txt += "• *PAX:* " + m.pax + (m.carga ? " | *Carga:* " + m.carga : "") + "\n";
+        if (m.obs) txt += "• *Motivo/Obs:* " + m.obs + "\n";
+        txt += "• *Ruta:* " + m.rutaStr + "\n";
+        txt += "• *Itinerario Estimado:*\n";
+        for (var j = 0; j < m.tramos.length; j++) {
+          var tr = m.tramos[j];
+          txt += "  - " + tr.de + " (" + tr.hSal + ") ➔ " + tr.a + " (" + tr.hLleg + ") [" + tr.tiempoH + "h]\n";
+        }
+        txt += "• *Total Estimado:* " + m.tiempoH + " h (" + m.dist + " NM)\n\n";
+      }
+
+      txt += "_Mensaje preliminar para estructuración de despacho oficial._";
+      return txt;
+    }
+
+    function enviarWhatsAppRadioperador() {
+      if (!misionesS3.length) return;
+      var texto = generarTextoOrdenRadioperador();
+      var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
+      window.open(url, "_blank");
+    }
+
+    function copiarTextoRadioperador() {
+      if (!misionesS3.length) return;
+      var texto = generarTextoOrdenRadioperador();
+      navigator.clipboard.writeText(texto).then(function() {
+        alert("✅ Orden de vuelo copiada al portapapeles lista para pegar en WhatsApp.");
+      });
+    }
+
     function calcularSimulacionRapida() {
       var selAvionId = document.getElementById("simSelAvion").value;
       var rawRuta = document.getElementById("simInputRuta").value.trim();
       var etdVal = document.getElementById("simETD").value || "08:00";
       var paxVal = parseInt(document.getElementById("simPax").value) || 0;
+      var cargaVal = (document.getElementById("simCarga") ? document.getElementById("simCarga").value.trim() : "");
+      var obsVal = (document.getElementById("simObsMision") ? document.getElementById("simObsMision").value.trim() : "");
       var contRes = document.getElementById("simResultado");
 
       if (!selAvionId || !rawRuta) {
         contRes.style.display = "none";
+        misionActualTemp = null;
         return;
       }
 
@@ -418,6 +568,7 @@
       var tokens = rawRuta.toUpperCase().replace(/[-,;]/g, " ").split(/\s+/).filter(Boolean);
       if (tokens.length < 2) {
         contRes.style.display = "none";
+        misionActualTemp = null;
         return;
       }
 
@@ -462,6 +613,19 @@
       var totalHorasMision = tramos.reduce(function(acc, t) { return acc + t.tiempoH; }, 0);
       totalHorasMision = Math.round(totalHorasMision * 10) / 10;
 
+      misionActualTemp = {
+        matricula: avion.matricula,
+        modelo: sp.nombre,
+        etd: etdVal,
+        pax: paxVal,
+        carga: cargaVal,
+        obs: obsVal,
+        rutaStr: tokens.join(" ➔ "),
+        dist: distTotalNM,
+        tiempoH: totalHorasMision,
+        tramos: tramos
+      };
+
       var alertaPax = "";
       if (sp.maxPax && paxVal > sp.maxPax) {
         alertaPax = '<div style="background:rgba(244,63,94,0.15); border-left:3px solid #f43f5e; padding:6px 10px; border-radius:4px; font-size:11px; color:#fda4af; margin-top:8px;">⚠️ <b>ALERTA DE CAPACIDAD:</b> PAX (' + paxVal + ') superan configuración máxima de ' + sp.nombre + ' (' + sp.maxPax + ' PAX).</div>';
@@ -490,7 +654,7 @@
       contRes.innerHTML = 
         '<div style="border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">' +
           '<div>' +
-            '<div style="font-size:11px; color:#94a3b8; font-weight:700;">PLAN DE VUELO S-3 CALCULADO</div>' +
+            '<div style="font-size:11px; color:#94a3b8; font-weight:700;">PLAN CALCULADO</div>' +
             '<div style="font-size:14px; font-weight:900; color:#f8fafc;">' + tokens.join(" ➔ ") + '</div>' +
           '</div>' +
           '<div style="text-align:right;">' +
@@ -498,17 +662,21 @@
             '<div style="font-size:16px; font-weight:900; color:#34d399;">' + totalHorasMision.toFixed(1) + ' h</div>' +
           '</div>' +
         '</div>' +
+        (obsVal ? '<div style="font-size:11px; color:#fbbf24; background:rgba(245,158,11,0.1); border-left:2px solid #f59e0b; padding:6px 10px; border-radius:4px; margin-bottom:8px;"><b>Motivo:</b> ' + obsVal + '</div>' : '') +
         htmlTramos +
         alertaPax +
         alertaCupo +
-        '<div style="margin-top:12px; display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; background:#0f172a; padding:8px 10px; border-radius:6px;">' +
+        '<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; font-size:11px; color:#94a3b8; background:#0f172a; padding:8px 10px; border-radius:6px; margin-bottom:10px;">' +
           '<span>Distancia: <b style="color:#f1f5f9;">' + distTotalNM + ' NM</b></span>' +
           '<span>PAX: <b style="color:#f1f5f9;">' + paxVal + '</b></span>' +
+          (cargaVal ? '<span>Carga: <b style="color:#f1f5f9;">' + cargaVal + '</b></span>' : '') +
           '<span>Aeronave: <b style="color:#f1f5f9;">' + avion.matricula + '</b></span>' +
-        '</div>';
+        '</div>' +
+        '<button onclick="agregarMisionALaOrden()" style="width:100%; background:#38bdf8; border:none; color:#000; font-weight:900; padding:11px; border-radius:8px; cursor:pointer; font-size:12px; text-transform:uppercase;">➕ Agregar a la Orden de Vuelo</button>';
 
       contRes.style.display = "block";
     }
+
 
     function pad(n) { return n < 10 ? "0" + n : n; }
 
