@@ -483,6 +483,22 @@
     }
 
 
+    
+    function obtenerSiglaMilitar(avion) {
+      if (!avion) return "";
+      var m = (avion.modelo || "").toUpperCase();
+      var t = (avion.tipoSpecs || "").toUpperCase();
+
+      if (m.indexOf("350") !== -1 || t.indexOf("350") !== -1) return "B-350";
+      if (m.indexOf("200") !== -1 || t.indexOf("200") !== -1) return "B-200";
+      if (m.indexOf("208") !== -1 || t.indexOf("208") !== -1) return "C208B";
+      if (m.indexOf("TC") !== -1 || m.indexOf("COMMANDER") !== -1 || t.indexOf("TC") !== -1 || m.indexOf("AC-90") !== -1) return "AC-90";
+      if (m.indexOf("C-90") !== -1 || m.indexOf("C90") !== -1 || t.indexOf("C-90") !== -1) return "C-90";
+      if (m.indexOf("AN") !== -1 || t.indexOf("AN") !== -1) return "AN-32";
+      if (m.indexOf("212") !== -1 || t.indexOf("212") !== -1) return "C-212";
+      return avion.modelo;
+    }
+
     function generarTextoOrdenRadioperador() {
       // Ordenar misiones cronológicamente por hora de salida (ETD)
       misionesS3.sort(function(a, b) {
@@ -525,7 +541,8 @@
         var obsStr = m.obs ? m.obs : "Transporte de personal y material.";
 
         txt += "✅Unidad: \n";
-        txt += matLimpia + " " + m.modelo + " *" + m.etd + "*\n";
+        var modeloSigla = m.siglaMilitar || obtenerSiglaMilitar(m) || m.modelo;
+        txt += matLimpia + " " + modeloSigla + " *" + m.etd + "*\n";
         txt += "Ruta: " + rutaFormateada + ".\n";
         txt += "Realizará " + obsStr.trim().replace(/\.$/, "") + ".\n";
         txt += "Tarea: \n";
@@ -624,7 +641,7 @@
 
       misionActualTemp = {
         matricula: avion.matricula,
-        modelo: sp.nombre,
+        modelo: sp.nombre, siglaMilitar: obtenerSiglaMilitar(avion),
         etd: etdVal,
         pax: paxVal,
         carga: cargaVal,
