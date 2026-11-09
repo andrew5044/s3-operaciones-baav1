@@ -226,7 +226,10 @@
       "SKIN": { nombre: "INÍRIDA", lat: 3.8647, lon: -67.9236 },
       "SKMU": { nombre: "MITÚ", lat: 1.2536, lon: -70.2339 },
       "SKGB": { nombre: "GUABITO", lat: 3.8333, lon: -76.3000 },
-      "SKQU": { nombre: "MARIQUITA", lat: 5.2133, lon: -74.8833 }
+      "SKQU": { nombre: "Mariquita", lat: 5.2133, lon: -74.8833 },
+    "SKSJ": { nombre: "San José del Guaviare", lat: 2.5767, lon: -72.6397 },
+    "SKIB": { nombre: "Ibagué", lat: 4.4214, lon: -75.1333 },
+    "SKGI": { nombre: "Girardot", lat: 4.2764, lon: -74.7967 }
     };
 
     function distanciaNM(lat1, lon1, lat2, lon2) {
@@ -505,29 +508,68 @@
       }
     }
 
+    
+    function obtenerNombreCiudad(icao) {
+      if (!icao) return "";
+      var cod = icao.toUpperCase().trim();
+      if (cod === "LOCAL") return "Local";
+      var ap = AEROPUERTOS[cod];
+      if (ap && ap.nombre) {
+        return ap.nombre.replace(/\s*\(.*?\)/g, "").trim();
+      }
+      return cod;
+    }
+
+
     function generarTextoOrdenRadioperador() {
-      var d = new Date();
-      var fStr = pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + d.getFullYear();
-      var txt = "*ORDEN DE VUELO S-3 BAAV1*\n";
-      txt += "📅 *Fecha:* " + fStr + "\n";
-      txt += "📋 *Total Aeronaves Programadas:* " + misionesS3.length + "\n\n";
+      // Fecha de mañana calculada automáticamente
+      var manana = new Date();
+      manana.setDate(manana.getDate() + 1);
+
+      var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      var diaStr = pad(manana.getDate());
+      var mesStr = meses[manana.getMonth()];
+      var anioStr = manana.getFullYear();
+
+      var txt = "Mi Coronel buenas noches, para solicitarle su autorización con el fin de programar los siguientes vuelos para mañana " + diaStr + " de " + mesStr + " de " + anioStr + ", así:\n\n";
 
       for (var i = 0; i < misionesS3.length; i++) {
         var m = misionesS3[i];
-        txt += "✈️ *MISIÓN " + (i + 1) + ": " + m.matricula + "* (" + m.modelo + ")\n";
-        txt += "• *ETD:* " + m.etd + "R\n";
-        txt += "• *PAX:* " + m.pax + (m.carga ? " | *Carga:* " + m.carga : "") + "\n";
-        if (m.obs) txt += "• *Motivo/Obs:* " + m.obs + "\n";
-        txt += "• *Ruta:* " + m.rutaStr + "\n";
-        txt += "• *Itinerario Estimado:*\n";
-        for (var j = 0; j < m.tramos.length; j++) {
-          var tr = m.tramos[j];
-          txt += "  - " + tr.de + " (" + tr.hSal + ") ➔ " + tr.a + " (" + tr.hLleg + ") [" + tr.tiempoH + "h]\n";
+
+        // Traducir ICAO a ciudades (ej: Bogotá - Tolemaida - San José - Bogotá)
+        var tokensRuta = m.rutaStr.replace(/➔/g, " ").split(/\s+/).filter(Boolean);
+        var ciudadesRuta = [];
+        for (var k = 0; k < tokensRuta.length; k++) {
+          ciudadesRuta.push(obtenerNombreCiudad(tokensRuta[k]));
         }
-        txt += "• *Total Estimado:* " + m.tiempoH + " h (" + m.dist + " NM)\n\n";
+        var rutaFormateada = ciudadesRuta.join(" - ");
+
+        // Formato matrícula sin guión (EJC 1101)
+        var matLimpia = m.matricula.replace("-", " ");
+
+        // Pax con 2 dígitos (08, 02, etc.)
+        var paxNum = parseInt(m.pax) || 0;
+        var paxStr = paxNum < 10 ? "0" + paxNum : String(paxNum);
+
+        // Carga
+        var cargaStr = m.carga ? m.carga : "00 lbs.";
+
+        // Motivo / Observación
+        var obsStr = m.obs ? m.obs : "Transporte de personal y material.";
+
+        txt += "✅Unidad: [                   ]\n";
+        txt += matLimpia + " " + m.modelo + " *" + m.etd + "*\n";
+        txt += "Ruta: " + rutaFormateada + ".\n";
+        txt += "Realizará " + obsStr.trim().replace(/\.$/, "") + ".\n";
+        txt += "Tarea: [                   ]\n";
+        txt += "Pax: " + paxStr + "\n";
+        txt += "Carga: " + cargaStr + "\n\n";
       }
 
-      txt += "_Mensaje preliminar para estructuración de despacho oficial._";
+      var totVuelosStr = misionesS3.length < 10 ? "0" + misionesS3.length : String(misionesS3.length);
+      txt += "*TOTAL VUELOS A REALIZAR: " + totVuelosStr + "*\n\n";
+      txt += "A su orden permanezco QAP mi coronel.";
+
       return txt;
     }
 
