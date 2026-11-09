@@ -97,15 +97,15 @@
           </select>
         </div>
 
-        <!-- Fila con Hora Salida y Pasajeros separados -->
-        <div style="display:flex; gap:10px; width:100%;">
-          <div style="flex:1; min-width:0;">
-            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block;">2. Hora Salida (ETD)</label>
-            <input type="time" id="simETD" value="08:00" onchange="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+        <!-- Fila con Hora Salida (65%) y Pasajeros compacto (35%) -->
+        <div style="display:flex; gap:12px; width:100%; align-items:flex-end;">
+          <div style="flex:0 0 62%; min-width:0;">
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">2. Hora Salida (ETD)</label>
+            <input type="time" id="simETD" value="08:00" onchange="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px 8px; border-radius:8px; font-weight:700; font-size:13px;">
           </div>
-          <div style="flex:1; min-width:0;">
-            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block;">3. Pasajeros (PAX)</label>
-            <input type="number" id="simPax" placeholder="Ej: 8" min="0" oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+          <div style="flex:0 0 34%; min-width:0;">
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">3. PAX</label>
+            <input type="number" id="simPax" placeholder="0" min="0" oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px 4px; border-radius:8px; font-weight:800; font-size:14px; text-align:center;">
           </div>
         </div>
 
