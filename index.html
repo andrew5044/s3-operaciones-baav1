@@ -258,7 +258,7 @@
       localStorage.removeItem("BAAV1_FLOTA_DATA_V10");
     } catch(e) {}
 
-    var CLAVE_STORE = "BAAV1_FLOTA_RESTORE_2026_V1";
+    var CLAVE_STORE = "BAAV1_FLOTA_FECHAS_V2";
     var datosGuardados = null;
 try { datosGuardados = JSON.parse(localStorage.getItem(CLAVE_STORE)); } catch(e) {}
 var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.length > 0) ? datosGuardados : FLOTA_DEFAULT;
