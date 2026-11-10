@@ -22,6 +22,7 @@
     .nav-btn.active { color: #f59e0b; }
     .vista-seccion { display: none; }
     .vista-seccion.activa { display: block; }
+    .hidden { display: none !important; }
     input, select { background: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 10px; border-radius: 8px; font-weight: 700; width: 100%; box-sizing: border-box; }
   </style>
 </head>
@@ -487,6 +488,7 @@
       if (!a || h <= 0) { alert("Seleccione una aeronave y un valor de horas válido."); return; }
       
       a.voladasMes = (Number(a.voladasMes) || 0) + h;
+      a.dispMes = Math.max(0, (Number(a.asignadas) || 0) - a.voladasMes);
       guardarDatos();
       guardarEnNube(flota);
 
@@ -673,7 +675,7 @@
       var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
       var fStr = pad(manana.getDate()) + " de " + meses[manana.getMonth()] + " de " + manana.getFullYear();
 
-      var txt = "Mi Coronel buenas noches, para solicitarle su autorización con el fin de programar los siguientes vuelos para mañana " + fStr + ", así:\\n\\n";
+      var txt = "Mi Coronel buenas noches, para solicitarle su autorización con el fin de programar los siguientes vuelos para mañana " + fStr + ", así:\n\n";
 
       for (var i = 0; i < misionesS3.length; i++) {
         var m = misionesS3[i];
@@ -699,20 +701,20 @@
         else if (siglaOficial.indexOf("212") !== -1) siglaOficial = "C-212";
 
         if (unidadSel) {
-          txt += "Unidad: " + unidadSel + "\\n";
+          txt += "Unidad: " + unidadSel + "\n";
         } else {
-          txt += "Unidad:\\n";
+          txt += "Unidad:\n";
         }
-        txt += matLimpia + " " + siglaOficial + " *" + m.etd + "*\\n";
-        txt += "Ruta: " + rutaFormateada + ".\\n";
-        txt += "Realizará " + obsStr.trim().replace(/\.$/, "") + ".\\n";
-        txt += "Tarea:\\n";
-        txt += "Pax: " + paxStr + "\\n";
-        txt += "Carga: " + cargaStr + "\\n\\n";
+        txt += matLimpia + " " + siglaOficial + " *" + m.etd + "*\n";
+        txt += "Ruta: " + rutaFormateada + ".\n";
+        txt += "Realizará " + obsStr.trim().replace(/\.$/, "") + ".\n";
+        txt += "Tarea:\n";
+        txt += "Pax: " + paxStr + "\n";
+        txt += "Carga: " + cargaStr + "\n\n";
       }
 
       var totVuelosStr = misionesS3.length < 10 ? "0" + misionesS3.length : String(misionesS3.length);
-      txt += "TOTAL VUELOS A REALIZAR: " + totVuelosStr + "\\n";
+      txt += "TOTAL VUELOS A REALIZAR: " + totVuelosStr + "\n";
       txt += "A su orden permanezco QAP mi coronel.";
       return txt;
     }
@@ -762,6 +764,8 @@
                     a.pernocta = p.indexOf("BOGOT") !== -1 ? "BOGOTÁ" : (p.indexOf("BAMAV") !== -1 ? "BAMAV-1" : p);
                   }
                 }
+                a.dispMes = Math.max(0, (Number(a.asignadas) || 0) - (Number(a.voladasMes) || 0));
+                a.remFase = (Number(a.proximaFase) || 0) - (Number(a.horasActuales) || 0);
                 actualizados++;
                 break;
               }
