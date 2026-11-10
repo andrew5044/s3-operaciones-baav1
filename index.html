@@ -266,6 +266,76 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
     var historial = JSON.parse(localStorage.getItem("BAAV1_HIST_PROD_1")) || [];
     var hangarOculto = false;
 
+    var FIREBASE_URL = "https://baav1-d1225-default-rtdb.firebaseio.com/flota.json";
+    var sincronizando = false;
+
+    function sincronizarDesdeNube() {
+      if (sincronizando) return;
+      sincronizando = true;
+      var badge = document.getElementById("badgeCloudStatus");
+      if (badge) badge.innerText = "☁️ SINCRONIZANDO...";
+
+      fetch(FIREBASE_URL + "?t=" + Date.now())
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          sincronizando = false;
+          var lista = null;
+          if (Array.isArray(data) && data.length > 0) {
+            lista = data;
+          } else if (data && typeof data === "object") {
+            var vals = Object.values(data);
+            if (vals.length > 0) lista = vals;
+          }
+
+          // Validación estricta: solo reemplaza si la nube trae una flota válida
+          if (lista && lista.length > 0) {
+            flota = lista;
+            try { localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
+            renderFlota();
+            renderRampa();
+            poblarSelectorSimulador();
+            if (badge) {
+              badge.innerText = "☁️ EN LÍNEA";
+              badge.className = "pill pill-green";
+            }
+          } else {
+            // Si la nube está vacía, sube la flota actual para inicializarla
+            guardarEnNube(flota);
+          }
+        })
+        .catch(function(err) {
+          sincronizando = false;
+          console.warn("Firebase offline, manteniendo datos locales seguros:", err);
+          if (badge) {
+            badge.innerText = "☁️ LOCAL";
+            badge.className = "pill pill-amber";
+          }
+        });
+    }
+
+    function guardarEnNube(datosFlota) {
+      if (!datosFlota || datosFlota.length === 0) return Promise.resolve();
+      var badge = document.getElementById("badgeCloudStatus");
+      if (badge) badge.innerText = "☁️ SUBIENDO...";
+
+      return fetch(FIREBASE_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datosFlota)
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(resp) {
+        if (badge) {
+          badge.innerText = "☁️ EN LÍNEA";
+          badge.className = "pill pill-green";
+        }
+        return resp;
+      })
+      .catch(function(err) {
+        console.error("Error al subir a Firebase:", err);
+      });
+    }
+
     function guardarDatos() {
       try {
         localStorage.setItem(CLAVE_STORE, JSON.stringify(flota));
@@ -884,7 +954,9 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
 
           guardarDatos();
           event.target.value = "";
-          alert("✅ Parte diario actualizado con éxito.\nAeronaves procesadas: " + actualizados);
+          guardarEnNube(flota).then(function() {
+            alert("✅ Parte diario actualizado con éxito.\n☁️ Sincronizado en la nube para todos los dispositivos.");
+          });
         } catch(err) {
           alert("Error al procesar el archivo Excel: " + err.message);
         }
