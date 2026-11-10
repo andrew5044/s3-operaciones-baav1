@@ -310,16 +310,28 @@
       var totAsig = 0, totVol = 0;
 
       for (var i = 0; i < flota.length; i++) {
+
         var a = flota[i];
         if (!a) continue;
 
         var asigNum = Number(a.asignadas) || 0;
         var volNum = Number(a.voladasMes || a.voladas) || 0;
-        var dispMes = Math.max(0, asigNum - volNum);
-        totAsig += asigNum;
-        totVol += volNum;
+        var dispMes = Number(a.dispMes || (asigNum - volNum)) || 0;
+        if (dispMes < 0) dispMes = 0;
+        dispMes = dispMes.toFixed(1);
 
-        var sp = CONFIG[a.tipoSpecs || a.modelo] || { nombre: a.modelo || "Aeronave", maxPax: 7, velKT: 200 };
+        var pctMes = asigNum > 0 ? Math.min(100, Math.round((volNum / asigNum) * 100)) : 0;
+        var totCelula = (Number(a.horasActuales || a.tot || a.celula) || 0).toFixed(1);
+        var proxFase = (Number(a.proximaFase) || 0).toFixed(1);
+        var remFaseNum = Number(a.remFase || a.rem) || 0;
+        var remFase = remFaseNum.toFixed(1);
+
+        var pillFase = "pill-green";
+        if (remFaseNum <= 5.0) pillFase = "pill-red";
+        else if (remFaseNum <= 20.0) pillFase = "pill-amber";
+
+        var sp = (typeof CONFIG !== "undefined" && CONFIG[a.tipoSpecs || a.modelo]) ? CONFIG[a.tipoSpecs || a.modelo] : { nombre: a.modelo || "Aeronave", maxPax: 7, velKT: 200 };
+
         var card = document.createElement("div");
         card.className = "card";
 
