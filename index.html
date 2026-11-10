@@ -258,7 +258,7 @@
       localStorage.removeItem("BAAV1_FLOTA_DATA_V10");
     } catch(e) {}
 
-    var CLAVE_STORE = "BAAV1_FLOTA_ONLINE_V12";
+    var CLAVE_STORE = "BAAV1_FLOTA_ONLINE_V14";
     var datosGuardados = null;
 try { datosGuardados = JSON.parse(localStorage.getItem(CLAVE_STORE)); } catch(e) {}
 var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.length > 0) ? datosGuardados : FLOTA_DEFAULT;
@@ -476,12 +476,20 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
 
         var card = document.createElement("div");
         card.className = "card";
+                var btnAccion = esDeBAMAV1(a) ?
+          '<button type="button" onclick="event.stopPropagation(); toggleUbicacionAvion(\'' + a.matricula + '\')" class="pill pill-green" style="border:none; cursor:pointer; font-weight:800; font-size:10px; padding:4px 8px;">🔺 A BOGOTÁ</button>' :
+          '<button type="button" onclick="event.stopPropagation(); toggleUbicacionAvion(\'' + a.matricula + '\')" class="pill pill-amber" style="border:none; cursor:pointer; font-weight:800; font-size:10px; padding:4px 8px;">🔻 A BAMAV-1</button>';
+
         card.innerHTML = 
-          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">' +
+          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">' +
             '<div>' +
-              '<div style="font-size:14px; font-weight:900;">' + a.matricula + ' <span style="font-size:11px; color:#94a3b8; font-weight:normal;">(' + sp.nombre + ')</span></div>' +
-              '<div style="margin-top:3px; display:flex; flex-wrap:wrap; gap:4px; align-items:center;">' + pillEstado + pernoctaTag + divTag + '</div>' +
+              '<div style="font-weight:900; font-size:15px; color:#f8fafc;">' + a.matricula + ' <span style="font-size:11px; font-weight:normal; color:#94a3b8;">(' + sp.nombre + ')</span></div>' +
+              '<div style="margin-top:2px;">' +
+                '<span class="pill pill-green">' + a.estado + '</span>' +
+                '<span class="pill pill-blue" style="margin-left:4px;">📍 ' + a.pernocta + (a.divAsig ? ' (' + a.divAsig + ')' : '') + '</span>' +
+              '</div>' +
             '</div>' +
+            '<div>' + btnAccion + '</div>' +
           '</div>' +
           (a.obs ? '<div style="font-size:10px; color:#fbbf24; background:rgba(245, 158, 11, 0.1); border-left:2px solid #f59e0b; padding:4px 8px; border-radius:4px; margin:6px 0;">⚠️ ' + a.obs + '</div>' : '') +
           (esDeBAMAV1(a) || a.fechaIngresoManto || a.fechaSalidaManto ? 
