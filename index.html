@@ -425,6 +425,8 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
     }
 
     function esDeBAMAV1(a) {
+      if (a.manualBAMAV1 === true || a.pernocta === 'BAMAV-1') return true;
+      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
       if (a.manualBAMAV1 === true) return true;
       if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
       if (!a) return false;
