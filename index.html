@@ -382,6 +382,33 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
       });
     }
 
+    
+    // Cambiar manualmente ubicación (Bogotá ⇄ BAMAV-1) y sincronizar a la nube
+    function toggleUbicacionAvion(cola) {
+      var av = flota.find(function(a) { return a.cola === cola; });
+      if (!av) return;
+
+      if (av.cat === "hangar") {
+        av.cat = "bogota";
+        av.manualOverride = false; // Vuelve al control estándar
+      } else {
+        av.cat = "hangar";
+        av.manualOverride = true;  // Bloqueo manual del S-3
+        if (!av.fechaIngresoManto) {
+          av.fechaIngresoManto = new Date().toISOString().slice(0, 10);
+        }
+        if (!av.fechaSalidaManto) {
+          av.fechaSalidaManto = "Indefinido";
+        }
+      }
+
+      guardarDatos();
+      renderFlota();
+      renderRampa();
+      poblarSelectorSimulador();
+      guardarEnNube(flota);
+    }
+
     function guardarDatos() {
       try {
         localStorage.setItem(CLAVE_STORE, JSON.stringify(flota));
@@ -500,22 +527,23 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
 
     // SIMULADOR S-3 DIRECTO: SOLO ACL, SIN TAREAS, CÁLCULO DE RUTA RÁPIDA
     function poblarSelectorSimulador() {
-      var sel = document.getElementById("simSelAvion");
+      var sel = document.getElementById("simAeronave");
       if (!sel) return;
-      sel.innerHTML = "<option value=\"\">-- Seleccionar Aeronave ACL --</option>";
-      var cAcl = 0;
-      for (var i = 0; i < flota.length; i++) {
-        var a = flota[i];
-        if (a.estado !== "ACL" || esDeBAMAV1(a)) continue;
-        var sp = CONFIG[a.tipoSpecs] || { nombre: a.modelo };
+      var selVal = sel.value;
+      sel.innerHTML = '<option value="">-- Seleccionar Aeronave --</option>';
+
+      // Solo aeronaves operativas que NO estén en el Hangar BAMAV-1
+      var disponibles = flota.filter(function(a) { 
+        return a.cat !== "hangar" && a.rem > 0.5; 
+      });
+
+      disponibles.forEach(function(a) {
         var opt = document.createElement("option");
-        opt.value = a.id;
-        opt.innerText = a.matricula + " (" + sp.nombre + ") • " + a.pernocta + " [Disp: " + a.dispMes.toFixed(1) + " h]";
+        opt.value = a.cola;
+        opt.innerText = a.cola + " (" + a.tipo + ") - Rem: " + a.rem + " h | Cupo: " + a.disp + " h";
         sel.appendChild(opt);
-        cAcl++;
-      }
-      var bAcl = document.getElementById("badgeTotalACL");
-      if (bAcl) bAcl.innerText = cAcl + " DISPONIBLES ACL";
+      });
+      if (selVal) sel.value = selVal;
     }
 
     var misionesS3 = JSON.parse(localStorage.getItem("BAAV1_MISIONES_S3_PROD")) || [];
