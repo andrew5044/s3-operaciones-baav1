@@ -258,8 +258,10 @@
       localStorage.removeItem("BAAV1_FLOTA_DATA_V10");
     } catch(e) {}
 
-    var CLAVE_STORE = "BAAV1_FLOTA_DATA_PROD_1";
-    var flota = JSON.parse(localStorage.getItem(CLAVE_STORE)) || FLOTA_DEFAULT;
+    var CLAVE_STORE = "BAAV1_FLOTA_RESTORE_2026_V1";
+    var datosGuardados = null;
+try { datosGuardados = JSON.parse(localStorage.getItem(CLAVE_STORE)); } catch(e) {}
+var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.length > 0) ? datosGuardados : FLOTA_DEFAULT;
     var avionSeleccionado = null;
     var historial = JSON.parse(localStorage.getItem("BAAV1_HIST_PROD_1")) || [];
     var hangarOculto = false;
@@ -289,6 +291,7 @@
     }
 
     function renderFlota() {
+      if (!flota || flota.length === 0) { flota = FLOTA_DEFAULT; }
       var contBog = document.getElementById("listaBogota");
       var contDiv = document.getElementById("listaDivision");
       var contHangar = document.getElementById("listaHangar");
