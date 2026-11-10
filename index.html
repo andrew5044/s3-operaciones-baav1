@@ -14,15 +14,14 @@
     .pill-amber { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
     .pill-red { background: rgba(244, 63, 94, 0.2); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); }
     .pill-blue { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
-    .pill-purple { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
     .bar-bg { background: #1e293b; height: 6px; border-radius: 999px; overflow: hidden; margin: 6px 0; }
     .bar-fill { height: 100%; border-radius: 999px; }
     .btn-outline { background: transparent; border: 1px solid #334155; color: #cbd5e1; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
     .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-top: 1px solid #1e293b; display: flex; justify-content: space-around; padding: 10px 0; z-index: 50; }
     .nav-btn { background: none; border: none; color: #64748b; font-size: 11px; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
     .nav-btn.active { color: #f59e0b; }
-    .tab-content { display: none; padding: 10px 0; }
-    .tab-content.active { display: block; }
+    .vista-seccion { display: none; }
+    .vista-seccion.activa { display: block; }
     input, select { background: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 10px; border-radius: 8px; font-weight: 700; width: 100%; box-sizing: border-box; }
   </style>
 </head>
@@ -44,7 +43,7 @@
   </header>
 
   <!-- VISTA 1: FLOTA -->
-  <div id="view-flota" class="tab-content active">
+  <div id="vista-flota" class="vista-seccion activa">
     <div class="card" style="border-top: 3px solid #38bdf8;">
       <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">BALANCE OPERACIONAL DE FLOTA</div>
       <div style="display:flex; justify-content:space-between; align-items:baseline; margin: 4px 0;">
@@ -75,16 +74,31 @@
     <div id="listaAvionesHangar"></div>
   </div>
 
-  <!-- VISTA 2: SIMULADOR S-3 -->
-  <div id="view-simulador" class="tab-content">
+  <!-- VISTA 2: PROGRAMACIÓN S-3 -->
+  <div id="vista-simulador" class="vista-seccion">
     <div class="card" style="border-top:3px solid #f59e0b;">
       <div style="font-weight:900; font-size:13px; text-transform:uppercase; color:#f59e0b; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-        <span>SIMULADOR S-3 • PLANIFICACIÓN DE MISIÓN</span>
+        <span>PROGRAMACIÓN S-3 • PLANIFICACIÓN</span>
         <span class="pill pill-green" id="badgeTotalACL">0 DISPONIBLES ACL</span>
       </div>
 
       <div style="margin-bottom:10px;">
-        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">1. Aeronave Operativa (Solo ACL en Línea Bogotá)</label>
+        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">1. Unidad</label>
+        <select id="simUnidad">
+          <option value="">-- Sin Unidad (En blanco) --</option>
+          <option value="COEJC">COEJC</option>
+          <option value="SEJEC">SEJEC</option>
+          <option value="JEMOP">JEMOP</option>
+          <option value="CEIGE">CEIGE</option>
+          <option value="DAVAA">DAVAA</option>
+          <option value="BRIAV32">BRIAV32</option>
+          <option value="BRIAV25">BRIAV25</option>
+          <option value="BIGAM">BIGAM</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">2. Aeronave Operativa (Solo ACL en Línea Bogotá)</label>
         <select id="simSelAvion" onchange="calcularSimulacionRapida()">
           <option value="">-- Seleccionar Aeronave --</option>
         </select>
@@ -92,29 +106,28 @@
 
       <div style="display:flex; gap:10px; width:100%; align-items:flex-end; margin-bottom:10px;">
         <div style="flex:0 0 62%;">
-          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">2. Hora Salida (ETD)</label>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">3. Hora Salida (ETD)</label>
           <input type="time" id="simETD" value="08:00" onchange="calcularSimulacionRapida()" style="height:42px;">
         </div>
         <div style="flex:0 0 34%;">
-          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">3. PAX</label>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">4. PAX</label>
           <input type="number" id="simPax" placeholder="0" min="0" oninput="calcularSimulacionRapida()" style="text-align:center; font-weight:800; font-size:14px; height:42px;">
         </div>
       </div>
 
       <div style="margin-bottom:10px;">
-        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">4. Carga Transportada</label>
+        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">5. Carga Transportada</label>
         <input type="text" id="simCarga" placeholder="Ej: 150 kg repuestos, valija, etc." oninput="calcularSimulacionRapida()">
       </div>
 
       <div style="margin-bottom:10px;">
-        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">5. Observaciones / Motivo de Vuelo</label>
+        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">6. Observaciones / Motivo de Vuelo</label>
         <input type="text" id="simObsMision" placeholder="Ej: Transporte Comandante del Ejército, Apoyo División" oninput="calcularSimulacionRapida()">
       </div>
 
       <div style="margin-bottom:6px;">
-        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">6. Ruta (Ej: skbo skti skbo)</label>
+        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">7. Ruta (Ej: skbo skti skbo)</label>
         <input type="text" id="simInputRuta" placeholder="skbo skti skbo" oninput="calcularSimulacionRapida()">
-        <div style="font-size:10px; color:#64748b; margin-top:3px;">Escribe los códigos IATA/OACI separados por espacio o guión.</div>
       </div>
     </div>
 
@@ -140,7 +153,7 @@
   </div>
 
   <!-- VISTA 3: RAMPA -->
-  <div id="view-rampa" class="tab-content">
+  <div id="vista-rampa" class="vista-seccion">
     <div class="card" style="border-top:3px solid #10b981; margin:12px;">
       <div style="font-size:12px; font-weight:900; color:#10b981; text-transform:uppercase; margin-bottom:8px;">SELECCIONAR AERONAVE PARA DESCUENTO</div>
       <div id="selectorRampa" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:8px; margin-bottom:12px;"></div>
@@ -173,12 +186,13 @@
   <!-- NAVEGACIÓN -->
   <div class="nav-bar">
     <button class="nav-btn active" onclick="cambiarVista('flota')">✈️ Flota & Horas</button>
-    <button class="nav-btn" onclick="cambiarVista('simulador')">📋 Simulador S-3</button>
+    <button class="nav-btn" onclick="cambiarVista('simulador')">📋 Programación S-3</button>
     <button class="nav-btn" onclick="cambiarVista('rampa')">⏱️ Rampa</button>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
-    var CLAVE_STORE = "BAAV1_FLOTA_FINAL_STABLE_V100";
+    var CLAVE_STORE = "BAAV1_FLOTA_FINAL_STABLE_V200";
     var FIREBASE_URL = "https://s3-operaciones-baav1-default-rtdb.firebaseio.com/flota.json";
 
     var AEROPUERTOS = {
@@ -206,23 +220,23 @@
       "SKBG": { nombre: "Bucaramanga", lat: 7.1264, lon: -73.1847 },
       "SKNV": { nombre: "Neiva", lat: 2.9502, lon: -75.2940 },
       "SKPS": { nombre: "Pasto", lat: 1.3964, lon: -77.2911 },
-      "SKVP": { nombre: "Valledupar", "lat": 10.4351, "lon": -73.2494 },
-      "SKRH": { nombre: "Riohacha", "lat": 11.5262, "lon": -72.9267 },
-      "SKCO": { nombre: "Condoto", "lat": 5.0717, "lon": -76.6886 },
-      "SKUI": { nombre: "Quibdó", "lat": 5.6908, "lon": -76.6414 },
-      "SKTH": { nombre: "Tame", "lat": 6.4510, "lon": -71.7601 },
-      "SKPZ": { nombre: "Paz de Ariporo", "lat": 5.8770, "lon": -71.8863 },
-      "SKUC": { nombre: "Araracuara", "lat": -0.6039, "lon": -72.4000 },
-      "SKLG": { nombre: "Tumaco", "lat": 1.8150, "lon": -78.7500 },
-      "SKPC": { nombre: "Puerto Carreño", "lat": 6.1851, "lon": -67.4926 },
-      "SKIN": { nombre: "Inírida", "lat": 3.8528, "lon": -67.9039 },
-      "SKPD": { nombre: "Inírida", "lat": 3.8528, "lon": -67.9039 },
-      "SKMU": { nombre: "Mitú", "lat": 1.2535, "lon": -70.2341 },
-      "SKGB": { nombre: "Guabito", "lat": 3.8333, "lon": -76.3000 },
-      "SKQU": { nombre: "Mariquita", "lat": 5.2133, "lon": -74.8833 },
-      "SKSJ": { nombre: "San José del Guaviare", "lat": 2.5767, "lon": -72.6397 },
-      "SKIB": { nombre: "Ibagué", "lat": 4.4214, "lon": -75.1333 },
-      "SKGI": { nombre: "Girardot", "lat": 4.2764, "lon": -74.7967 }
+      "SKVP": { nombre: "Valledupar", lat: 10.4351, lon: -73.2494 },
+      "SKRH": { nombre: "Riohacha", lat: 11.5262, lon: -72.9267 },
+      "SKCO": { nombre: "Condoto", lat: 5.0717, lon: -76.6886 },
+      "SKUI": { nombre: "Quibdó", lat: 5.6908, lon: -76.6414 },
+      "SKTH": { nombre: "Tame", lat: 6.4510, lon: -71.7601 },
+      "SKPZ": { nombre: "Paz de Ariporo", lat: 5.8770, lon: -71.8863 },
+      "SKUC": { nombre: "Araracuara", lat: -0.6039, lon: -72.4000 },
+      "SKLG": { nombre: "Tumaco", lat: 1.8150, lon: -78.7500 },
+      "SKPC": { nombre: "Puerto Carreño", lat: 6.1851, lon: -67.4926 },
+      "SKIN": { nombre: "Inírida", lat: 3.8528, lon: -67.9039 },
+      "SKPD": { nombre: "Inírida", lat: 3.8528, lon: -67.9039 },
+      "SKMU": { nombre: "Mitú", lat: 1.2535, lon: -70.2341 },
+      "SKGB": { nombre: "Guabito", lat: 3.8333, lon: -76.3000 },
+      "SKQU": { nombre: "Mariquita", lat: 5.2133, lon: -74.8833 },
+      "SKSJ": { nombre: "San José del Guaviare", lat: 2.5767, lon: -72.6397 },
+      "SKIB": { nombre: "Ibagué", lat: 4.4214, lon: -75.1333 },
+      "SKGI": { nombre: "Girardot", lat: 4.2764, lon: -74.7967 }
     };
 
     var CONFIG = {
@@ -246,13 +260,13 @@
       { id: "EJC1125", matricula: "EJC-1125", modelo: "B-350", tipoSpecs: "B-350", estado: "ACL", horasActuales: 3881.7, proximaFase: 4066.9, tipoInsp: "FASE 5", remFase: 185.2, asignadas: 45.0, voladasMes: 2.9, dispMes: 42.1, pernocta: "BOGOTÁ", divAsig: "", obs: "", fechaSalidaManto: "Indefinido" },
       { id: "EJC1133", matricula: "EJC-1133", modelo: "C-208B", tipoSpecs: "C-208B", estado: "ACL", horasActuales: 6253.9, proximaFase: 6300.0, tipoInsp: "FASE OWNER", remFase: 46.1, asignadas: 30.0, voladasMes: 3.9, dispMes: 26.1, pernocta: "BOGOTÁ", divAsig: "I-II", obs: "", fechaSalidaManto: "Indefinido" },
       { id: "EJC1134", matricula: "EJC-1134", modelo: "C-208B", tipoSpecs: "C-208B", estado: "ACL", horasActuales: 6513.5, proximaFase: 6600.0, tipoInsp: "FASE OWNER", remFase: 86.5, asignadas: 35.0, voladasMes: 2.8, dispMes: 32.2, pernocta: "APIAY", divAsig: "IV-VI", obs: "", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1135", matricula: "EJC-1135", modelo: "C-208B", tipoSpecs: "C-208B", estado: "ACL", horasActuales: 6078.9, proximaFase: 6100.0, tipoInsp": "FASE D6", remFase: 21.1, asignadas: 27.3, voladasMes: 6.2, dispMes: 21.1, pernocta": "TOLEMAIDA", divAsig": "", obs: "", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1138", matricula: "EJC-1138", modelo: "C-208B EX", tipoSpecs: "C-208B", estado: "ACL", horasActuales: 3356.2, proximaFase: 3400.0, tipoInsp": "FASE D6", remFase: 43.8, asignadas: 30.0, voladasMes: 13.1, dispMes: 16.9, pernocta": "MEDELLÍN", divAsig": "III-VII", obs: "", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1140", matricula: "EJC-1140", modelo: "C-208B EX", tipoSpecs: "C-208B", estado: "ACL", horasActuales: 2517.6, proximaFase: 2600.0, tipoInsp": "FASE D6", remFase: 82.4, asignadas: 35.0, voladasMes: 13.9, dispMes": 21.1, pernocta": "YOPAL", divAsig": "VIII", obs: "", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1146", matricula: "EJC-1146", modelo: "AN-32 A", tipoSpecs": "AN-32", estado: "ACL", horasActuales: 10976.5, proximaFase: 11000.0, tipoInsp": "FASE 100 HORAS", remFase: 23.5, asignadas: 25.0, voladasMes: 11.4, dispMes": 13.6, pernocta": "BOGOTÁ", divAsig": "", obs: "", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1147", matricula: "EJC-1147", modelo: "AN-32 B", tipoSpecs": "AN-32", estado: "ACL", horasActuales: 6750.0, proximaFase: 6750.0, tipoInsp": "FASE 50 HORAS", remFase: 23.5, asignadas: 20.0, voladasMes: 11.2, dispMes": 8.8, pernocta": "BOGOTÁ", divAsig": "", obs: "", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1132", matricula: "EJC-1132", modelo: "C-208B", tipoSpecs": "C-208B", estado: "AMP", horasActuales: 6289.9, proximaFase: 6310.0, tipoInsp": "FASE D6", remFase: 9.1, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Mantenimiento Preventivo", fechaSalidaManto: "01/12/2026", fechaIngresoManto: "08/09/2025" },
-      { id: "EJC1136", matricula: "EJC-1136", modelo: "C-208B", tipoSpecs": "C-208B", estado: "AMP", horasActuales: 4000.0, proximaFase: 4000.0, tipoInsp": "FASE D6", remFase: 8.8, asignadas: 20.1, voladasMes: 0.0, dispMes": 20.1, pernocta": "BAMAV-1", divAsig": "", obs: "Inspección General", fechaSalidaManto: "23/11/2026", fechaIngresoManto: "05/11/2026" },
+      { id: "EJC1135", matricula: "EJC-1135", modelo: "C-208B", tipoSpecs: "C-208B", estado: "ACL", horasActuales: 6078.9, proximaFase: 6100.0, tipoInsp: "FASE D6", remFase: 21.1, asignadas: 27.3, voladasMes: 6.2, dispMes: 21.1, pernocta: "TOLEMAIDA", divAsig: "", obs: "", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1138", matricula: "EJC-1138", modelo: "C-208B EX", tipoSpecs: "C-208B", estado: "ACL", horasActuales: 3356.2, proximaFase: 3400.0, tipoInsp: "FASE D6", remFase: 43.8, asignadas: 30.0, voladasMes: 13.1, dispMes: 16.9, pernocta: "MEDELLÍN", divAsig: "III-VII", obs: "", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1140", matricula: "EJC-1140", modelo: "C-208B EX", tipoSpecs: "C-208B", estado: "ACL", horasActuales: 2517.6, proximaFase: 2600.0, tipoInsp: "FASE D6", remFase: 82.4, asignadas: 35.0, voladasMes: 13.9, dispMes: 21.1, pernocta: "YOPAL", divAsig: "VIII", obs: "", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1146", matricula: "EJC-1146", modelo: "AN-32 A", tipoSpecs: "AN-32", estado: "ACL", horasActuales: 10976.5, proximaFase: 11000.0, tipoInsp: "FASE 100 HORAS", remFase: 23.5, asignadas: 25.0, voladasMes: 11.4, dispMes: 13.6, pernocta: "BOGOTÁ", divAsig: "", obs: "", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1147", matricula: "EJC-1147", modelo: "AN-32 B", tipoSpecs: "AN-32", estado: "ACL", horasActuales: 6750.0, proximaFase: 6750.0, tipoInsp: "FASE 50 HORAS", remFase: 23.5, asignadas: 20.0, voladasMes: 11.2, dispMes: 8.8, pernocta: "BOGOTÁ", divAsig: "", obs: "", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1132", matricula: "EJC-1132", modelo: "C-208B", tipoSpecs: "C-208B", estado: "AMP", horasActuales: 6289.9, proximaFase: 6310.0, tipoInsp: "FASE D6", remFase: 9.1, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Mantenimiento Preventivo", fechaSalidaManto: "01/12/2026", fechaIngresoManto: "08/09/2025" },
+      { id: "EJC1136", matricula: "EJC-1136", modelo: "C-208B", tipoSpecs: "C-208B", estado: "AMP", horasActuales: 4000.0, proximaFase: 4000.0, tipoInsp": "FASE D6", remFase: 8.8, asignadas: 20.1, voladasMes: 0.0, dispMes": 20.1, pernocta": "BAMAV-1", divAsig": "", obs: "Inspección General", fechaSalidaManto: "23/11/2026", fechaIngresoManto: "05/11/2026" },
       { id: "EJC1117", matricula: "EJC-1117", modelo: "B-200", tipoSpecs": "B-200", estado: "PAR", horasActuales: 12727.1, proximaFase: 12793.4, tipoInsp": "FASE I Y II", remFase: 66.3, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Pendiente Banco", fechaSalidaManto: "Indefinido" },
       { id: "EJC1126", matricula: "EJC-1126", modelo: "B-350", tipoSpecs": "B-350", estado: "PAR", horasActuales: 3579.1, proximaFase: 3777.5, tipoInsp": "FASE 5", remFase: 198.4, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Inmovilizada", fechaSalidaManto: "Indefinido" },
       { id: "EJC1139", matricula: "EJC-1139", modelo: "TC-690B", tipoSpecs": "TC-690", estado: "APB", horasActuales: 7088.0, proximaFase: 7207.2, tipoInsp": "150 HORAS", remFase: 119.2, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Plan de Baja", fechaSalidaManto: "Indefinido" },
@@ -765,10 +779,11 @@
 
     function cambiarVista(vista) {
       var tabs = ['flota', 'simulador', 'rampa'];
-      var mapViews = { 'flota': 'view-flota', 'simulador': 'view-simulador', 'rampa': 'view-rampa' };
+      var mapViews = { 'flota': 'vista-flota', 'simulador': 'vista-simulador', 'rampa': 'vista-rampa' };
       for (var i = 0; i < tabs.length; i++) {
         var t = tabs[i];
-        document.getElementById(mapViews[t]).className = "tab-content" + (t === vista ? " active" : "");
+        var el = document.getElementById(mapViews[t]);
+        if (el) el.className = "vista-seccion" + (t === vista ? " activa" : "");
       }
       var btns = document.querySelectorAll(".nav-bar .nav-btn");
       for (var j = 0; j < btns.length; j++) {
