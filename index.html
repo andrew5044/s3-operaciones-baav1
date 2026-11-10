@@ -258,7 +258,7 @@
       localStorage.removeItem("BAAV1_FLOTA_DATA_V10");
     } catch(e) {}
 
-    var CLAVE_STORE = "BAAV1_FLOTA_ONLINE_V14";
+    var CLAVE_STORE = "BAAV1_FLOTA_ONLINE_V18";
     var datosGuardados = null;
 try { datosGuardados = JSON.parse(localStorage.getItem(CLAVE_STORE)); } catch(e) {}
 var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.length > 0) ? datosGuardados : FLOTA_DEFAULT;
@@ -474,6 +474,38 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
     };
 
 
+    
+    window.editarFechaSalida = function(idAvion) {
+      if (!flota || !Array.isArray(flota)) return;
+      var target = String(idAvion).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      var av = flota.find(function(a) {
+        var m = a.matricula ? String(a.matricula).replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
+        var id = a.id ? String(a.id).replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
+        return m === target || id === target;
+      });
+      if (!av) return;
+
+      var actual = av.fechaSalidaManto || 'Indefinido';
+      var nueva = prompt('Modificar fecha estimada de salida/entrega para ' + av.matricula + ':\n(Ej: 25/11/2026, 2026-11-25 o escribe "Indefinido")', actual);
+      if (nueva === null) return;
+      nueva = nueva.trim();
+      if (!nueva) nueva = 'Indefinido';
+
+      av.fechaSalidaManto = nueva;
+      av.fechaSalidaManual = true; // ESCUDO: No permite que el Excel la cambie
+
+      try { localStorage.setItem("BAAV1_FLOTA_DATA", JSON.stringify(flota)); } catch(e) {}
+      try { if (typeof CLAVE_STORE !== "undefined") localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
+
+      if (typeof renderFlota === "function") renderFlota();
+      if (typeof guardarEnNube === "function") {
+        guardarEnNube(flota).then(function() {
+          alert('✅ Fecha de entrega actualizada a "' + nueva + '" y sincronizada en todos los dispositivos.');
+        });
+      }
+    };
+
+
     function renderFlota() {
       if (!flota || flota.length === 0) { flota = FLOTA_DEFAULT; }
       var contBog = document.getElementById("listaBogota");
@@ -540,7 +572,7 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
               '<div style="color:#fbbf24; font-weight:700;">🛠️ ' + (a.obs || a.faseManto || 'Mantenimiento BAMAV-1') + '</div>' +
               '<div style="display:flex; justify-content:space-between; margin-top:3px; color:#94a3b8;">' +
                 '<span>Ingreso: <b>' + (a.fechaIngresoManto || '10/11/2026') + '</b></span>' +
-                '<span style="color:#f8fafc; font-weight:700;">Entrega: ' + (a.fechaSalidaManto || 'Indefinido') + '</span>' +
+                '<span onclick="event.stopPropagation(); editarFechaSalida(\'' + a.matricula + '\')" style="cursor:pointer; background:#1e293b; padding:2px 8px; border-radius:4px; border:1px solid #38bdf8; color:#38bdf8; font-weight:700;" title="Tocar para cambiar fecha">Entrega: ' + (a.fechaSalidaManto || 'Indefinido') + ' ✏️</span>' +
               '</div>' +
             '</div>' : '') +
           ((a.remFase <= 5.0 && !esDeBAMAV1(a)) ? 
