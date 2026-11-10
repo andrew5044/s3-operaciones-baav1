@@ -258,7 +258,7 @@
       localStorage.removeItem("BAAV1_FLOTA_DATA_V10");
     } catch(e) {}
 
-    var CLAVE_STORE = "BAAV1_FLOTA_FECHAS_V2";
+    var CLAVE_STORE = "BAAV1_FLOTA_ONLINE_V12";
     var datosGuardados = null;
 try { datosGuardados = JSON.parse(localStorage.getItem(CLAVE_STORE)); } catch(e) {}
 var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.length > 0) ? datosGuardados : FLOTA_DEFAULT;
@@ -425,6 +425,8 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
     }
 
     function esDeBAMAV1(a) {
+      if (a.manualBAMAV1 === true) return true;
+      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
       if (!a) return false;
       var p = normalizarTexto(a.pernocta);
       var e = normalizarTexto(a.estado);
@@ -482,6 +484,16 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
             '</div>' +
           '</div>' +
           (a.obs ? '<div style="font-size:10px; color:#fbbf24; background:rgba(245, 158, 11, 0.1); border-left:2px solid #f59e0b; padding:4px 8px; border-radius:4px; margin:6px 0;">⚠️ ' + a.obs + '</div>' : '') +
+          (esDeBAMAV1(a) || a.fechaIngresoManto || a.fechaSalidaManto ? 
+            '<div style="background:#090d16; border-left:3px solid #f59e0b; padding:6px 10px; border-radius:6px; font-size:10px; margin-top:6px; color:#cbd5e1;">' +
+              '<div style="color:#fbbf24; font-weight:700;">🛠️ ' + (a.obs || a.faseManto || 'Mantenimiento BAMAV-1') + '</div>' +
+              '<div style="display:flex; justify-content:space-between; margin-top:3px; color:#94a3b8;">' +
+                '<span>Ingreso: <b>' + (a.fechaIngresoManto || '10/11/2026') + '</b></span>' +
+                '<span style="color:#f8fafc; font-weight:700;">Entrega: ' + (a.fechaSalidaManto || 'Indefinido') + '</span>' +
+              '</div>' +
+            '</div>' : '') +
+          ((a.remFase <= 5.0 && !esDeBAMAV1(a)) ? 
+            '<div style="font-size:10px; color:#f87171; background:rgba(239, 68, 68, 0.15); border-left:2px solid #ef4444; padding:4px 8px; border-radius:4px; margin-top:6px; font-weight:700;">⚠️ ALERTA S-3: Remanente crítico de fase (' + a.remFase.toFixed(1) + ' h)</div>' : '') +
           '<div style="background:#0f172a; padding:8px 10px; border-radius:8px; border:1px solid #1e293b; margin-top:6px;">' +
             '<div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">' +
               '<span style="color:#94a3b8;">Cupo: <b style="color:#f1f5f9;">' + a.asignadas.toFixed(1) + ' h</b></span>' +
