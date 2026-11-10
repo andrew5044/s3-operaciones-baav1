@@ -427,6 +427,8 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
     function esDeBAMAV1(a) {
       if (a.manualBAMAV1 === true || a.pernocta === 'BAMAV-1') return true;
       if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
+      if (a.manualBAMAV1 === true || a.pernocta === 'BAMAV-1') return true;
+      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
       if (a.manualBAMAV1 === true) return true;
       if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
       if (!a) return false;
@@ -436,6 +438,41 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
       var enManto = ["AMP", "AMI", "EVA", "PAR", "APB"].indexOf(e) !== -1;
       return enHangar || enManto;
     }
+
+    
+    window.toggleUbicacionAvion = function(idAvion) {
+      if (!flota || !Array.isArray(flota)) return;
+      var target = String(idAvion).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      
+      var av = flota.find(function(a) {
+        var m = a.matricula ? String(a.matricula).replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
+        var id = a.id ? String(a.id).replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
+        return m === target || id === target;
+      });
+
+      if (!av) return;
+
+      var actualmenteHangar = (av.manualBAMAV1 === true) || (av.pernocta === "BAMAV-1");
+
+      if (actualmenteHangar) {
+        av.manualBAMAV1 = false;
+        av.pernocta = "BOGOTÁ";
+      } else {
+        av.manualBAMAV1 = true;
+        av.pernocta = "BAMAV-1";
+        if (!av.fechaIngresoManto) av.fechaIngresoManto = "10/11/2026";
+        if (!av.fechaSalidaManto) av.fechaSalidaManto = "Indefinido";
+      }
+
+      try { localStorage.setItem("BAAV1_FLOTA_DATA", JSON.stringify(flota)); } catch(e) {}
+      try { if (typeof CLAVE_STORE !== "undefined") localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
+
+      if (typeof renderFlota === "function") renderFlota();
+      if (typeof renderRampa === "function") { try { renderRampa(); } catch(e) {} }
+      if (typeof poblarSelectorSimulador === "function") { try { poblarSelectorSimulador(); } catch(e) {} }
+      if (typeof guardarEnNube === "function") { try { guardarEnNube(flota); } catch(e) {} }
+    };
+
 
     function renderFlota() {
       if (!flota || flota.length === 0) { flota = FLOTA_DEFAULT; }
