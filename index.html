@@ -267,6 +267,31 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
     var hangarOculto = false;
 
     
+    
+    // --- CAPA DE SEGURIDAD Y RESPALDOS INMUTABLES ---
+    var CLAVE_BACKUP = "BAAV1_BACKUP_EMERGENCIA_SEGURA";
+
+    // Guarda una copia de seguridad válida
+    function asegurarBackup(datos) {
+      if (datos && Array.isArray(datos) && datos.length >= 20) {
+        try { localStorage.setItem(CLAVE_BACKUP, JSON.stringify(datos)); } catch(e) {}
+      }
+    }
+
+    // Descarga un archivo JSON de respaldo directamente al dispositivo
+    function exportarRespaldoSeguridad() {
+      if (!flota || flota.length === 0) {
+        alert("No hay datos cargados para respaldar.");
+        return;
+      }
+      var blob = new Blob([JSON.stringify(flota, null, 2)], { type: "application/json" });
+      var a = document.createElement("a");
+      var fecha = new Date().toISOString().slice(0, 10);
+      a.href = URL.createObjectURL(blob);
+      a.download = "BAAV1_RESPALDO_FLOTA_" + fecha + ".json";
+      a.click();
+    }
+
     var FIREBASE_URL = "https://baav1-d1225-default-rtdb.firebaseio.com/flota.json";
     var enProcesoSincronizacion = false;
 
@@ -318,13 +343,26 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
         })
         .catch(function(err) {
           enProcesoSincronizacion = false;
-          console.warn("Sin respuesta de Firebase:", err);
+          console.warn("Sin respuesta de Firebase, usando respaldo seguro:", err);
+          var backup = null;
+          try { backup = JSON.parse(localStorage.getItem(CLAVE_BACKUP)); } catch(e) {}
+          if (backup && backup.length >= 20) {
+            flota = backup;
+            renderFlota();
+            renderRampa();
+          }
           actualizarBadgeNube("LOCAL (OFFLINE)", "pill-amber");
         });
     }
 
     // Subir a Firebase cuando cargas el Excel o editas horas
     function guardarEnNube(datosFlota, silencioso) {
+      // Bloqueo de seguridad: Si la flota viene vacía o incompleta, abortar para no borrar datos
+      if (!datosFlota || !Array.isArray(datosFlota) || datosFlota.length < 20) {
+        console.warn("Seguridad activada: Intento de guardar datos incompletos o vacíos bloqueado.");
+        return Promise.resolve();
+      }
+      asegurarBackup(datosFlota);
       if (!datosFlota || datosFlota.length === 0) return Promise.resolve();
       if (!silencioso) actualizarBadgeNube("☁️ SUBIENDO...", "pill-amber");
 
