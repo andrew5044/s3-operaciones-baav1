@@ -42,7 +42,7 @@
     <div style="display:flex; align-items:center; gap:8px;">
       <input type="file" id="inputParteExcel" accept=".xlsx,.xls" style="display:none;" onchange="importarParteExcel(event)">
       <button onclick="document.getElementById('inputParteExcel').click()" class="btn-outline" style="border-color:#10b981; color:#34d399; font-weight:800; font-size:11px; padding:6px 10px; cursor:pointer;">📂 Cargar Parte (.xlsx)</button>
-      <span class="pill pill-green">EN LÍNEA</span>
+      <button type="button" onclick="sincronizarDesdeNube(false)" class="pill pill-green" id="badgeCloudStatus" style="cursor:pointer; border:none; outline:none;">☁️ SINCRONIZAR</button>
     </div>
   </header>
 
@@ -266,57 +266,67 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
     var historial = JSON.parse(localStorage.getItem("BAAV1_HIST_PROD_1")) || [];
     var hangarOculto = false;
 
+    
     var FIREBASE_URL = "https://baav1-d1225-default-rtdb.firebaseio.com/flota.json";
-    var sincronizando = false;
+    var enProcesoSincronizacion = false;
 
-    function sincronizarDesdeNube() {
-      if (sincronizando) return;
-      sincronizando = true;
-      var badge = document.getElementById("badgeCloudStatus");
-      if (badge) badge.innerText = "☁️ SINCRONIZANDO...";
+    function formatearHoraCorta() {
+      var d = new Date();
+      var h = d.getHours();
+      var m = d.getMinutes();
+      var s = d.getSeconds();
+      return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+    }
+
+    function actualizarBadgeNube(texto, clase) {
+      var b = document.getElementById("badgeCloudStatus");
+      if (b) {
+        b.innerText = texto;
+        b.className = "pill " + (clase || "pill-green");
+      }
+    }
+
+    // Descarga en tiempo real desde Firebase
+    function sincronizarDesdeNube(silencioso) {
+      if (enProcesoSincronizacion) return;
+      enProcesoSincronizacion = true;
+      if (!silencioso) actualizarBadgeNube("☁️ DESCARGANDO...", "pill-amber");
 
       fetch(FIREBASE_URL + "?t=" + Date.now())
         .then(function(res) { return res.json(); })
         .then(function(data) {
-          sincronizando = false;
-          var lista = null;
+          enProcesoSincronizacion = false;
+          var arr = null;
           if (Array.isArray(data) && data.length > 0) {
-            lista = data;
+            arr = data;
           } else if (data && typeof data === "object") {
             var vals = Object.values(data);
-            if (vals.length > 0) lista = vals;
+            if (vals.length > 0) arr = vals;
           }
 
-          // Validación estricta: solo reemplaza si la nube trae una flota válida
-          if (lista && lista.length > 0) {
-            flota = lista;
+          if (arr && arr.length >= 20) {
+            flota = arr;
             try { localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
             renderFlota();
             renderRampa();
             poblarSelectorSimulador();
-            if (badge) {
-              badge.innerText = "☁️ EN LÍNEA";
-              badge.className = "pill pill-green";
-            }
+            actualizarBadgeNube("☁️ NUBE: " + formatearHoraCorta(), "pill-green");
           } else {
-            // Si la nube está vacía, sube la flota actual para inicializarla
-            guardarEnNube(flota);
+            // Si la base de datos en Firebase está en blanco o null, la poblamos de inmediato
+            guardarEnNube(flota, true);
           }
         })
         .catch(function(err) {
-          sincronizando = false;
-          console.warn("Firebase offline, manteniendo datos locales seguros:", err);
-          if (badge) {
-            badge.innerText = "☁️ LOCAL";
-            badge.className = "pill pill-amber";
-          }
+          enProcesoSincronizacion = false;
+          console.warn("Sin respuesta de Firebase:", err);
+          actualizarBadgeNube("LOCAL (OFFLINE)", "pill-amber");
         });
     }
 
-    function guardarEnNube(datosFlota) {
+    // Subir a Firebase cuando cargas el Excel o editas horas
+    function guardarEnNube(datosFlota, silencioso) {
       if (!datosFlota || datosFlota.length === 0) return Promise.resolve();
-      var badge = document.getElementById("badgeCloudStatus");
-      if (badge) badge.innerText = "☁️ SUBIENDO...";
+      if (!silencioso) actualizarBadgeNube("☁️ SUBIENDO...", "pill-amber");
 
       return fetch(FIREBASE_URL, {
         method: "PUT",
@@ -325,14 +335,12 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
       })
       .then(function(res) { return res.json(); })
       .then(function(resp) {
-        if (badge) {
-          badge.innerText = "☁️ EN LÍNEA";
-          badge.className = "pill pill-green";
-        }
+        actualizarBadgeNube("☁️ NUBE: " + formatearHoraCorta(), "pill-green");
         return resp;
       })
       .catch(function(err) {
-        console.error("Error al subir a Firebase:", err);
+        console.error("Error al guardar en Firebase:", err);
+        alert("Atención: No se pudo subir a la nube. Revisa tu conexión a internet.");
       });
     }
 
@@ -965,8 +973,23 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-      guardarDatos();
+      renderFlota();
+      renderRampa();
       renderHistorial();
+      renderListaMisionesS3();
+      poblarSelectorSimulador();
+
+      // Sincronizar de inmediato con Firebase
+      sincronizarDesdeNube(false);
+
+      // Comprobar cambios cada 10 segundos
+      setInterval(function() {
+        sincronizarDesdeNube(true);
+      }, 10000);
+
+      window.addEventListener("focus", function() {
+        sincronizarDesdeNube(false);
+      });
     });
   </script>
 </body>
