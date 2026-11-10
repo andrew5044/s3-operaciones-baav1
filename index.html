@@ -22,6 +22,7 @@
     .nav-btn.active { color: #f59e0b; }
     .vista-seccion { display: none; }
     .vista-seccion.activa { display: block; }
+    .hidden { display: none !important; }
     input, select { background: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 10px; border-radius: 8px; font-weight: 700; width: 100%; box-sizing: border-box; }
   </style>
 </head>
@@ -266,16 +267,16 @@
       { id: "EJC1146", matricula: "EJC-1146", modelo: "AN-32 A", tipoSpecs: "AN-32", estado: "ACL", horasActuales: 10976.5, proximaFase: 11000.0, tipoInsp: "FASE 100 HORAS", remFase: 23.5, asignadas: 25.0, voladasMes: 11.4, dispMes: 13.6, pernocta: "BOGOTÁ", divAsig: "", obs: "", fechaSalidaManto: "Indefinido" },
       { id: "EJC1147", matricula: "EJC-1147", modelo: "AN-32 B", tipoSpecs: "AN-32", estado: "ACL", horasActuales: 6750.0, proximaFase: 6750.0, tipoInsp: "FASE 50 HORAS", remFase: 23.5, asignadas: 20.0, voladasMes: 11.2, dispMes: 8.8, pernocta: "BOGOTÁ", divAsig: "", obs: "", fechaSalidaManto: "Indefinido" },
       { id: "EJC1132", matricula: "EJC-1132", modelo: "C-208B", tipoSpecs: "C-208B", estado: "AMP", horasActuales: 6289.9, proximaFase: 6310.0, tipoInsp: "FASE D6", remFase: 9.1, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Mantenimiento Preventivo", fechaSalidaManto: "01/12/2026", fechaIngresoManto: "08/09/2025" },
-      { id: "EJC1136", matricula: "EJC-1136", modelo: "C-208B", tipoSpecs: "C-208B", estado: "AMP", horasActuales: 4000.0, proximaFase: 4000.0, tipoInsp": "FASE D6", remFase: 8.8, asignadas: 20.1, voladasMes: 0.0, dispMes": 20.1, pernocta": "BAMAV-1", divAsig": "", obs: "Inspección General", fechaSalidaManto: "23/11/2026", fechaIngresoManto: "05/11/2026" },
-      { id: "EJC1117", matricula: "EJC-1117", modelo: "B-200", tipoSpecs": "B-200", estado: "PAR", horasActuales: 12727.1, proximaFase: 12793.4, tipoInsp": "FASE I Y II", remFase: 66.3, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Pendiente Banco", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1126", matricula: "EJC-1126", modelo: "B-350", tipoSpecs": "B-350", estado: "PAR", horasActuales: 3579.1, proximaFase: 3777.5, tipoInsp": "FASE 5", remFase: 198.4, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Inmovilizada", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1139", matricula: "EJC-1139", modelo: "TC-690B", tipoSpecs": "TC-690", estado: "APB", horasActuales: 7088.0, proximaFase: 7207.2, tipoInsp": "150 HORAS", remFase: 119.2, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Plan de Baja", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1189", matricula: "EJC-1189", modelo: "TC-690B", tipoSpecs": "TC-690", estado: "APB", horasActuales: 9589.9, proximaFase: 9706.6, tipoInsp": "150 HORAS", remFase: 116.7, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Plan de Baja", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1111", matricula: "EJC-1111", modelo: "C-208B EX", tipoSpecs": "C-208B", estado: "PAR", horasActuales: 2996.9, proximaFase: 3000.0, tipoInsp": "FASE D6", remFase: 3.1, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Parqueada", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1115", matricula: "EJC-1115", modelo: "TC-690", tipoSpecs": "TC-690", estado: "APB", horasActuales: 10081.5, proximaFase: 10082.5, tipoInsp": "150 HORAS", remFase: 1.0, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Plan de Baja 00104787 DAVAA", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1122", matricula: "EJC-1122", modelo: "C-212", tipoSpecs": "C-212", estado: "APB", horasActuales: 14155.0, proximaFase: 14214.3, tipoInsp": "150 HORAS", remFase: 59.3, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Plan de Baja 00003332 DAVAA", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1123", matricula: "EJC-1123", modelo: "C-212", tipoSpecs": "C-212", estado: "APB", horasActuales: 11245.8, proximaFase: 11320.0, tipoInsp": "750 HORAS", remFase: 74.2, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Plan de Baja 00003332 DAVAA", fechaSalidaManto: "Indefinido" },
-      { id: "EJC1129", matricula: "EJC-1129", modelo: "C-212", tipoSpecs": "C-212", estado: "APB", horasActuales: 9053.4, proximaFase: 9096.1, tipoInsp": "FASE A 150 HORAS", remFase: 42.7, asignadas: 0.0, voladasMes: 0.0, dispMes": 0.0, pernocta": "BAMAV-1", divAsig": "", obs: "Plan de Baja 00022392 DAVAA", fechaSalidaManto: "Indefinido" }
+      { id: "EJC1136", matricula: "EJC-1136", modelo: "C-208B", tipoSpecs: "C-208B", estado: "AMP", horasActuales: 4000.0, proximaFase: 4000.0, tipoInsp: "FASE D6", remFase: 8.8, asignadas: 20.1, voladasMes: 0.0, dispMes: 20.1, pernocta: "BAMAV-1", divAsig: "", obs: "Inspección General", fechaSalidaManto: "23/11/2026", fechaIngresoManto: "05/11/2026" },
+      { id: "EJC1117", matricula: "EJC-1117", modelo: "B-200", tipoSpecs: "B-200", estado: "PAR", horasActuales: 12727.1, proximaFase: 12793.4, tipoInsp: "FASE I Y II", remFase: 66.3, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Pendiente Banco", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1126", matricula: "EJC-1126", modelo: "B-350", tipoSpecs: "B-350", estado: "PAR", horasActuales: 3579.1, proximaFase: 3777.5, tipoInsp: "FASE 5", remFase: 198.4, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Inmovilizada", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1139", matricula: "EJC-1139", modelo: "TC-690B", tipoSpecs: "TC-690", estado: "APB", horasActuales: 7088.0, proximaFase: 7207.2, tipoInsp: "150 HORAS", remFase: 119.2, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Plan de Baja", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1189", matricula: "EJC-1189", modelo: "TC-690B", tipoSpecs: "TC-690", estado: "APB", horasActuales: 9589.9, proximaFase: 9706.6, tipoInsp: "150 HORAS", remFase: 116.7, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Plan de Baja", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1111", matricula: "EJC-1111", modelo: "C-208B EX", tipoSpecs: "C-208B", estado: "PAR", horasActuales: 2996.9, proximaFase: 3000.0, tipoInsp: "FASE D6", remFase: 3.1, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Parqueada", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1115", matricula: "EJC-1115", modelo: "TC-690", tipoSpecs: "TC-690", estado: "APB", horasActuales: 10081.5, proximaFase: 10082.5, tipoInsp: "150 HORAS", remFase: 1.0, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Plan de Baja 00104787 DAVAA", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1122", matricula: "EJC-1122", modelo: "C-212", tipoSpecs: "C-212", estado: "APB", horasActuales: 14155.0, proximaFase: 14214.3, tipoInsp: "150 HORAS", remFase: 59.3, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Plan de Baja 00003332 DAVAA", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1123", matricula: "EJC-1123", modelo: "C-212", tipoSpecs: "C-212", estado: "APB", horasActuales: 11245.8, proximaFase: 11320.0, tipoInsp: "750 HORAS", remFase: 74.2, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Plan de Baja 00003332 DAVAA", fechaSalidaManto: "Indefinido" },
+      { id: "EJC1129", matricula: "EJC-1129", modelo: "C-212", tipoSpecs: "C-212", estado: "APB", horasActuales: 9053.4, proximaFase: 9096.1, tipoInsp: "FASE A 150 HORAS", remFase: 42.7, asignadas: 0.0, voladasMes: 0.0, dispMes: 0.0, pernocta: "BAMAV-1", divAsig: "", obs: "Plan de Baja 00022392 DAVAA", fechaSalidaManto: "Indefinido" }
     ];
 
     var flota = JSON.parse(localStorage.getItem(CLAVE_STORE)) || FLOTA_DEFAULT;
@@ -487,6 +488,7 @@
       if (!a || h <= 0) { alert("Seleccione una aeronave y un valor de horas válido."); return; }
       
       a.voladasMes = (Number(a.voladasMes) || 0) + h;
+      a.dispMes = Math.max(0, (Number(a.asignadas) || 0) - a.voladasMes);
       guardarDatos();
       guardarEnNube(flota);
 
@@ -673,7 +675,7 @@
       var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
       var fStr = pad(manana.getDate()) + " de " + meses[manana.getMonth()] + " de " + manana.getFullYear();
 
-      var txt = "Mi Coronel buenas noches, para solicitarle su autorización con el fin de programar los siguientes vuelos para mañana " + fStr + ", así:\\n\\n";
+      var txt = "Mi Coronel buenas noches, para solicitarle su autorización con el fin de programar los siguientes vuelos para mañana " + fStr + ", así:\n\n";
 
       for (var i = 0; i < misionesS3.length; i++) {
         var m = misionesS3[i];
@@ -699,20 +701,20 @@
         else if (siglaOficial.indexOf("212") !== -1) siglaOficial = "C-212";
 
         if (unidadSel) {
-          txt += "Unidad: " + unidadSel + "\\n";
+          txt += "Unidad: " + unidadSel + "\n";
         } else {
-          txt += "Unidad:\\n";
+          txt += "Unidad:\n";
         }
-        txt += matLimpia + " " + siglaOficial + " *" + m.etd + "*\\n";
-        txt += "Ruta: " + rutaFormateada + ".\\n";
-        txt += "Realizará " + obsStr.trim().replace(/\.$/, "") + ".\\n";
-        txt += "Tarea:\\n";
-        txt += "Pax: " + paxStr + "\\n";
-        txt += "Carga: " + cargaStr + "\\n\\n";
+        txt += matLimpia + " " + siglaOficial + " *" + m.etd + "*\n";
+        txt += "Ruta: " + rutaFormateada + ".\n";
+        txt += "Realizará " + obsStr.trim().replace(/\.$/, "") + ".\n";
+        txt += "Tarea:\n";
+        txt += "Pax: " + paxStr + "\n";
+        txt += "Carga: " + cargaStr + "\n\n";
       }
 
       var totVuelosStr = misionesS3.length < 10 ? "0" + misionesS3.length : String(misionesS3.length);
-      txt += "TOTAL VUELOS A REALIZAR: " + totVuelosStr + "\\n";
+      txt += "TOTAL VUELOS A REALIZAR: " + totVuelosStr + "\n";
       txt += "A su orden permanezco QAP mi coronel.";
       return txt;
     }
@@ -762,6 +764,8 @@
                     a.pernocta = p.indexOf("BOGOT") !== -1 ? "BOGOTÁ" : (p.indexOf("BAMAV") !== -1 ? "BAMAV-1" : p);
                   }
                 }
+                a.dispMes = Math.max(0, (Number(a.asignadas) || 0) - (Number(a.voladasMes) || 0));
+                a.remFase = (Number(a.proximaFase) || 0) - (Number(a.horasActuales) || 0);
                 actualizados++;
                 break;
               }
