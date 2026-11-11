@@ -99,7 +99,7 @@
       </div>
 
       <div style="margin-bottom:10px;">
-        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">2. Aeronave Operativa (Solo ACL en Línea Bogotá)</label>
+        <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">2. Aeronave (con horas remanentes de mantenimiento)</label>
         <select id="simSelAvion" onchange="calcularSimulacionRapida()">
           <option value="">-- Seleccionar Aeronave --</option>
         </select>
@@ -443,18 +443,20 @@
       var sel = document.getElementById("simSelAvion");
       if (!sel) return;
       var selVal = sel.value;
-      sel.innerHTML = '<option value="">-- Seleccionar Aeronave ACL --</option>';
+      sel.innerHTML = '<option value="">-- Seleccionar Aeronave --</option>';
 
+      // En Programación S-3 se listan todas las aeronaves con horas remanentes,
+      // sin filtrar por ubicación ni estado. Las demás vistas conservan sus filtros.
       var disponibles = flota.filter(function(a) {
-        return !esDeBAMAV1(a) && String(a.estado || "").toUpperCase() === "ACL";
+        return a && Number(a.remFase) > 0;
       });
 
-      document.getElementById("badgeTotalACL").innerText = disponibles.length + " DISPONIBLES ACL";
+      document.getElementById("badgeTotalACL").innerText = disponibles.length + " CON HORAS MANTO";
 
       disponibles.forEach(function(a) {
         var opt = document.createElement("option");
         opt.value = a.id;
-        opt.innerText = a.matricula + " (" + a.modelo + ") • Rem: " + (a.remFase || 0).toFixed(1) + "h | Cupo: " + (a.dispMes || 0).toFixed(1) + "h";
+        opt.innerText = a.matricula + " (" + a.modelo + ") • Rem: " + Number(a.remFase).toFixed(1) + "h | Estado: " + (a.estado || "N/D") + " | Ubic.: " + (a.pernocta || "N/D");
         sel.appendChild(opt);
       });
       if (selVal) sel.value = selVal;
