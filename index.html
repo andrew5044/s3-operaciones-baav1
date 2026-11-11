@@ -281,6 +281,7 @@
 
     var flota = JSON.parse(localStorage.getItem(CLAVE_STORE)) || FLOTA_DEFAULT;
     if (!flota || flota.length < 20) flota = FLOTA_DEFAULT;
+    var revisionLocal = 0;
 
     var misionesS3 = JSON.parse(localStorage.getItem("BAAV1_MISIONES_S3_PROD")) || [];
     var misionActualTemp = null;
@@ -331,6 +332,7 @@
     }
 
     function guardarDatos() {
+      revisionLocal++;
       try { localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
       renderFlota();
     }
@@ -355,9 +357,11 @@
     }
 
     function sincronizarDesdeNube() {
+      var revisionAlIniciar = revisionLocal;
       fetch(FIREBASE_URL)
         .then(function(res) { return res.json(); })
         .then(function(data) {
+          if (revisionAlIniciar !== revisionLocal) return;
           if (data && Array.isArray(data) && data.length >= 20) {
             flota = data;
             try { localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
@@ -748,6 +752,10 @@
           var sheet = workbook.Sheets[workbook.SheetNames[0]];
           var rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
           
+          // Las fechas de mantenimiento BAMAV-1 son texto manual: el parte diario no debe alterarlas.
+          var fechasMantenimientoManuales = flota.map(function(av) {
+            return { id: av.id, fechaIngresoManto: av.fechaIngresoManto, fechaSalidaManto: av.fechaSalidaManto };
+          });
           var actualizados = 0;
           for (var i = 0; i < rows.length; i++) {
             var r = rows[i];
@@ -773,6 +781,16 @@
               }
             }
           }
+          // Restaurar literalmente las fechas que estaban antes de importar el Excel.
+          fechasMantenimientoManuales.forEach(function(fecha) {
+            var avion = flota.find(function(av) { return av.id === fecha.id; });
+            if (avion) {
+              if (fecha.fechaIngresoManto === undefined) delete avion.fechaIngresoManto;
+              else avion.fechaIngresoManto = fecha.fechaIngresoManto;
+              if (fecha.fechaSalidaManto === undefined) delete avion.fechaSalidaManto;
+              else avion.fechaSalidaManto = fecha.fechaSalidaManto;
+            }
+          });
           guardarDatos();
           guardarEnNube(flota);
           alert("✅ Parte diario procesado con éxito. Aeronaves actualizadas: " + actualizados);
