@@ -449,18 +449,28 @@
       var selVal = sel.value;
       sel.innerHTML = '<option value="">-- Seleccionar Aeronave --</option>';
 
-      // En Programación S-3 se listan todas las aeronaves con horas remanentes,
-      // sin filtrar por ubicación ni estado. Las demás vistas conservan sus filtros.
-      var disponibles = flota.filter(function(a) {
-        return a && Number(a.remFase) > 0;
+      // Programación S-3: mostrar aeronaves con más de 0,1 h remanentes de inspección,
+      // sin filtrar por ubicación. También mostrar las horas disponibles del mes.
+      var disponibles = flota.map(function(a) {
+        if (!a) return null;
+        var proximaFase = Number(a.proximaFase);
+        var horasActuales = Number(a.horasActuales);
+        var remInspeccion = Number.isFinite(proximaFase) && Number.isFinite(horasActuales)
+          ? proximaFase - horasActuales
+          : Number(a.remFase);
+        var horasDispMes = Math.max(0, (Number(a.asignadas) || 0) - (Number(a.voladasMes || a.voladas) || 0));
+        return { avion: a, remInspeccion: remInspeccion, horasDispMes: horasDispMes };
+      }).filter(function(item) {
+        return item && Number.isFinite(item.remInspeccion) && item.remInspeccion > 0.1;
       });
 
       document.getElementById("badgeTotalACL").innerText = disponibles.length + " CON HORAS MANTO";
 
-      disponibles.forEach(function(a) {
+      disponibles.forEach(function(item) {
+        var a = item.avion;
         var opt = document.createElement("option");
         opt.value = a.id;
-        opt.innerText = a.matricula + " (" + a.modelo + ") • Rem: " + Number(a.remFase).toFixed(1) + "h | Estado: " + (a.estado || "N/D") + " | Ubic.: " + (a.pernocta || "N/D");
+        opt.innerText = a.matricula + " (" + a.modelo + ") • Rem. inspección: " + item.remInspeccion.toFixed(1) + "h | Disp. mes: " + item.horasDispMes.toFixed(1) + "h | Estado: " + (a.estado || "N/D") + " | Ubic.: " + (a.pernocta || "N/D");
         sel.appendChild(opt);
       });
       if (selVal) sel.value = selVal;
