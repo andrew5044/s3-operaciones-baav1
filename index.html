@@ -414,10 +414,15 @@
       if (actualmenteHangar) {
         av.manualBAMAV1 = false;
         av.pernocta = "BOGOTÁ";
+        av.fechaIngresoManto = "";
+        av.fechaSalidaManto = "";
+        av.fechaSalidaManual = false;
       } else {
+        var hoy = new Date();
+        var dStr = (hoy.getDate() < 10 ? "0" : "") + hoy.getDate() + "/" + ((hoy.getMonth()+1) < 10 ? "0" : "") + (hoy.getMonth()+1) + "/" + hoy.getFullYear();
         av.manualBAMAV1 = true;
         av.pernocta = "BAMAV-1";
-        if (!av.fechaIngresoManto) av.fechaIngresoManto = "10/11/2026";
+        if (!av.fechaIngresoManto) av.fechaIngresoManto = dStr;
         if (!av.fechaSalidaManto) av.fechaSalidaManto = "Indefinido";
       }
 
@@ -1045,9 +1050,10 @@
 
                   var rawPernocta = String(r[16] || "").trim();
                   var normPernocta = normalizarTexto(rawPernocta);
-                  if (normPernocta.indexOf("BOGOTA") !== -1) {
+                  if (a.manualBAMAV1 === true) {
+                    a.pernocta = "BAMAV-1";
+                  } else if (normPernocta.indexOf("BOGOTA") !== -1) {
                     a.pernocta = "BOGOTÁ";
-                    a.manualBAMAV1 = false;
                   } else if (normPernocta.indexOf("BAMAV") !== -1 || normPernocta.indexOf("HANGAR") !== -1) {
                     a.pernocta = "BAMAV-1";
                   } else if (rawPernocta && normPernocta !== "NAN") {
