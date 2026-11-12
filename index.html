@@ -783,8 +783,18 @@
                     a.pernocta = p.indexOf("BOGOT") !== -1 ? "BOGOTÁ" : (p.indexOf("BAMAV") !== -1 ? "BAMAV-1" : p);
                   }
                 }
-                a.dispMes = Math.max(0, (Number(a.asignadas) || 0) - (Number(a.voladasMes) || 0));
-                a.remFase = (Number(a.proximaFase) || 0) - (Number(a.horasActuales) || 0);
+                // J (índice 9) es el remanente de inspección informado por el parte.
+                // M (índice 12) es el saldo disponible del mes. Son valores independientes.
+                if (r[9] !== undefined && r[9] !== null && String(r[9]).trim() !== "" && !isNaN(parseFloat(r[9]))) {
+                  a.remFase = parseFloat(r[9]);
+                } else {
+                  a.remFase = (Number(a.proximaFase) || 0) - (Number(a.horasActuales) || 0);
+                }
+                if (r[12] !== undefined && r[12] !== null && String(r[12]).trim() !== "" && !isNaN(parseFloat(r[12]))) {
+                  a.dispMes = Math.max(0, parseFloat(r[12]));
+                } else {
+                  a.dispMes = Math.max(0, (Number(a.asignadas) || 0) - (Number(a.voladasMes) || 0));
+                }
                 actualizados++;
                 break;
               }
