@@ -452,7 +452,7 @@
       // En Programación S-3 se listan todas las aeronaves con horas remanentes,
       // sin filtrar por ubicación ni estado. Las demás vistas conservan sus filtros.
       var disponibles = flota.filter(function(a) {
-        return a && Number(a.remFase) > 0;
+        return a && Number(a.remFase) > 0.1;
       });
 
       document.getElementById("badgeTotalACL").innerText = disponibles.length + " CON HORAS MANTO";
@@ -460,7 +460,9 @@
       disponibles.forEach(function(a) {
         var opt = document.createElement("option");
         opt.value = a.id;
-        opt.innerText = a.matricula + " (" + a.modelo + ") • Rem: " + Number(a.remFase).toFixed(1) + "h | Estado: " + (a.estado || "N/D") + " | Ubic.: " + (a.pernocta || "N/D");
+        var dispMes = Number(a.dispMes);
+        if (!isFinite(dispMes)) dispMes = Math.max(0, (Number(a.asignadas) || 0) - (Number(a.voladasMes) || 0));
+        opt.innerText = a.matricula + " (" + a.modelo + ") • Rem. insp.: " + Number(a.remFase).toFixed(1) + "h | Disp. mes: " + dispMes.toFixed(1) + "h | Estado: " + (a.estado || "N/D") + " | Ubic.: " + (a.pernocta || "N/D");
         sel.appendChild(opt);
       });
       if (selVal) sel.value = selVal;
@@ -752,9 +754,15 @@
           var sheet = workbook.Sheets[workbook.SheetNames[0]];
           var rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
           
-          // Las fechas de mantenimiento BAMAV-1 son texto manual: el parte diario no debe alterarlas.
-          var fechasMantenimientoManuales = flota.map(function(av) {
-            return { id: av.id, fechaIngresoManto: av.fechaIngresoManto, fechaSalidaManto: av.fechaSalidaManto };
+          // Preservar ubicación manual y fechas de mantenimiento frente a los datos del parte diario.
+          var datosManuales = flota.map(function(av) {
+            return {
+              id: av.id,
+              manualBAMAV1: av.manualBAMAV1,
+              pernocta: av.pernocta,
+              fechaIngresoManto: av.fechaIngresoManto,
+              fechaSalidaManto: av.fechaSalidaManto
+            };
           });
           var actualizados = 0;
           for (var i = 0; i < rows.length; i++) {
@@ -770,7 +778,8 @@
                 if (r[11] !== undefined && !isNaN(parseFloat(r[11]))) a.voladasMes = parseFloat(r[11]);
                 if (r[16] && String(r[16]).trim() !== "NAN") {
                   var p = String(r[16]).trim().toUpperCase();
-                  if (!a.fechaSalidaManual) {
+                  // Si la ubicación fue cambiada manualmente, el Excel no puede sobrescribirla.
+                  if (typeof a.manualBAMAV1 !== "boolean" && !a.fechaSalidaManual) {
                     a.pernocta = p.indexOf("BOGOT") !== -1 ? "BOGOTÁ" : (p.indexOf("BAMAV") !== -1 ? "BAMAV-1" : p);
                   }
                 }
@@ -781,14 +790,18 @@
               }
             }
           }
-          // Restaurar literalmente las fechas que estaban antes de importar el Excel.
-          fechasMantenimientoManuales.forEach(function(fecha) {
-            var avion = flota.find(function(av) { return av.id === fecha.id; });
+          // Restaurar ubicación manual y fechas de mantenimiento exactamente como estaban.
+          datosManuales.forEach(function(datos) {
+            var avion = flota.find(function(av) { return av.id === datos.id; });
             if (avion) {
-              if (fecha.fechaIngresoManto === undefined) delete avion.fechaIngresoManto;
-              else avion.fechaIngresoManto = fecha.fechaIngresoManto;
-              if (fecha.fechaSalidaManto === undefined) delete avion.fechaSalidaManto;
-              else avion.fechaSalidaManto = fecha.fechaSalidaManto;
+              if (typeof datos.manualBAMAV1 === "boolean") {
+                avion.manualBAMAV1 = datos.manualBAMAV1;
+                avion.pernocta = datos.pernocta;
+              }
+              if (datos.fechaIngresoManto === undefined) delete avion.fechaIngresoManto;
+              else avion.fechaIngresoManto = datos.fechaIngresoManto;
+              if (datos.fechaSalidaManto === undefined) delete avion.fechaSalidaManto;
+              else avion.fechaSalidaManto = datos.fechaSalidaManto;
             }
           });
           guardarDatos();
