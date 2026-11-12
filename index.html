@@ -526,8 +526,8 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
         totVol += a.voladasMes;
         var sp = CONFIG[a.tipoSpecs] || { nombre: a.modelo, maxPax: 8, velKT: 180 };
 
-        var remFase = Math.max(0, a.proximaFase - a.horasActuales).toFixed(1);
-        var dispMes = Math.max(0, a.asignadas - a.voladasMes).toFixed(1);
+        var hActNum = Number(a.horasActuales) || 0; var pFaseNum = Number(a.proximaFase) || 0; a.horasActuales = hActNum; a.proximaFase = pFaseNum; a.asignadas = Number(a.asignadas) || 0; a.voladasMes = Number(a.voladasMes) || 0; var remFase = (a.remFase !== undefined && a.remFase !== null && !isNaN(parseFloat(a.remFase))) ? Math.max(0, parseFloat(a.remFase)).toFixed(1) : Math.max(0, pFaseNum - hActNum).toFixed(1);
+        var dispMes = (a.dispMes !== undefined && a.dispMes !== null && !isNaN(parseFloat(a.dispMes))) ? Math.max(0, parseFloat(a.dispMes)).toFixed(1) : Math.max(0, a.asignadas - a.voladasMes).toFixed(1);
         var pctMes = a.asignadas > 0 ? Math.min(100, (a.voladasMes / a.asignadas) * 100) : 0;
 
         var est = (a.estado || "").toUpperCase().trim();
@@ -611,6 +611,617 @@ var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.l
       document.getElementById("txtTotalAsig").innerText = totAsig.toFixed(1) + " h";
       document.getElementById("txtTotalVol").innerText = totVol.toFixed(1) + " h";
       document.getElementById("txtTotalDisp").innerHTML = Math.max(0, totAsig - totVol).toFixed(1) + ' <span style="font-size:12px; color:#94a3b8; font-weight:normal;">h disponibles</span>';
+    }
+
+    function toggleHangar() {
+      var h = document.getElementById("listaHangar");
+      hangarOculto = !hangarOculto;
+      h.style.display = hangarOculto ? "none" : "block";
+      document.getElementById("txtToggleHangar").innerText = hangarOculto ? "▼ Mostrar" : "▲ Ocultar";
+    }
+
+    // SIMULADOR S-3 DIRECTO: SOLO ACL, SIN TAREAS, CÁLCULO DE RUTA RÁPIDA
+    function poblarSelectorSimulador() {
+      var sel = document.getElementById("simSelAvion");
+      if (!sel) return;
+      var selVal = sel.value;
+      sel.innerHTML = '<option value="">-- Seleccionar Aeronave (Rem > 0.1h) --</option>';
+      var cAcl = 0;
+
+      for (var i = 0; i < flota.length; i++) {
+        var a = flota[i];
+        if (!a) continue;
+        var remVal = (a.remFase !== undefined && a.remFase !== null && !isNaN(parseFloat(a.remFase)))
+          ? parseFloat(a.remFase)
+          : Math.max(0, (Number(a.proximaFase) || 0) - (Number(a.horasActuales) || 0));
+        var dispVal = (a.dispMes !== undefined && a.dispMes !== null && !isNaN(parseFloat(a.dispMes)))
+          ? parseFloat(a.dispMes)
+          : Math.max(0, (Number(a.asignadas) || 0) - (Number(a.voladasMes) || 0));
+
+        if (remVal <= 0.1) continue;
+        if (a.estado === "APB") continue;
+
+        var sp = CONFIG[a.tipoSpecs] || { nombre: a.modelo };
+        var opt = document.createElement("option");
+        opt.value = a.id;
+        opt.innerText = a.matricula + " (" + sp.nombre + " - " + a.pernocta + ") • Rem Insp: " + remVal.toFixed(1) + "h | Disp Mes: " + dispVal.toFixed(1) + "h";
+        sel.appendChild(opt);
+        cAcl++;
+      }
+
+      var bAcl = document.getElementById("badgeTotalACL");
+      if (bAcl) bAcl.innerText = cAcl + " DISPONIBLES";
+      if (selVal) sel.value = selVal;
+    }
+
+    var misionesS3 = JSON.parse(localStorage.getItem("BAAV1_MISIONES_S3_PROD")) || [];
+    var misionActualTemp = null;
+
+    function renderListaMisionesS3() {
+      var cont = document.getElementById("listaMisionesProgramadas");
+      var panel = document.getElementById("panelEnvioRadio");
+      var badge = document.getElementById("countMisionesProg");
+      if (!cont) return;
+
+      badge.innerText = misionesS3.length;
+      if (misionesS3.length === 0) {
+        cont.innerHTML = '<div style="color:#64748b; font-size:11px; text-align:center; padding:12px 0;">No has agregado aeronaves a la orden aún. Planifica arriba y pulsa "Agregar a la Orden".</div>';
+        if (panel) panel.style.display = "none";
+        return;
+      }
+
+      if (panel) panel.style.display = "flex";
+      cont.innerHTML = "";
+
+      for (var i = 0; i < misionesS3.length; i++) {
+        (function(idx) {
+          var m = misionesS3[idx];
+          var card = document.createElement("div");
+          card.style.cssText = "background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:10px;";
+          card.innerHTML = 
+            '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">' +
+              '<div>' +
+                '<span style="font-weight:900; font-size:13px; color:#38bdf8;">' + m.matricula + ' (' + m.modelo + ')</span>' +
+                '<div style="font-size:11px; color:#f8fafc; font-weight:700; margin-top:2px;">' + m.rutaStr + '</div>' +
+              '</div>' +
+              '<button onclick="eliminarMisionS3(' + idx + ')" class="btn-outline" style="border-color:#f43f5e; color:#f87171; padding:2px 6px; font-size:10px;">✕ Quitar</button>' +
+            '</div>' +
+            (m.obs ? '<div style="font-size:11px; color:#fbbf24; background:rgba(245,158,11,0.1); border-left:2px solid #f59e0b; padding:4px 8px; border-radius:4px; margin-bottom:6px;"><b>Obs:</b> ' + m.obs + '</div>' : '') +
+            '<div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; background:#131d31; padding:6px 8px; border-radius:6px;">' +
+              '<span>ETD: <b style="color:#f1f5f9;">' + m.etd + '</b></span>' +
+              '<span>PAX: <b style="color:#f1f5f9;">' + m.pax + '</b></span>' +
+              (m.carga ? '<span>Carga: <b style="color:#f1f5f9;">' + m.carga + '</b></span>' : '') +
+              '<span>Dist: <b style="color:#f1f5f9;">' + m.dist + ' NM</b></span>' +
+              '<span>Vuelo: <b style="color:#34d399;">' + m.tiempoH + ' h</b></span>' +
+            '</div>';
+          cont.appendChild(card);
+        })(i);
+      }
+    }
+
+    function agregarMisionALaOrden() {
+      if (!misionActualTemp) return;
+      misionesS3.push(misionActualTemp);
+      localStorage.setItem("BAAV1_MISIONES_S3_PROD", JSON.stringify(misionesS3));
+      misionActualTemp = null;
+      document.getElementById("simInputRuta").value = "";
+      document.getElementById("simCarga").value = "";
+      document.getElementById("simObsMision").value = "";
+      document.getElementById("simResultado").style.display = "none";
+      renderListaMisionesS3();
+    }
+
+    function eliminarMisionS3(idx) {
+      misionesS3.splice(idx, 1);
+      localStorage.setItem("BAAV1_MISIONES_S3_PROD", JSON.stringify(misionesS3));
+      renderListaMisionesS3();
+    }
+
+    function limpiarOrdenVuelo() {
+      if (confirm("¿Vaciar todas las aeronaves de la orden de vuelo?")) {
+        misionesS3 = [];
+        localStorage.removeItem("BAAV1_MISIONES_S3_PROD");
+        renderListaMisionesS3();
+      }
+    }
+
+    
+    function obtenerNombreCiudad(icao) {
+      if (!icao) return "";
+      var cod = icao.toUpperCase().trim();
+      if (cod === "LOCAL") return "Local";
+      var ap = AEROPUERTOS[cod];
+      if (ap && ap.nombre) {
+        return ap.nombre.replace(/\s*\(.*?\)/g, "").trim();
+      }
+      return cod;
+    }
+
+
+    
+    function obtenerSiglaMilitar(avion) {
+      if (!avion) return "";
+      var m = (avion.modelo || "").toUpperCase();
+      var t = (avion.tipoSpecs || "").toUpperCase();
+
+      if (m.indexOf("350") !== -1 || t.indexOf("350") !== -1) return "B-350";
+      if (m.indexOf("200") !== -1 || t.indexOf("200") !== -1) return "B-200";
+      if (m.indexOf("208") !== -1 || t.indexOf("208") !== -1) return "C208B";
+      if (m.indexOf("TC") !== -1 || m.indexOf("COMMANDER") !== -1 || t.indexOf("TC") !== -1 || m.indexOf("AC-90") !== -1) return "AC-90";
+      if (m.indexOf("C-90") !== -1 || m.indexOf("C90") !== -1 || t.indexOf("C-90") !== -1) return "C-90";
+      if (m.indexOf("AN") !== -1 || t.indexOf("AN") !== -1) return "AN-32";
+      if (m.indexOf("212") !== -1 || t.indexOf("212") !== -1) return "C-212";
+      return avion.modelo;
+    }
+
+    function generarTextoOrdenRadioperador() {
+      // Ordenar misiones cronológicamente por hora de salida (ETD)
+      misionesS3.sort(function(a, b) {
+        return (a.etd || "").localeCompare(b.etd || "");
+      });
+
+      // Fecha de mañana calculada automáticamente
+      var manana = new Date();
+      manana.setDate(manana.getDate() + 1);
+
+      var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      var diaStr = pad(manana.getDate());
+      var mesStr = meses[manana.getMonth()];
+      var anioStr = manana.getFullYear();
+
+      var txt = "Mi Coronel buenas noches, para solicitarle su autorización con el fin de programar los siguientes vuelos para mañana " + diaStr + " de " + mesStr + " de " + anioStr + ", así:\n\n";
+
+      for (var i = 0; i < misionesS3.length; i++) {
+        var m = misionesS3[i];
+
+        // Traducir ICAO a ciudades (ej: Bogotá - Tolemaida - San José - Bogotá)
+        var tokensRuta = m.rutaStr.replace(/➔/g, " ").split(/\s+/).filter(Boolean);
+        var ciudadesRuta = [];
+        for (var k = 0; k < tokensRuta.length; k++) {
+          ciudadesRuta.push(obtenerNombreCiudad(tokensRuta[k]));
+        }
+        var rutaFormateada = ciudadesRuta.join(" - ");
+
+        // Formato matrícula sin guión (EJC 1101)
+        var matLimpia = m.matricula.replace("-", " ");
+
+        // Pax con 2 dígitos (08, 02, etc.)
+        var paxNum = parseInt(m.pax) || 0;
+        var paxStr = paxNum < 10 ? "0" + paxNum : String(paxNum);
+
+        // Carga
+        var cargaStr = m.carga ? m.carga : "00 lbs.";
+
+        // Motivo / Observación
+        var obsStr = m.obs ? m.obs : "Transporte de personal y material.";
+
+        txt += "✅Unidad: \n";
+        var modeloSigla = m.siglaMilitar || obtenerSiglaMilitar(m) || m.modelo;
+        txt += matLimpia + " " + modeloSigla + " *" + m.etd + "*\n";
+        txt += "Ruta: " + rutaFormateada + ".\n";
+        txt += "Realizará " + obsStr.trim().replace(/\.$/, "") + ".\n";
+        txt += "Tarea: \n";
+        txt += "Pax: " + paxStr + "\n";
+        txt += "Carga: " + cargaStr + "\n\n";
+      }
+
+      var totVuelosStr = misionesS3.length < 10 ? "0" + misionesS3.length : String(misionesS3.length);
+      txt += "*TOTAL VUELOS A REALIZAR: " + totVuelosStr + "*\n\n";
+      txt += "A su orden permanezco QAP mi coronel.";
+
+      return txt;
+    }
+
+    function enviarWhatsAppRadioperador() {
+      if (!misionesS3.length) return;
+      var texto = generarTextoOrdenRadioperador();
+      var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
+      window.open(url, "_blank");
+    }
+
+    function copiarTextoRadioperador() {
+      if (!misionesS3.length) return;
+      var texto = generarTextoOrdenRadioperador();
+      navigator.clipboard.writeText(texto).then(function() {
+        alert("✅ Orden de vuelo copiada al portapapeles lista para pegar en WhatsApp.");
+      });
+    }
+
+    function calcularSimulacionRapida() {
+      var selAvionId = document.getElementById("simSelAvion").value;
+      var rawRuta = document.getElementById("simInputRuta").value.trim();
+      var etdVal = document.getElementById("simETD").value || "08:00";
+      var paxVal = parseInt(document.getElementById("simPax").value) || 0;
+      var cargaVal = (document.getElementById("simCarga") ? document.getElementById("simCarga").value.trim() : "");
+      var obsVal = (document.getElementById("simObsMision") ? document.getElementById("simObsMision").value.trim() : "");
+      var contRes = document.getElementById("simResultado");
+
+      if (!selAvionId || !rawRuta) {
+        contRes.style.display = "none";
+        misionActualTemp = null;
+        return;
+      }
+
+      var avion = flota.find(function(x) { return x.id === selAvionId; });
+      if (!avion) return;
+      var sp = CONFIG[avion.tipoSpecs] || { nombre: avion.modelo, velKT: 220, maxPax: 8 };
+
+      var tokens = rawRuta.toUpperCase().replace(/[-,;]/g, " ").split(/\s+/).filter(Boolean);
+      if (tokens.length < 2) {
+        contRes.style.display = "none";
+        misionActualTemp = null;
+        return;
+      }
+
+      var distTotalNM = 0;
+      var tramos = [];
+      var partesETD = etdVal.split(":");
+      var minutosReloj = parseInt(partesETD[0]) * 60 + parseInt(partesETD[1]);
+
+      for (var i = 0; i < tokens.length - 1; i++) {
+        var orig = tokens[i];
+        var dest = tokens[i+1];
+        var infoO = AEROPUERTOS[orig];
+        var infoD = AEROPUERTOS[dest];
+
+        var distTramo = 120;
+        if (infoO && infoD) {
+          distTramo = Math.round(distanciaNM(infoO.lat, infoO.lon, infoD.lat, infoD.lon));
+        }
+
+        distTotalNM += distTramo;
+        var velCrucero = sp.velKT || 200;
+        var minutosVuelo = Math.round((distTramo / velCrucero) * 60) + 15;
+        var horasVueloTramo = Math.round((minutosVuelo / 60) * 10) / 10;
+
+        var hSal = pad(Math.floor(minutosReloj / 60) % 24) + ":" + pad(minutosReloj % 60);
+        minutosReloj += minutosVuelo;
+        var hLleg = pad(Math.floor(minutosReloj / 60) % 24) + ":" + pad(minutosReloj % 60);
+        minutosReloj += 30;
+
+        tramos.push({
+          de: orig,
+          a: dest,
+          nomOrig: infoO ? infoO.nombre : orig,
+          nomDest: infoD ? infoD.nombre : dest,
+          dist: distTramo,
+          hSal: hSal,
+          hLleg: hLleg,
+          tiempoH: horasVueloTramo
+        });
+      }
+
+      var totalHorasMision = tramos.reduce(function(acc, t) { return acc + t.tiempoH; }, 0);
+      totalHorasMision = Math.round(totalHorasMision * 10) / 10;
+
+      misionActualTemp = {
+        matricula: avion.matricula,
+        modelo: sp.nombre, siglaMilitar: obtenerSiglaMilitar(avion),
+        etd: etdVal,
+        pax: paxVal,
+        carga: cargaVal,
+        obs: obsVal,
+        rutaStr: tokens.join(" ➔ "),
+        dist: distTotalNM,
+        tiempoH: totalHorasMision,
+        tramos: tramos
+      };
+
+      var alertaPax = "";
+      if (sp.maxPax && paxVal > sp.maxPax) {
+        alertaPax = '<div style="background:rgba(244,63,94,0.15); border-left:3px solid #f43f5e; padding:6px 10px; border-radius:4px; font-size:11px; color:#fda4af; margin-top:8px;">⚠️ <b>ALERTA DE CAPACIDAD:</b> PAX (' + paxVal + ') superan configuración máxima de ' + sp.nombre + ' (' + sp.maxPax + ' PAX).</div>';
+      }
+
+      var alertaCupo = "";
+      if (totalHorasMision > avion.dispMes) {
+        alertaCupo = '<div style="background:rgba(244,63,94,0.15); border-left:3px solid #f43f5e; padding:6px 10px; border-radius:4px; font-size:11px; color:#fda4af; margin-top:6px;">⚠️ <b>ALERTA DE CUPO:</b> Misión (' + totalHorasMision + ' h) excede el cupo disponible (' + avion.dispMes.toFixed(1) + ' h).</div>';
+      }
+
+      var htmlTramos = "";
+      for (var j = 0; j < tramos.length; j++) {
+        var tr = tramos[j];
+        htmlTramos += '<div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:8px 12px; border-radius:6px; margin-top:6px; border:1px solid #1e293b;">' +
+                        '<div>' +
+                          '<div style="font-weight:900; font-size:12px; color:#38bdf8;">' + tr.de + ' ➔ ' + tr.a + '</div>' +
+                          '<div style="font-size:10px; color:#94a3b8;">' + tr.nomOrig + ' a ' + tr.nomDest + ' (' + tr.dist + ' NM)</div>' +
+                        '</div>' +
+                        '<div style="text-align:right;">' +
+                          '<div style="font-weight:900; font-size:12px; color:#f1f5f9;">' + tr.hSal + ' - ' + tr.hLleg + '</div>' +
+                          '<div style="font-size:10px; color:#10b981; font-weight:700;">' + tr.tiempoH.toFixed(1) + ' h</div>' +
+                        '</div>' +
+                      '</div>';
+      }
+
+      contRes.innerHTML = 
+        '<div style="border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">' +
+          '<div>' +
+            '<div style="font-size:11px; color:#94a3b8; font-weight:700;">PLAN CALCULADO</div>' +
+            '<div style="font-size:14px; font-weight:900; color:#f8fafc;">' + tokens.join(" ➔ ") + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<div style="font-size:10px; color:#94a3b8;">TIEMPO TOTAL</div>' +
+            '<div style="font-size:16px; font-weight:900; color:#34d399;">' + totalHorasMision.toFixed(1) + ' h</div>' +
+          '</div>' +
+        '</div>' +
+        (obsVal ? '<div style="font-size:11px; color:#fbbf24; background:rgba(245,158,11,0.1); border-left:2px solid #f59e0b; padding:6px 10px; border-radius:4px; margin-bottom:8px;"><b>Motivo:</b> ' + obsVal + '</div>' : '') +
+        htmlTramos +
+        alertaPax +
+        alertaCupo +
+        '<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; font-size:11px; color:#94a3b8; background:#0f172a; padding:8px 10px; border-radius:6px; margin-bottom:10px;">' +
+          '<span>Distancia: <b style="color:#f1f5f9;">' + distTotalNM + ' NM</b></span>' +
+          '<span>PAX: <b style="color:#f1f5f9;">' + paxVal + '</b></span>' +
+          (cargaVal ? '<span>Carga: <b style="color:#f1f5f9;">' + cargaVal + '</b></span>' : '') +
+          '<span>Aeronave: <b style="color:#f1f5f9;">' + avion.matricula + '</b></span>' +
+        '</div>' +
+        '<button onclick="agregarMisionALaOrden()" style="width:100%; background:#38bdf8; border:none; color:#000; font-weight:900; padding:11px; border-radius:8px; cursor:pointer; font-size:12px; text-transform:uppercase;">➕ Agregar a la Orden de Vuelo</button>';
+
+      contRes.style.display = "block";
+    }
+
+
+    function pad(n) { return n < 10 ? "0" + n : n; }
+
+    // RAMPA (SOLO ACTIVAS)
+    function renderRampa() {
+      var cont = document.getElementById("selectorRampa");
+      if (!cont) return;
+      cont.innerHTML = "";
+
+      for (var i = 0; i < flota.length; i++) {
+        var a = flota[i];
+        if (esDeBAMAV1(a)) continue; // EXCLUIR BAMAV-1
+
+        (function(avion) {
+          var sp = CONFIG[avion.tipoSpecs] || { nombre: avion.modelo };
+          var b = document.createElement("button");
+          b.className = "btn-outline";
+          b.style.cssText = "padding:10px; text-align:left; border-radius:10px; cursor:pointer;" + (avionSeleccionado === avion.id ? " border-color:#f59e0b; background:#1e293b;" : "");
+          b.onclick = function() { avionSeleccionado = avion.id; renderRampa(); };
+          b.innerHTML = "<div style=\"font-weight:900; font-size:13px; color:#f1f5f9;\">" + avion.matricula + "</div>" +
+                        "<div style=\"font-size:10px; color:#94a3b8;\">" + sp.nombre + " • <span style=\"color:#38bdf8;\">" + avion.pernocta + "</span></div>";
+          cont.appendChild(b);
+        })(a);
+      }
+    }
+
+    function ajustarHoras(delta) {
+      var el = document.getElementById("rampaHoras");
+      el.value = Math.max(0.1, parseFloat(el.value) + delta).toFixed(1);
+    }
+
+    function descontarHoras() {
+      var a = null;
+      for (var i = 0; i < flota.length; i++) {
+        if (flota[i].id === avionSeleccionado) { a = flota[i]; break; }
+      }
+      var h = parseFloat(document.getElementById("rampaHoras").value) || 0;
+      var r = document.getElementById("rampaRuta").value || "Vuelo de Operaciones";
+
+      if (!a || h <= 0) {
+        alert("Por favor selecciona una aeronave activa en rampa.");
+        return;
+      }
+      a.voladasMes += h;
+      a.horasActuales += h;
+
+      var d = new Date();
+      var hora = pad(d.getHours()) + ":" + pad(d.getMinutes());
+      historial.unshift({ hora: hora, avion: a.matricula, horas: h.toFixed(1), ruta: r });
+      if (historial.length > 8) historial.pop();
+
+      guardarDatos();
+      renderHistorial();
+      alert("✅ Registradas +" + h.toFixed(1) + " h a " + a.matricula);
+    }
+
+    function renderHistorial() {
+      var cont = document.getElementById("listaHistorial");
+      if (!cont) return;
+      cont.innerHTML = "";
+      if (!historial.length) {
+        cont.innerHTML = '<span style="color:#64748b; font-size:11px;">No hay reportes recientes</span>';
+        return;
+      }
+      for (var i = 0; i < historial.length; i++) {
+        var h = historial[i];
+        var el = document.createElement("div");
+        el.style.cssText = "display:flex; justify-content:space-between; border-bottom:1px solid #1e293b; padding:4px 0; font-size:11px;";
+        el.innerHTML = '<span>' + h.hora + ' • <b>' + h.avion + '</b> (' + h.ruta + ')</span><b style="color:#34d399;">+' + h.horas + ' h</b>';
+        cont.appendChild(el);
+      }
+    }
+
+    function cambiarVista(vista) {
+      var tabs = ["flota", "simulador", "rampa"];
+      var mapViews = { "flota": "viewFlota", "simulador": "viewSimulador", "rampa": "viewRampa" };
+      for (var i = 0; i < tabs.length; i++) {
+        var t = tabs[i];
+        document.getElementById(mapViews[t]).className = "tab-content" + (t === vista ? " active" : "");
+      }
+      var btns = document.querySelectorAll("nav .nav-btn");
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].className = "nav-btn" + (tabs[j] === vista ? " active" : "");
+      }
+      if (vista === "simulador") poblarSelectorSimulador();
+      if (vista === "rampa") renderRampa();
+    }
+
+    // IMPORTADOR EXCEL AUTOMÁTICO CON NORMALIZACIÓN
+    function formatearFechaExcel(val) {
+      if (!val) return "";
+      if (val instanceof Date) {
+        return pad(val.getDate()) + "/" + pad(val.getMonth() + 1) + "/" + val.getFullYear();
+      }
+      if (typeof val === "number") {
+        var dt = new Date(Math.round((val - 25569) * 86400 * 1000));
+        if (!isNaN(dt.getTime())) {
+          return pad(dt.getUTCDate()) + "/" + pad(dt.getUTCMonth() + 1) + "/" + dt.getUTCFullYear();
+        }
+      }
+      var str = String(val).trim();
+      if (!str || str.toUpperCase() === "NAN") return "";
+      if (str.toLowerCase().indexOf("indefinid") !== -1) return "Indefinido";
+      if (str.length >= 10 && str.charAt(4) === "-" && str.charAt(7) === "-") {
+        var p = str.slice(0, 10).split("-");
+        return p[2] + "/" + p[1] + "/" + p[0];
+      }
+      return str;
+    }
+
+    function parseNumExcel(val) {
+      if (val === undefined || val === null || val === "") return NaN;
+      if (typeof val === "number") return Math.round(val * 10) / 10;
+      var s = String(val).trim().split(" ").join("");
+      if (!s || s.toUpperCase() === "NAN") return NaN;
+      if (s.indexOf(".") !== -1 && s.indexOf(",") !== -1) {
+        if (s.lastIndexOf(",") > s.lastIndexOf(".")) {
+          s = s.split(".").join("").replace(",", ".");
+        } else {
+          s = s.split(",").join("");
+        }
+      } else if (s.indexOf(",") !== -1) {
+        s = s.replace(",", ".");
+      }
+      var n = parseFloat(s);
+      return isNaN(n) ? NaN : Math.round(n * 10) / 10;
+    }
+
+    function importarParteExcel(event) {
+      var file = (event && event.target && event.target.files) ? event.target.files[0] : null;
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          var data = new Uint8Array(e.target.result);
+          var workbook = XLSX.read(data, { type: "array", cellDates: true });
+          var sheetName = workbook.SheetNames[0];
+          var worksheet = workbook.Sheets[sheetName];
+          var rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+
+          var actualizados = 0;
+          for (var i = 0; i < rows.length; i++) {
+            var r = rows[i];
+            if (!r || r.length < 5) continue;
+
+            var cola = "";
+            for (var colIdx = 0; colIdx < Math.min(5, r.length); colIdx++) {
+              var celda = String(r[colIdx] || "").trim().toUpperCase().split(" ").join("").split("-").join("");
+              if (celda.indexOf("EJC") === 0 && celda.length === 7) {
+                cola = "EJC-" + celda.slice(3);
+                break;
+              }
+            }
+            if (!cola) continue;
+
+            for (var j = 0; j < flota.length; j++) {
+              var matFlota = "EJC-" + String(flota[j].matricula || flota[j].id || "").toUpperCase().split(" ").join("").split("-").join("").replace("EJC", "");
+              if (matFlota === cola) {
+                var a = flota[j];
+
+                // Col D (r[3]): Estado
+                var estado = String(r[3] || a.estado).trim().toUpperCase();
+                if (estado && estado !== "NAN") a.estado = estado;
+
+                // Col G (r[6]): Horas actuales de aeronave
+                var tot = parseNumExcel(r[6]);
+                if (!isNaN(tot)) a.horasActuales = tot;
+
+                // Col H (r[7]): Próxima inspección
+                var prox = parseNumExcel(r[7]);
+                if (!isNaN(prox)) a.proximaFase = prox;
+
+                // Col I (r[8]): Tipo inspección
+                var tipoInsp = String(r[8] || "").trim();
+                if (tipoInsp && tipoInsp.toUpperCase() !== "NAN") a.tipoInsp = tipoInsp;
+
+                // Col J (r[9]): Remanente de inspección (50.0h en EJC-1147)
+                var rem = parseNumExcel(r[9]);
+                if (!isNaN(rem)) {
+                  a.remFase = rem;
+                } else if (!isNaN(a.proximaFase) && !isNaN(a.horasActuales)) {
+                  a.remFase = Math.max(0, Math.round((a.proximaFase - a.horasActuales) * 10) / 10);
+                }
+
+                // Col K (r[10]): Horas asignadas (20.0h en EJC-1147)
+                var asig = parseNumExcel(r[10]);
+                if (!isNaN(asig)) a.asignadas = asig;
+
+                // Col L (r[11]): Horas voladas (14.3h en EJC-1147)
+                var vol = parseNumExcel(r[11]);
+                if (!isNaN(vol)) a.voladasMes = vol;
+
+                // Col M (r[12]): Horas disponibles del mes (5.7h en EJC-1147)
+                var disp = parseNumExcel(r[12]);
+                if (!isNaN(disp)) {
+                  a.dispMes = disp;
+                } else if (!isNaN(a.asignadas) && !isNaN(a.voladasMes)) {
+                  a.dispMes = Math.max(0, Math.round((a.asignadas - a.voladasMes) * 10) / 10);
+                }
+
+                // Col Q (r[16]): Pernocta (Respeta movimientos manuales hechos por el S-3)
+                if (typeof a.manualBAMAV1 !== "boolean") {
+                  var rawPernocta = String(r[16] || "").trim();
+                  var normPernocta = normalizarTexto(rawPernocta);
+                  if (normPernocta.indexOf("BOGOTA") !== -1) {
+                    a.pernocta = "BOGOTÁ";
+                  } else if (normPernocta.indexOf("BAMAV") !== -1 || normPernocta.indexOf("HANGAR") !== -1) {
+                    a.pernocta = "BAMAV-1";
+                  } else if (rawPernocta && normPernocta !== "NAN") {
+                    a.pernocta = rawPernocta.toUpperCase();
+                  }
+                }
+
+                // Col R (r[17]): División Asignada
+                var divRaw = String(r[17] || "").trim().toUpperCase();
+                if (divRaw && divRaw !== "NAN" && divRaw !== "NONE") {
+                  a.divAsig = divRaw;
+                } else {
+                  a.divAsig = "";
+                }
+
+                // Col S (r[18]) y Col U (r[20]): Fechas de mantenimiento (Respeta fechas manuales)
+                var fIni = formatearFechaExcel(r[18]);
+                var fFin = formatearFechaExcel(r[20]);
+                if (fIni && !a.fechaIngresoManual) a.fechaIngresoManto = fIni;
+                if (fFin && !a.fechaSalidaManual) a.fechaSalidaManto = fFin;
+
+                // Col V (r[21]) y Col W (r[22]): Fase y Avance
+                var obsFase = String(r[21] || "").trim();
+                var avance = parseFloat(r[22]);
+                var obsFinal = "";
+                if (obsFase && obsFase.toLowerCase() !== "nan" && obsFase !== "0") {
+                  obsFinal = obsFase;
+                  if (!isNaN(avance) && avance > 0) {
+                    obsFinal += " (Avance: " + Math.round(avance * 100) + "%)";
+                  }
+                }
+                if (obsFinal) {
+                  a.obs = obsFinal;
+                  a.faseManto = obsFinal;
+                } else if (!esDeBAMAV1(a)) {
+                  a.obs = "";
+                }
+
+                actualizados++;
+                break;
+              }
+            }
+          }
+
+          guardarDatos();
+          event.target.value = "";
+          if (typeof guardarEnNube === "function") {
+            guardarEnNube(flota).then(function() {
+              alert("✅ Parte diario actualizado con éxito.\nAeronaves procesadas: " + actualizados + "\n☁️ Sincronizado en la nube para todos los dispositivos.");
+            });
+          } else {
+            alert("✅ Parte diario actualizado con éxito.\nAeronaves procesadas: " + actualizados);
+          }
+        } catch(err) {
+          alert("Error al procesar el archivo Excel: " + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
     }
 
     function toggleHangar() {
