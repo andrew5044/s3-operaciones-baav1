@@ -95,7 +95,7 @@
           <select id="simUnidad" onchange="actualizarUnidadObservacion(); calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
             <option value="">-- Seleccionar Unidad --</option>
             <option value="COEJC">COEJC</option>
-            <option value="SEJEC">SEJEC</option>
+            <option value="SECEJ">SECEJ</option>
             <option value="JEMOP">JEMOP</option>
             <option value="CEIGE">CEIGE</option>
             <option value="DAVAA">DAVAA</option>
@@ -385,7 +385,7 @@
         });
     }
 
-    // Subir a Firebase cuando cargas el Excel o editas horas
+    // Subir a Firebase cuando cargas el Excel, mueves aeronaves, editas fechas o descuentas horas en Rampa
     function guardarEnNube(datosFlota, silencioso) {
       // Bloqueo de seguridad: Si la flota viene vacía o incompleta, abortar para no borrar datos
       if (!datosFlota || !Array.isArray(datosFlota) || datosFlota.length < 20) {
@@ -394,6 +394,7 @@
       }
       asegurarBackup(datosFlota);
       if (!datosFlota || datosFlota.length === 0) return Promise.resolve();
+      enProcesoSincronizacion = true;
       if (!silencioso) actualizarBadgeNube("☁️ SUBIENDO...", "pill-amber");
 
       return fetch(FIREBASE_URL, {
@@ -403,39 +404,15 @@
       })
       .then(function(res) { return res.json(); })
       .then(function(resp) {
+        enProcesoSincronizacion = false;
         actualizarBadgeNube("☁️ NUBE: " + formatearHoraCorta(), "pill-green");
         return resp;
       })
       .catch(function(err) {
+        enProcesoSincronizacion = false;
         console.error("Error al guardar en Firebase:", err);
         alert("Atención: No se pudo subir a la nube. Revisa tu conexión a internet.");
       });
-    }
-
-    // Cambiar manualmente ubicación (Bogotá ⇄ BAMAV-1) y sincronizar a la nube
-    function toggleUbicacionAvion(cola) {
-      var av = flota.find(function(a) { return a.cola === cola; });
-      if (!av) return;
-
-      if (av.cat === "hangar") {
-        av.cat = "bogota";
-        av.manualOverride = false; // Vuelve al control estándar
-      } else {
-        av.cat = "hangar";
-        av.manualOverride = true;  // Bloqueo manual del S-3
-        if (!av.fechaIngresoManto) {
-          av.fechaIngresoManto = new Date().toISOString().slice(0, 10);
-        }
-        if (!av.fechaSalidaManto) {
-          av.fechaSalidaManto = "Indefinido";
-        }
-      }
-
-      guardarDatos();
-      renderFlota();
-      renderRampa();
-      poblarSelectorSimulador();
-      guardarEnNube(flota);
     }
 
     function guardarDatos() {
@@ -454,13 +431,9 @@
     }
 
     function esDeBAMAV1(a) {
-      if (a.manualBAMAV1 === true || a.pernocta === 'BAMAV-1') return true;
-      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
-      if (a.manualBAMAV1 === true || a.pernocta === 'BAMAV-1') return true;
-      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
-      if (a.manualBAMAV1 === true) return true;
-      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
       if (!a) return false;
+      if (a.manualBAMAV1 === true || a.pernocta === 'BAMAV-1') return true;
+      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
       var p = normalizarTexto(a.pernocta);
       var e = normalizarTexto(a.estado);
       var enHangar = p.indexOf("BAMAV") !== -1 || p.indexOf("HANGAR") !== -1;
@@ -479,7 +452,7 @@
 
       if (!av) return;
 
-      var actualmenteHangar = (av.manualBAMAV1 === true) || (av.pernocta === "BAMAV-1");
+      var actualmenteHangar = esDeBAMAV1(av);
 
       if (actualmenteHangar) {
         av.manualBAMAV1 = false;
@@ -498,13 +471,8 @@
         if (!av.fechaSalidaManto) av.fechaSalidaManto = "Indefinido";
       }
 
-      try { localStorage.setItem("BAAV1_FLOTA_DATA", JSON.stringify(flota)); } catch(e) {}
-      try { if (typeof CLAVE_STORE !== "undefined") localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
-
-      if (typeof renderFlota === "function") renderFlota();
-      if (typeof renderRampa === "function") { try { renderRampa(); } catch(e) {} }
-      if (typeof poblarSelectorSimulador === "function") { try { poblarSelectorSimulador(); } catch(e) {} }
-      if (typeof guardarEnNube === "function") { try { guardarEnNube(flota); } catch(e) {} }
+      guardarDatos();
+      guardarEnNube(flota);
     };
 
     window.editarFechaSalida = function(idAvion) {
@@ -526,15 +494,10 @@
       av.fechaSalidaManto = nueva;
       av.fechaSalidaManual = true; // ESCUDO: No permite que el Excel la cambie
 
-      try { localStorage.setItem("BAAV1_FLOTA_DATA", JSON.stringify(flota)); } catch(e) {}
-      try { if (typeof CLAVE_STORE !== "undefined") localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
-
-      if (typeof renderFlota === "function") renderFlota();
-      if (typeof guardarEnNube === "function") {
-        guardarEnNube(flota).then(function() {
-          alert('✅ Fecha de entrega actualizada a "' + nueva + '" y sincronizada en todos los dispositivos.');
-        });
-      }
+      guardarDatos();
+      guardarEnNube(flota).then(function() {
+        alert('✅ Fecha de entrega actualizada a "' + nueva + '" y sincronizada en todos los dispositivos.');
+      });
     };
 
     function renderFlota() {
@@ -557,14 +520,14 @@
 
         var asigNum = Number(a.asignadas) || 0;
         var volNum = Number(a.voladasMes || a.voladas) || 0;
-        var dispMes = Number(a.dispMes || (asigNum - volNum)) || 0;
-        if (dispMes < 0) dispMes = 0;
-        dispMes = dispMes.toFixed(1);
+        var dispMesNum = Math.max(0, asigNum - volNum);
+        a.dispMes = Math.round(dispMesNum * 10) / 10;
+        var dispMes = dispMesNum.toFixed(1);
 
         var pctMes = asigNum > 0 ? Math.min(100, Math.round((volNum / asigNum) * 100)) : 0;
         var totCelula = (Number(a.horasActuales || a.tot || a.celula) || 0).toFixed(1);
         var proxFase = (Number(a.proximaFase) || 0).toFixed(1);
-        var remFaseNum = Number(a.remFase || a.rem) || 0;
+        var remFaseNum = Number(a.remFase !== undefined ? a.remFase : a.rem) || 0;
         var remFase = remFaseNum.toFixed(1);
 
         var pillFase = "pill-green";
@@ -599,8 +562,8 @@
                 '<span onclick="event.stopPropagation(); editarFechaSalida(\'' + a.matricula + '\')" style="cursor:pointer; background:#1e293b; padding:2px 8px; border-radius:4px; border:1px solid #38bdf8; color:#38bdf8; font-weight:700;" title="Tocar para cambiar fecha">Entrega: ' + (a.fechaSalidaManto || 'Indefinido') + ' ✏️</span>' +
               '</div>' +
             '</div>' : '') +
-          ((a.remFase <= 5.0 && !esDeBAMAV1(a)) ?
-            '<div style="font-size:10px; color:#f87171; background:rgba(239, 68, 68, 0.15); border-left:2px solid #ef4444; padding:4px 8px; border-radius:4px; margin-top:6px; font-weight:700;">⚠️ ALERTA S-3: Remanente crítico de fase (' + a.remFase.toFixed(1) + ' h)</div>' : '') +
+          ((remFaseNum <= 5.0 && !esDeBAMAV1(a)) ?
+            '<div style="font-size:10px; color:#f87171; background:rgba(239, 68, 68, 0.15); border-left:2px solid #ef4444; padding:4px 8px; border-radius:4px; margin-top:6px; font-weight:700;">⚠️ ALERTA S-3: Remanente crítico de fase (' + remFase + ' h)</div>' : '') +
           '<div style="background:#0f172a; padding:8px 10px; border-radius:8px; border:1px solid #1e293b; margin-top:6px;">' +
             '<div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">' +
               '<span style="color:#94a3b8;">Cupo: <b style="color:#f1f5f9;">' + asigNum.toFixed(1) + ' h</b></span>' +
@@ -834,7 +797,7 @@
     }
     function normalizarObservacionConUnidad(texto, unidad) {
       var base = (texto || "").trim();
-      var patronApoyo = /\s+en apoyo\s+(?:a\s+la|al|a)\s+(COEJC|SEJEC|JEMOP|CEIGE|DAVAA|BRIAV32|BRIAV25|BIGAM)\.?$/i;
+      var patronApoyo = /\s+en apoyo\s+(?:a\s+la|al|a)\s+(COEJC|SECEJ|SEJEC|JEMOP|CEIGE|DAVAA|BRIAV32|BRIAV25|BIGAM)\.?$/i;
       // Elimina todos los sufijos de unidad previos para evitar duplicarlos al editar o cambiar la unidad.
       while (patronApoyo.test(base)) {
         base = base.replace(patronApoyo, "").trim();
@@ -1233,17 +1196,20 @@
     function descontarHoras() {
       var a = null;
       for (var i = 0; i < flota.length; i++) {
-        if (flota[i].id === avionSeleccionado) { a = flota[i]; break; }
+        if (flota[i].id === avionSeleccionado || flota[i].matricula === avionSeleccionado) { a = flota[i]; break; }
       }
-      var h = parseFloat(document.getElementById("rampaHoras").value) || 0;
+      var h = parseFloat(String(document.getElementById("rampaHoras").value).replace(",", ".")) || 0;
       var r = document.getElementById("rampaRuta").value || "Vuelo de Operaciones";
 
       if (!a || h <= 0) {
         alert("Por favor selecciona una aeronave activa en rampa.");
         return;
       }
-      a.voladasMes += h;
-      a.horasActuales += h;
+      a.voladasMes = Math.round(((Number(a.voladasMes) || 0) + h) * 10) / 10;
+      a.horasActuales = Math.round(((Number(a.horasActuales) || 0) + h) * 10) / 10;
+      a.dispMes = Math.max(0, Math.round(((Number(a.asignadas) || 0) - a.voladasMes) * 10) / 10);
+      var remActual = Number(a.remFase !== undefined ? a.remFase : a.rem) || Math.max(0, (Number(a.proximaFase) || 0) - (Number(a.horasActuales) || 0));
+      a.remFase = Math.max(0, Math.round((remActual - h) * 10) / 10);
 
       var d = new Date();
       var hora = pad(d.getHours()) + ":" + pad(d.getMinutes());
@@ -1252,7 +1218,9 @@
 
       guardarDatos();
       renderHistorial();
-      alert("✅ Registradas +" + h.toFixed(1) + " h a " + a.matricula);
+      guardarEnNube(flota).then(function() {
+        alert("✅ Registradas +" + h.toFixed(1) + " h a " + a.matricula + " (Restan en el mes: " + a.dispMes.toFixed(1) + " h | Rem Fase: " + a.remFase.toFixed(1) + " h)");
+      });
     }
 
     function renderHistorial() {
@@ -1332,6 +1300,13 @@
                 var tipoInsp = String(r[8] || "").trim();
                 if (tipoInsp) a.tipoInsp = tipoInsp;
 
+                var remExcel = parseFloat(r[9]);
+                if (!isNaN(remExcel) && remExcel >= 0) {
+                  a.remFase = Math.round(remExcel * 10) / 10;
+                } else if (!isNaN(prox) && !isNaN(tot)) {
+                  a.remFase = Math.max(0, Math.round((a.proximaFase - a.horasActuales) * 10) / 10);
+                }
+
                 var asig = parseFloat(r[10]);
                 if (!isNaN(asig)) a.asignadas = Math.round(asig * 10) / 10;
 
@@ -1340,10 +1315,13 @@
 
                 var disp = parseFloat(r[12]);
                 if (!isNaN(disp)) a.dispMes = Math.round(disp * 10) / 10;
+                else a.dispMes = Math.max(0, Math.round(((a.asignadas || 0) - (a.voladasMes || 0)) * 10) / 10);
 
                 var rawPernocta = String(r[16] || "").trim();
                 var normPernocta = normalizarTexto(rawPernocta);
-                if (normPernocta.indexOf("BOGOTA") !== -1) {
+                if (a.manualBAMAV1 === true) {
+                  a.pernocta = "BAMAV-1";
+                } else if (normPernocta.indexOf("BOGOTA") !== -1) {
                   a.pernocta = "BOGOTÁ";
                 } else if (normPernocta.indexOf("BAMAV") !== -1 || normPernocta.indexOf("HANGAR") !== -1) {
                   a.pernocta = "BAMAV-1";
