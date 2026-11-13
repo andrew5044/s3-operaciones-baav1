@@ -16,7 +16,7 @@
     .pill-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
     .pill-red { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
     .pill-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
-    .pill-purple { background: rgba(168, 85, 247, 0.22); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.5); }
+    .pill-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
     .pill-gray { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
     .bar-bg { background: #1e293b; height: 6px; border-radius: 999px; overflow: hidden; margin: 6px 0; }
     .bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s ease; }
@@ -27,23 +27,6 @@
     .nav-btn.active { color: #f59e0b; }
     .tab-content { display: none; padding: 12px 14px; }
     .tab-content.active { display: block; }
-
-    /* ESTILOS DEL AUTOCOMPLETADO FLOTANTE ORIGINAL */
-    .autocomplete-container { position: relative; width: 100%; }
-    .suggestions-list {
-      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-      background: #1e293b; border: 1px solid #38bdf8; border-radius: 10px;
-      max-height: 230px; overflow-y: auto; z-index: 999;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.85);
-      display: none;
-    }
-    .suggestions-list.show { display: block; }
-    .suggestion-item {
-      padding: 10px 12px; border-bottom: 1px solid rgba(51, 65, 85, 0.7); cursor: pointer;
-      display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #f8fafc;
-    }
-    .suggestion-item:last-child { border-bottom: none; }
-    .suggestion-item:active, .suggestion-item:hover { background: #0f172a; }
   </style>
 </head>
 <body>
@@ -98,57 +81,78 @@
     <div id="listaHangar"></div>
   </div>
 
-  <!-- PESTAÑA 2: PROGRAMACIÓN S-3 -->
+  <!-- PESTAÑA 2: PROGRAMACIÓN S-3 (MULTI-AERONAVE, PAX, CARGA, OBSERVACIONES) -->
   <div id="viewSimulador" class="tab-content">
     <div class="card" style="border-top:3px solid #38bdf8; margin-bottom:12px;">
       <div style="font-weight:900; font-size:13px; text-transform:uppercase; color:#38bdf8; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
         <span>⚡ PROGRAMACIÓN S-3 • PLANIFICACIÓN</span>
-        <span class="pill pill-green" id="badgeTotalACL">0 DISPONIBLES ACL</span>
+        <span class="pill pill-green" id="badgeTotalACL">0 DISPONIBLES EN BOGOTÁ</span>
       </div>
 
       <div style="display:flex; flex-direction:column; gap:10px;">
         <div>
-          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">1. Aeronave Operativa (Solo ACL)</label>
-          <select id="simSelAvion" onchange="alCambiarAvionSimulador()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
-            <option value="">-- Seleccionar Aeronave ACL --</option>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">Unidad</label>
+          <select id="simUnidad" onchange="actualizarUnidadObservacion(); calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+            <option value="">-- Seleccionar Unidad --</option>
+            <option value="COEJC">COEJC</option>
+            <option value="SEJEC">SEJEC</option>
+            <option value="JEMOP">JEMOP</option>
+            <option value="CEIGE">CEIGE</option>
+            <option value="DAVAA">DAVAA</option>
+            <option value="BRIAV32">BRIAV32</option>
+            <option value="BRIAV25">BRIAV25</option>
+            <option value="BIGAM">BIGAM</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">Tarea</label>
+          <select id="simTarea" onchange="actualizarSugerenciasObservacion(); calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+            <option value="">-- Seleccionar Tarea --</option>
+            <option value="MTM-C2">MTM-C2</option>
+            <option value="MA-OCI-SA">MA-OCI-SA</option>
+            <option value="MA-OCI">MA-OCI</option>
+            <option value="R-RA">R-RA</option>
+            <option value="MA-OCI-E">MA-OCI-E</option>
+            <option value="MA-OCI-M">MA-OCI-M</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Aeronave Operativa (Solo Bogotá)</label>
+          <select id="simSelAvion" onchange="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-weight:700; margin-top:4px;">
+            <option value="">-- Seleccionar Aeronave en Bogotá --</option>
           </select>
         </div>
 
-        <!-- 2. Apoyo a Unidad con selector rápido y autocompletado -->
-        <div class="autocomplete-container">
-          <label style="font-size:11px; color:#c084fc; font-weight:800; text-transform:uppercase;">2. En Apoyo a Unidad</label>
-          <input type="text" id="simUnidad" autocomplete="off" placeholder="Escribe o toca: COEJC, DIV01..DIV08, DAVAA, FUTCO..." onfocus="mostrarSugerenciasUnidad(this.value)" oninput="mostrarSugerenciasUnidad(this.value); calcularSimulacionRapida();" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #a855f7; color:#f8fafc; padding:10px; border-radius:8px; font-size:13px; font-weight:800; margin-top:4px;">
-          <div id="sugerenciasUnidad" class="suggestions-list"></div>
-        </div>
-
+        <!-- 2. Hora Salida (Fila independiente) -->
         <div>
-          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">3. Hora Salida (ETD)</label>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">2. Hora Salida (ETD)</label>
           <input type="time" id="simETD" value="08:00" onchange="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px 12px; border-radius:8px; font-weight:700; font-size:14px;">
         </div>
 
+        <!-- 3. Pasajeros (PAX) (Fila independiente abajo) -->
         <div>
-          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">4. Pasajeros (PAX)</label>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase; display:block; margin-bottom:4px;">3. Pasajeros (PAX)</label>
           <input type="number" id="simPax" placeholder="Ej: 8" min="0" oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px 12px; border-radius:8px; font-weight:700; font-size:14px;">
         </div>
 
+        <!-- Fila con Carga y Observaciones / Motivo de Vuelo -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div>
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">4. Carga Transportada</label>
+            <input type="text" id="simCarga" placeholder="Ej: 150 kg repuestos, valijas, etc." oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-size:12px; margin-top:4px;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">5. Observaciones / Motivo de Vuelo</label>
+            <input type="text" id="simObsMision" list="listaSugerenciasObservacion" placeholder="Escribe o selecciona el motivo del vuelo" oninput="actualizarSugerenciasObservacion(); calcularSimulacionRapida()" onblur="setTimeout(ocultarSugerenciasObservacion, 150); completarUnidadObservacion(); calcularSimulacionRapida()" autocomplete="off" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-size:12px; margin-top:4px;">
+            <div id="listaSugerenciasObservacion" style="display:none; position:relative; z-index:20; max-height:190px; overflow-y:auto; background:#111827; border:1px solid #334155; border-radius:8px; margin-top:4px;"></div>
+            <div style="font-size:10px; color:#64748b; margin-top:4px;">Sugerencias según la tarea. Puedes escribir y modificar libremente.</div>
+          </div>
+        </div>
+
         <div>
-          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">5. Carga Transportada</label>
-          <input type="text" id="simCarga" placeholder="Ej: 00 lbs., 150 kg repuestos, valijas..." oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-size:12px; margin-top:4px;">
-        </div>
-
-        <!-- 6. Observaciones / Motivo de Vuelo con Autocompletado Desplegable -->
-        <div class="autocomplete-container">
-          <label style="font-size:11px; color:#fbbf24; font-weight:800; text-transform:uppercase;">6. Observaciones / Motivo de Vuelo (Autocompletado ✨)</label>
-          <input type="text" id="simObsMision" autocomplete="off" placeholder="Escribe: comandante, div, relevo, apoyo, evacuacion..." onfocus="mostrarSugerenciasObs(this.value)" oninput="mostrarSugerenciasObs(this.value); calcularSimulacionRapida();" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #f59e0b; color:#f8fafc; padding:10px; border-radius:8px; font-size:12px; margin-top:4px;">
-          <div id="sugerenciasObs" class="suggestions-list"></div>
-        </div>
-
-        <!-- 7. Ruta con Autocompletado de Aeródromos -->
-        <div class="autocomplete-container">
-          <label style="font-size:11px; color:#38bdf8; font-weight:700; text-transform:uppercase;">7. Ruta (Escribe ICAO o Ciudad: skbo skmd sksr)</label>
-          <input type="text" id="simInputRuta" autocomplete="off" placeholder="Ej: skbo skmd sktq" oninput="mostrarSugerenciasRuta(this.value); calcularSimulacionRapida();" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #38bdf8; color:#f8fafc; padding:12px; border-radius:8px; font-weight:900; font-family:monospace; font-size:14px; text-transform:uppercase; margin-top:4px;">
-          <div id="sugerenciasRuta" class="suggestions-list"></div>
-          <div style="font-size:10px; color:#64748b; margin-top:3px;">Escribe los códigos OACI o nombre de ciudad separados por espacio.</div>
+          <label style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">6. Ruta (Escribe rápido: skbo skmd sksr)</label>
+          <input type="text" id="simInputRuta" placeholder="Ej: skbo skmd sktq" oninput="calcularSimulacionRapida()" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid #38bdf8; color:#f8fafc; padding:12px; border-radius:8px; font-weight:900; font-family:monospace; font-size:14px; text-transform:uppercase; margin-top:4px;">
+          <div style="font-size:10px; color:#64748b; margin-top:3px;">Escribe los ICAO separados por espacio o guión.</div>
         </div>
       </div>
     </div>
@@ -168,13 +172,18 @@
       </div>
 
       <!-- BOTONES DE ACCIÓN PARA EL RADIOPERADOR -->
-      <div id="panelEnvioRadio" style="display:none; margin-top:14px; flex-direction:column; gap:8px;">
+      <div id="panelEnvioRadio" style="display:none; margin-top:14px; display:flex; flex-direction:column; gap:8px;">
         <button onclick="enviarWhatsAppRadioperador()" style="width:100%; background:#25D366; border:none; color:#000; font-weight:900; padding:12px; border-radius:8px; cursor:pointer; font-size:13px; text-transform:uppercase; display:flex; align-items:center; justify-content:center; gap:8px;">
           <span>📲 Enviar Orden al Radioperador (WhatsApp)</span>
         </button>
         <button onclick="copiarTextoRadioperador()" class="btn-outline" style="width:100%; padding:10px; font-size:12px; font-weight:800; border-color:#38bdf8; color:#38bdf8; text-transform:uppercase;">
           📋 Copiar Formato al Portapapeles
         </button>
+        <div>
+          <label for="textoOrdenEditable" style="font-size:10px; color:#94a3b8; font-weight:800;">MENSAJE COMPLETO (EDITABLE)</label>
+          <textarea id="textoOrdenEditable" oninput="textoOrdenEditadoManualmente=true" rows="12" style="width:100%; background:#090d16; border:1px solid #334155; color:#f8fafc; padding:10px; border-radius:8px; font-size:12px; line-height:1.5; resize:vertical;"></textarea>
+          <button onclick="regenerarMensajeOrden()" class="btn-outline" style="width:100%; margin-top:6px; padding:8px; border-color:#f59e0b; color:#fbbf24;">↻ Regenerar mensaje desde los vuelos cargados</button>
+        </div>
       </div>
     </div>
   </div>
@@ -215,74 +224,7 @@
   </nav>
 
   <script>
-    var AEROPUERTOS = {"SKAD": {"nombre": "Acandí", "lat": 8.4981, "lon": -77.2739}, "SKAG": {"nombre": "Aguachica", "lat": 8.246, "lon": -73.581}, "SKAP": {"nombre": "Apiay", "lat": 4.0761, "lon": -73.5627}, "SKAC": {"nombre": "Araracuara", "lat": 0.6007, "lon": -72.3981}, "SKUC": {"nombre": "Arauca", "lat": 7.0689, "lon": -70.737}, "SKAR": {"nombre": "Armenia", "lat": 4.4518, "lon": -75.7662}, "SKBS": {"nombre": "Bahía Solano", "lat": 6.2031, "lon": -77.395}, "SKEJ": {"nombre": "Barrancabermeja", "lat": 7.0244, "lon": -73.8068}, "SKBM": {"nombre": "Barranco Minas", "lat": 3.4906, "lon": -69.81}, "SKBQ": {"nombre": "Barranquilla", "lat": 10.8886, "lon": -74.7818}, "SKBO": {"nombre": "Bogotá", "lat": 4.7014, "lon": -74.147}, "SKBG": {"nombre": "Bucaramanga", "lat": 7.1266, "lon": -73.1848}, "SKBU": {"nombre": "Buenaventura", "lat": 3.8196, "lon": -76.9899}, "SKBN": {"nombre": "Buenavista", "lat": 10.886, "lon": -72.901}, "SKCL": {"nombre": "Cali", "lat": 3.5431, "lon": -76.3817}, "SKCA": {"nombre": "Carimagua", "lat": 4.5647, "lon": -71.335}, "SKCG": {"nombre": "Cartagena", "lat": 10.4425, "lon": -75.5131}, "SKCR": {"nombre": "Carurú", "lat": 1.025, "lon": -71.3142}, "SKCD": {"nombre": "Condoto", "lat": 5.0717, "lon": -76.6806}, "SKCO": {"nombre": "Tumaco", "lat": 1.815, "lon": -78.75}, "SKCC": {"nombre": "Cúcuta", "lat": 7.9275, "lon": -72.5117}, "SKCP": {"nombre": "Capitanejo", "lat": 6.5275, "lon": -72.6958}, "SKCV": {"nombre": "Coveñas", "lat": 9.4011, "lon": -75.6983}, "SKCH": {"nombre": "Chigorodó", "lat": 7.6444, "lon": -76.6436}, "SKEB": {"nombre": "El Bagre", "lat": 7.5975, "lon": -74.8094}, "SKBC": {"nombre": "El Banco", "lat": 9.0264, "lon": -73.9744}, "SKFL": {"nombre": "Florencia", "lat": 1.5892, "lon": -75.5642}, "SKGI": {"nombre": "Girardot", "lat": 4.2764, "lon": -74.7967}, "SKGB": {"nombre": "Guabito", "lat": 3.4667, "lon": -76.5}, "SKGL": {"nombre": "Guapi", "lat": 2.57, "lon": -77.8978}, "SKIB": {"nombre": "Ibagué", "lat": 4.4214, "lon": -75.1333}, "SKIP": {"nombre": "Ipiales", "lat": 0.8622, "lon": -77.6719}, "SKLA": {"nombre": "La Chorrera", "lat": -1.455, "lon": -72.7919}, "SKLC": {"nombre": "La Macarena", "lat": 2.1794, "lon": -73.7881}, "SKLP": {"nombre": "La Pedrera", "lat": -1.3039, "lon": -69.4975}, "SKLR": {"nombre": "Larandia", "lat": 1.4783, "lon": -75.4853}, "SKLT": {"nombre": "Leticia", "lat": -4.1944, "lon": -69.9431}, "SKMD": {"nombre": "Medellín", "lat": 6.2204, "lon": -75.5904}, "SKRG": {"nombre": "Rionegro", "lat": 6.1645, "lon": -75.423}, "SKMR": {"nombre": "Montería", "lat": 8.8244, "lon": -75.8278}, "SKMU": {"nombre": "Mitú", "lat": 1.2535, "lon": -70.2341}, "SKNV": {"nombre": "Neiva", "lat": 2.9502, "lon": -75.294}, "SKOC": {"nombre": "Ocaña", "lat": 8.3147, "lon": -73.3589}, "SKOT": {"nombre": "Otú", "lat": 7.0108, "lon": -74.7156}, "SKPS": {"nombre": "Pasto", "lat": 1.3964, "lon": -77.2911}, "SKPZ": {"nombre": "Paz de Ariporo", "lat": 5.877, "lon": -71.8863}, "SKPE": {"nombre": "Pereira", "lat": 4.8125, "lon": -75.7397}, "SKPI": {"nombre": "Pitalito", "lat": 1.8569, "lon": -76.0858}, "SKPP": {"nombre": "Popayán", "lat": 2.4544, "lon": -76.6098}, "SKPC": {"nombre": "Puerto Carreño", "lat": 6.1851, "lon": -67.4926}, "SKPD": {"nombre": "Inírida", "lat": 3.8528, "lon": -67.9039}, "SKIN": {"nombre": "Inírida", "lat": 3.8528, "lon": -67.9039}, "SKLG": {"nombre": "Puerto Leguízamo", "lat": -0.182, "lon": -74.7712}, "SKUI": {"nombre": "Quibdó", "lat": 5.6908, "lon": -76.6414}, "SKRH": {"nombre": "Riohacha", "lat": 11.5262, "lon": -72.9267}, "SKSJ": {"nombre": "San José del Guaviare", "lat": 2.5767, "lon": -72.6397}, "SKSP": {"nombre": "San Pedro de Urabá", "lat": 8.2817, "lon": -76.3769}, "SKSA": {"nombre": "Saravena", "lat": 6.9504, "lon": -71.8562}, "SKSM": {"nombre": "Santa Marta", "lat": 11.1197, "lon": -74.2306}, "SKTM": {"nombre": "Tame", "lat": 6.451, "lon": -71.7601}, "SKTI": {"nombre": "Tolemaida", "lat": 4.2447, "lon": -74.6499}, "SKTL": {"nombre": "Tolemaida", "lat": 4.2447, "lon": -74.6499}, "SKTQ": {"nombre": "Tres Esquinas", "lat": 0.7492, "lon": -75.2333}, "SKSR": {"nombre": "Tres Esquinas", "lat": 0.7492, "lon": -75.2333}, "SKTU": {"nombre": "Turbo", "lat": 8.0772, "lon": -76.7289}, "SKQU": {"nombre": "Mariquita", "lat": 5.2133, "lon": -74.8833}, "SKUR": {"nombre": "Urrao", "lat": 6.3197, "lon": -76.1367}, "SKVP": {"nombre": "Valledupar", "lat": 10.4351, "lon": -73.2494}, "SKVV": {"nombre": "Villavicencio", "lat": 4.1684, "lon": -73.6147}, "SKYP": {"nombre": "Yopal", "lat": 5.3191, "lon": -72.3842}};
-
-    // Mapa inmutable de las Divisiones asignadas a los 4 Caravan
-    var DIVISION_CARAVAN = {
-      "EJC1133": "I-II",
-      "EJC1134": "IV-VI",
-      "EJC1138": "III-VII",
-      "EJC1140": "VIII"
-    };
-
-    function obtenerDivAsignada(a) {
-      if (!a) return "";
-      var idLimpio = String(a.id || a.matricula || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-      var d = String(a.divAsig || "").trim();
-      if (d && d !== "NAN" && d !== "NONE" && d !== "UNDEFINED") return d;
-      return DIVISION_CARAVAN[idLimpio] || "";
-    }
-
-    // Plantillas para el autocompletado desplegable de Motivo/Observaciones y Unidad
-    var PLANTILLAS_MISIONES = [
-      { texto: "Movimiento aéreo Sr. Comandante del Ejército Nacional", unidad: "COEJC", pax: 6, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Sr. Segundo Comandante del Ejército", unidad: "SECEJ", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Sr. Inspector General del Ejército", unidad: "CEIGE", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Sr. Comandante DAVAA", unidad: "DAVAA", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Estado Mayor Comando Ejército", unidad: "COEJC", pax: 6, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Comandante Primera División", unidad: "DIV01", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Comandante Segunda División", unidad: "DIV02", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Comandante Tercera División", unidad: "DIV03", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Comandante Cuarta División", unidad: "DIV04", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Comandante Quinta División", unidad: "DIV05", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Comandante Sexta División", unidad: "DIV06", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Comandante Séptima División", unidad: "DIV07", pax: 5, carga: "00 lbs." },
-      { texto: "Movimiento aéreo Comandante Octava División", unidad: "DIV08", pax: 5, carga: "00 lbs." },
-      { texto: "Transporte de personal y material en apoyo a la Primera División", unidad: "DIV01", pax: 8, carga: "200 lbs." },
-      { texto: "Transporte de personal y material en apoyo a la Segunda División", unidad: "DIV02", pax: 8, carga: "200 lbs." },
-      { texto: "Transporte de personal y material en apoyo a la Tercera División", unidad: "DIV03", pax: 8, carga: "200 lbs." },
-      { texto: "Transporte de personal y material en apoyo a la Cuarta División", unidad: "DIV04", pax: 8, carga: "200 lbs." },
-      { texto: "Transporte de personal y material en apoyo a la Quinta División", unidad: "DIV05", pax: 8, carga: "200 lbs." },
-      { texto: "Transporte de personal y material en apoyo a la Sexta División", unidad: "DIV06", pax: 8, carga: "200 lbs." },
-      { texto: "Transporte de personal y material en apoyo a la Séptima División", unidad: "DIV07", pax: 8, carga: "200 lbs." },
-      { texto: "Transporte de personal y material en apoyo a la Octava División", unidad: "DIV08", pax: 8, carga: "200 lbs." },
-      { texto: "Sostenimiento de aviación transporte de técnicos y repuestos", unidad: "DAVAA", pax: 4, carga: "350 lbs." },
-      { texto: "Relevo de tripulaciones y sostenimiento de aviación", unidad: "BAAV1", pax: 4, carga: "Equipaje" },
-      { texto: "Vuelo de entrenamiento y estandarización de tripulaciones", unidad: "BAAV1", pax: 3, carga: "00 lbs." },
-      { texto: "Vuelo de instrucción de pilotos", unidad: "BAAV1", pax: 3, carga: "00 lbs." },
-      { texto: "Evacuación aeromédica de personal militar", unidad: "DAVAA", pax: 3, carga: "Equipo médico" }
-    ];
-
-    var UNIDADES_LISTA = [
-      { cod: "COEJC", desc: "Comando del Ejército Nacional" },
-      { cod: "SECEJ", desc: "Segundo Comando del Ejército" },
-      { cod: "DAVAA", desc: "División de Aviación Asalto Aéreo" },
-      { cod: "DIV01", desc: "Primera División del Ejército" },
-      { cod: "DIV02", desc: "Segunda División del Ejército" },
-      { cod: "DIV03", desc: "Tercera División del Ejército" },
-      { cod: "DIV04", desc: "Cuarta División del Ejército" },
-      { cod: "DIV05", desc: "Quinta División del Ejército" },
-      { cod: "DIV06", desc: "Sexta División del Ejército" },
-      { cod: "DIV07", desc: "Séptima División del Ejército" },
-      { cod: "DIV08", desc: "Octava División del Ejército" },
-      { cod: "DIV01 - DIV02", desc: "Apoyo Primera y Segunda División" },
-      { cod: "DIV03 - DIV07", desc: "Apoyo Tercera y Séptima División" },
-      { cod: "DIV04 - DIV06", desc: "Apoyo Cuarta y Sexta División" },
-      { cod: "FUTCO", desc: "Fuerza de Tarea Conjunta Omega" },
-      { cod: "FUDRA", desc: "Fuerza de Despliegue Rápido" },
-      { cod: "BRACNA", desc: "Brigada Contra el Narcotráfico" },
-      { cod: "BAAV1", desc: "Batallón de Aviación No. 1" }
-    ];
+    var AEROPUERTOS = {"SKAD": {"nombre": "Acandí", "lat": 8.4981, "lon": -77.2739}, "SKAG": {"nombre": "Aguachica", "lat": 8.246, "lon": -73.581}, "SKAP": {"nombre": "Apiay", "lat": 4.0761, "lon": -73.5627}, "SKAC": {"nombre": "Araracuara", "lat": 0.6007, "lon": -72.3981}, "SKUC": {"nombre": "Arauca", "lat": 7.0689, "lon": -70.737}, "SKAR": {"nombre": "Armenia", "lat": 4.4518, "lon": -75.7662}, "SKBS": {"nombre": "Bahía Solano", "lat": 6.2031, "lon": -77.395}, "SKEJ": {"nombre": "Barrancabermeja", "lat": 7.0244, "lon": -73.8068}, "SKBM": {"nombre": "Barranco Minas", "lat": 3.4906, "lon": -69.81}, "SKBQ": {"nombre": "Barranquilla", "lat": 10.8886, "lon": -74.7818}, "SKBO": {"nombre": "Bogotá", "lat": 4.7014, "lon": -74.147}, "SKBG": {"nombre": "Bucaramanga", "lat": 7.1266, "lon": -73.1848}, "SKBU": {"nombre": "Buenaventura", "lat": 3.8196, "lon": -76.9899}, "SKBN": {"nombre": "Buenavista", "lat": 10.886, "lon": -72.901}, "SKCL": {"nombre": "Cali", "lat": 3.5431, "lon": -76.3817}, "SKCA": {"nombre": "Carimagua", "lat": 4.5647, "lon": -71.335}, "SKCG": {"nombre": "Cartagena", "lat": 10.4425, "lon": -75.5131}, "SKCR": {"nombre": "Carurú", "lat": 1.025, "lon": -71.3142}, "SKCD": {"nombre": "Condoto", "lat": 5.0717, "lon": -76.6806}, "SKCO": {"nombre": "Tumaco", "lat": 1.815, "lon": -78.75}, "SKCC": {"nombre": "Cúcuta", "lat": 7.9275, "lon": -72.5117}, "SKCP": {"nombre": "Capiitanejo", "lat": 6.5275, "lon": -72.6958}, "SKCV": {"nombre": "Coveñas", "lat": 9.4011, "lon": -75.6983}, "SKCH": {"nombre": "Chigorodó", "lat": 7.6444, "lon": -76.6436}, "SKEB": {"nombre": "El Bagre", "lat": 7.5975, "lon": -74.8094}, "SKBC": {"nombre": "El Banco", "lat": 9.0264, "lon": -73.9744}, "SKFL": {"nombre": "Florencia", "lat": 1.5892, "lon": -75.5642}, "SKGI": {"nombre": "Girardot", "lat": 4.2764, "lon": -74.7967}, "SKGB": {"nombre": "Guabito", "lat": 3.4667, "lon": -76.5}, "SKGL": {"nombre": "Guapi", "lat": 2.57, "lon": -77.8978}, "SKIB": {"nombre": "Ibagué", "lat": 4.4214, "lon": -75.1333}, "SKIP": {"nombre": "Ipiales", "lat": 0.8622, "lon": -77.6719}, "SKLA": {"nombre": "La Chorrera", "lat": -1.455, "lon": -72.7919}, "SKLC": {"nombre": "La Macarena", "lat": 2.1794, "lon": -73.7881}, "SKLP": {"nombre": "La Pedrera", "lat": -1.3039, "lon": -69.4975}, "SKLR": {"nombre": "Larandia", "lat": 1.4783, "lon": -75.4853}, "SKLT": {"nombre": "Leticia", "lat": -4.1944, "lon": -69.9431}, "SKMD": {"nombre": "Medellín", "lat": 6.2204, "lon": -75.5904}, "SKRG": {"nombre": "Rionegro", "lat": 6.1645, "lon": -75.423}, "SKMR": {"nombre": "Montería", "lat": 8.8244, "lon": -75.8278}, "SKMU": {"nombre": "Mitú", "lat": 1.2535, "lon": -70.2341}, "SKNV": {"nombre": "Neiva", "lat": 2.9502, "lon": -75.294}, "SKOC": {"nombre": "Ocaña", "lat": 8.3147, "lon": -73.3589}, "SKOT": {"nombre": "Otú", "lat": 7.0108, "lon": -74.7156}, "SKPS": {"nombre": "Pasto", "lat": 1.3964, "lon": -77.2911}, "SKPZ": {"nombre": "Paz de Ariporo", "lat": 5.877, "lon": -71.8863}, "SKPE": {"nombre": "Pereira", "lat": 4.8125, "lon": -75.7397}, "SKPI": {"nombre": "Pitalito", "lat": 1.8569, "lon": -76.0858}, "SKPP": {"nombre": "Popayán", "lat": 2.4544, "lon": -76.6098}, "SKPC": {"nombre": "Puerto Carreño", "lat": 6.1851, "lon": -67.4926}, "SKPD": {"nombre": "Inírida", "lat": 3.8528, "lon": -67.9039}, "SKIN": {"nombre": "Inírida", "lat": 3.8528, "lon": -67.9039}, "SKLG": {"nombre": "Puerto Leguízamo", "lat": -0.182, "lon": -74.7712}, "SKUI": {"nombre": "Quibdó", "lat": 5.6908, "lon": -76.6414}, "SKRH": {"nombre": "Riohacha", "lat": 11.5262, "lon": -72.9267}, "SKSJ": {"nombre": "San José del Guaviare", "lat": 2.5767, "lon": -72.6397}, "SKSP": {"nombre": "San Pedro de Urabá", "lat": 8.2817, "lon": -76.3769}, "SKSA": {"nombre": "Saravena", "lat": 6.9504, "lon": -71.8562}, "SKSM": {"nombre": "Santa Marta", "lat": 11.1197, "lon": -74.2306}, "SKTM": {"nombre": "Tame", "lat": 6.451, "lon": -71.7601}, "SKTI": {"nombre": "Tolemaida", "lat": 4.2447, "lon": -74.6499}, "SKTL": {"nombre": "Tolemaida", "lat": 4.2447, "lon": -74.6499}, "SKTQ": {"nombre": "Tres Esquinas", "lat": 0.7492, "lon": -75.2333}, "SKSR": {"nombre": "Tres Esquinas", "lat": 0.7492, "lon": -75.2333}, "SKTU": {"nombre": "Turbo", "lat": 8.0772, "lon": -76.7289}, "SKQU": {"nombre": "Mariquita", "lat": 5.2133, "lon": -74.8833}, "SKUR": {"nombre": "Urrao", "lat": 6.3197, "lon": -76.1367}, "SKVP": {"nombre": "Valledupar", "lat": 10.4351, "lon": -73.2494}, "SKVV": {"nombre": "Villavicencio", "lat": 4.1684, "lon": -73.6147}, "SKYP": {"nombre": "Yopal", "lat": 5.3191, "lon": -72.3842}};
 
     function distanciaNM(lat1, lon1, lat2, lon2) {
       var R = 3440.065;
@@ -292,31 +234,6 @@
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon/2) * Math.sin(dLon/2);
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
-
-    function parseNum(val) {
-      if (val === undefined || val === null || val === "") return NaN;
-      if (typeof val === "number") return val;
-      var s = String(val).trim();
-      if (!s) return NaN;
-      if (s.indexOf(",") !== -1 && s.indexOf(".") !== -1) {
-        if (s.lastIndexOf(",") > s.lastIndexOf(".")) {
-          s = s.replace(/\./g, "").replace(",", ".");
-        } else {
-          s = s.replace(/,/g, "");
-        }
-      } else if (s.indexOf(",") !== -1) {
-        s = s.replace(",", ".");
-      }
-      return parseFloat(s);
-    }
-
-    function obtenerRemanenteFase(a) {
-      var calc = (parseNum(a.proximaFase) || 0) - (parseNum(a.horasActuales) || 0);
-      var guardado = parseNum(a.remFase);
-      if (calc > 0.05) return Math.round(calc * 10) / 10;
-      if (!isNaN(guardado) && guardado > 0) return Math.round(guardado * 10) / 10;
-      return Math.max(0, Math.round(calc * 10) / 10);
     }
 
     var CONFIG = {
@@ -344,7 +261,7 @@
       {"id": "EJC1138", "matricula": "EJC-1138", "modelo": "C-208B EX", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 3356.2, "proximaFase": 3400.0, "tipoInsp": "FASE D6", "remFase": 43.8, "asignadas": 30.0, "voladasMes": 13.1, "dispMes": 16.9, "pernocta": "MEDELLÍN", "divAsig": "III-VII", "obs": ""},
       {"id": "EJC1140", "matricula": "EJC-1140", "modelo": "C-208B EX", "tipoSpecs": "C-208B", "estado": "ACL", "horasActuales": 2517.6, "proximaFase": 2600.0, "tipoInsp": "FASE D6", "remFase": 82.4, "asignadas": 35.0, "voladasMes": 13.9, "dispMes": 21.1, "pernocta": "YOPAL", "divAsig": "VIII", "obs": ""},
       {"id": "EJC1146", "matricula": "EJC-1146", "modelo": "AN-32 A", "tipoSpecs": "AN-32", "estado": "ACL", "horasActuales": 10976.5, "proximaFase": 11000.0, "tipoInsp": "FASE 100 HORAS", "remFase": 23.5, "asignadas": 25.0, "voladasMes": 11.4, "dispMes": 13.6, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
-      {"id": "EJC1147", "matricula": "EJC-1147", "modelo": "AN-32 B", "tipoSpecs": "AN-32", "estado": "ACL", "horasActuales": 6750.0, "proximaFase": 6800.0, "tipoInsp": "FASE 50 HORAS", "remFase": 35.7, "asignadas": 20.0, "voladasMes": 14.3, "dispMes": 5.7, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
+      {"id": "EJC1147", "matricula": "EJC-1147", "modelo": "AN-32 B", "tipoSpecs": "AN-32", "estado": "ACL", "horasActuales": 6750.0, "proximaFase": 6750.0, "tipoInsp": "FASE 50 HORAS", "remFase": 0.0, "asignadas": 20.0, "voladasMes": 14.3, "dispMes": 5.7, "pernocta": "BOGOTÁ", "divAsig": "", "obs": ""},
       {"id": "EJC1132", "matricula": "EJC-1132", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "AMP", "horasActuales": 6209.9, "proximaFase": 6210.0, "tipoInsp": "FASE D6", "remFase": 0.1, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "FASE DOC 6 (Avance: 43%)"},
       {"id": "EJC1136", "matricula": "EJC-1136", "modelo": "C-208B", "tipoSpecs": "C-208B", "estado": "AMP", "horasActuales": 4000.0, "proximaFase": 4000.0, "tipoInsp": "FASE D6", "remFase": 0.0, "asignadas": 20.1, "voladasMes": 1.4, "dispMes": 18.7, "pernocta": "BAMAV-1", "divAsig": "", "obs": "FASE (Avance: 13%)"},
       {"id": "EJC1117", "matricula": "EJC-1117", "modelo": "B-200", "tipoSpecs": "B-200", "estado": "PAR", "horasActuales": 12727.1, "proximaFase": 12793.4, "tipoInsp": "FASE I Y II", "remFase": 66.3, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "TBO"},
@@ -358,7 +275,22 @@
       {"id": "EJC1129", "matricula": "EJC-1129", "modelo": "C-212", "tipoSpecs": "C-212", "estado": "APB", "horasActuales": 9053.4, "proximaFase": 9096.1, "tipoInsp": "FASE A 150 HORAS", "remFase": 42.7, "asignadas": 0.0, "voladasMes": 0.0, "dispMes": 0.0, "pernocta": "BAMAV-1", "divAsig": "", "obs": "Plan de Baja 00022392 DAVAA"}
     ];
 
-    var CLAVE_STORE = "BAAV1_FLOTA_ONLINE_V30";
+    // Limpieza forzada de versiones antiguas de cache
+    try {
+      localStorage.removeItem("BAAV1_FLOTA_DATA");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V1");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V2");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V3");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V4");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V5");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V6");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V7");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V8");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V9");
+      localStorage.removeItem("BAAV1_FLOTA_DATA_V10");
+    } catch(e) {}
+
+    var CLAVE_STORE = "BAAV1_FLOTA_ONLINE_V18";
     var datosGuardados = null;
     try { datosGuardados = JSON.parse(localStorage.getItem(CLAVE_STORE)); } catch(e) {}
     var flota = (datosGuardados && Array.isArray(datosGuardados) && datosGuardados.length > 0) ? datosGuardados : FLOTA_DEFAULT;
@@ -366,12 +298,28 @@
     var historial = JSON.parse(localStorage.getItem("BAAV1_HIST_PROD_1")) || [];
     var hangarOculto = false;
 
+    // --- CAPA DE SEGURIDAD Y RESPALDOS INMUTABLES ---
     var CLAVE_BACKUP = "BAAV1_BACKUP_EMERGENCIA_SEGURA";
 
+    // Guarda una copia de seguridad válida
     function asegurarBackup(datos) {
       if (datos && Array.isArray(datos) && datos.length >= 20) {
         try { localStorage.setItem(CLAVE_BACKUP, JSON.stringify(datos)); } catch(e) {}
       }
+    }
+
+    // Descarga un archivo JSON de respaldo directamente al dispositivo
+    function exportarRespaldoSeguridad() {
+      if (!flota || flota.length === 0) {
+        alert("No hay datos cargados para respaldar.");
+        return;
+      }
+      var blob = new Blob([JSON.stringify(flota, null, 2)], { type: "application/json" });
+      var a = document.createElement("a");
+      var fecha = new Date().toISOString().slice(0, 10);
+      a.href = URL.createObjectURL(blob);
+      a.download = "BAAV1_RESPALDO_FLOTA_" + fecha + ".json";
+      a.click();
     }
 
     var FIREBASE_URL = "https://baav1-d1225-default-rtdb.firebaseio.com/flota.json";
@@ -393,6 +341,7 @@
       }
     }
 
+    // Descarga en tiempo real desde Firebase
     function sincronizarDesdeNube(silencioso) {
       if (enProcesoSincronizacion) return;
       enProcesoSincronizacion = true;
@@ -411,9 +360,6 @@
           }
 
           if (arr && arr.length >= 20) {
-            for (var k = 0; k < arr.length; k++) {
-              arr[k].divAsig = obtenerDivAsignada(arr[k]);
-            }
             flota = arr;
             try { localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
             renderFlota();
@@ -421,31 +367,33 @@
             poblarSelectorSimulador();
             actualizarBadgeNube("☁️ NUBE: " + formatearHoraCorta(), "pill-green");
           } else {
+            // Si la base de datos en Firebase está en blanco o null, la poblamos de inmediato
             guardarEnNube(flota, true);
           }
         })
         .catch(function(err) {
           enProcesoSincronizacion = false;
+          console.warn("Sin respuesta de Firebase, usando respaldo seguro:", err);
           var backup = null;
           try { backup = JSON.parse(localStorage.getItem(CLAVE_BACKUP)); } catch(e) {}
           if (backup && backup.length >= 20) {
             flota = backup;
             renderFlota();
             renderRampa();
-            poblarSelectorSimulador();
           }
           actualizarBadgeNube("LOCAL (OFFLINE)", "pill-amber");
         });
     }
 
+    // Subir a Firebase cuando cargas el Excel o editas horas
     function guardarEnNube(datosFlota, silencioso) {
+      // Bloqueo de seguridad: Si la flota viene vacía o incompleta, abortar para no borrar datos
       if (!datosFlota || !Array.isArray(datosFlota) || datosFlota.length < 20) {
+        console.warn("Seguridad activada: Intento de guardar datos incompletos o vacíos bloqueado.");
         return Promise.resolve();
       }
-      for (var k = 0; k < datosFlota.length; k++) {
-        datosFlota[k].divAsig = obtenerDivAsignada(datosFlota[k]);
-      }
       asegurarBackup(datosFlota);
+      if (!datosFlota || datosFlota.length === 0) return Promise.resolve();
       if (!silencioso) actualizarBadgeNube("☁️ SUBIENDO...", "pill-amber");
 
       return fetch(FIREBASE_URL, {
@@ -460,13 +408,37 @@
       })
       .catch(function(err) {
         console.error("Error al guardar en Firebase:", err);
+        alert("Atención: No se pudo subir a la nube. Revisa tu conexión a internet.");
       });
     }
 
-    function guardarDatos() {
-      for (var k = 0; k < flota.length; k++) {
-        flota[k].divAsig = obtenerDivAsignada(flota[k]);
+    // Cambiar manualmente ubicación (Bogotá ⇄ BAMAV-1) y sincronizar a la nube
+    function toggleUbicacionAvion(cola) {
+      var av = flota.find(function(a) { return a.cola === cola; });
+      if (!av) return;
+
+      if (av.cat === "hangar") {
+        av.cat = "bogota";
+        av.manualOverride = false; // Vuelve al control estándar
+      } else {
+        av.cat = "hangar";
+        av.manualOverride = true;  // Bloqueo manual del S-3
+        if (!av.fechaIngresoManto) {
+          av.fechaIngresoManto = new Date().toISOString().slice(0, 10);
+        }
+        if (!av.fechaSalidaManto) {
+          av.fechaSalidaManto = "Indefinido";
+        }
       }
+
+      guardarDatos();
+      renderFlota();
+      renderRampa();
+      poblarSelectorSimulador();
+      guardarEnNube(flota);
+    }
+
+    function guardarDatos() {
       try {
         localStorage.setItem(CLAVE_STORE, JSON.stringify(flota));
         localStorage.setItem("BAAV1_HIST_PROD_1", JSON.stringify(historial));
@@ -482,9 +454,13 @@
     }
 
     function esDeBAMAV1(a) {
+      if (a.manualBAMAV1 === true || a.pernocta === 'BAMAV-1') return true;
+      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
+      if (a.manualBAMAV1 === true || a.pernocta === 'BAMAV-1') return true;
+      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
+      if (a.manualBAMAV1 === true) return true;
+      if (a.manualBAMAV1 === false && a.pernocta === 'BOGOTÁ') return false;
       if (!a) return false;
-      if (a.manualBAMAV1 === true || a.pernocta === "BAMAV-1") return true;
-      if (a.manualBAMAV1 === false && normalizarTexto(a.pernocta).indexOf("BOGOTA") !== -1) return false;
       var p = normalizarTexto(a.pernocta);
       var e = normalizarTexto(a.estado);
       var enHangar = p.indexOf("BAMAV") !== -1 || p.indexOf("HANGAR") !== -1;
@@ -494,60 +470,71 @@
 
     window.toggleUbicacionAvion = function(idAvion) {
       if (!flota || !Array.isArray(flota)) return;
-      var target = String(idAvion).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-
+      var target = String(idAvion).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
       var av = flota.find(function(a) {
-        var m = a.matricula ? String(a.matricula).replace(/[^A-Za-z0-9]/g, "").toUpperCase() : "";
-        var id = a.id ? String(a.id).replace(/[^A-Za-z0-9]/g, "").toUpperCase() : "";
+        var m = a.matricula ? String(a.matricula).replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
+        var id = a.id ? String(a.id).replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
         return m === target || id === target;
       });
 
       if (!av) return;
 
-      var actualmenteHangar = esDeBAMAV1(av);
+      var actualmenteHangar = (av.manualBAMAV1 === true) || (av.pernocta === "BAMAV-1");
 
       if (actualmenteHangar) {
         av.manualBAMAV1 = false;
         av.pernocta = "BOGOTÁ";
-        av.fechaIngresoManto = "";
-        av.fechaSalidaManto = "";
-        av.fechaSalidaManual = false;
+        // Al retirar la aeronave de mantenimiento, limpiar los datos del ingreso anterior.
+        delete av.fechaIngresoManto;
+        delete av.fechaSalidaManto;
+        delete av.fechaSalidaManual;
       } else {
-        var hoy = new Date();
-        var dStr = pad(hoy.getDate()) + "/" + pad(hoy.getMonth() + 1) + "/" + hoy.getFullYear();
         av.manualBAMAV1 = true;
         av.pernocta = "BAMAV-1";
-        if (!av.fechaIngresoManto) av.fechaIngresoManto = dStr;
+        if (!av.fechaIngresoManto) {
+          var fechaIngreso = new Date();
+          av.fechaIngresoManto = pad(fechaIngreso.getDate()) + "/" + pad(fechaIngreso.getMonth() + 1) + "/" + fechaIngreso.getFullYear();
+        }
         if (!av.fechaSalidaManto) av.fechaSalidaManto = "Indefinido";
       }
 
-      guardarDatos();
-      guardarEnNube(flota);
+      try { localStorage.setItem("BAAV1_FLOTA_DATA", JSON.stringify(flota)); } catch(e) {}
+      try { if (typeof CLAVE_STORE !== "undefined") localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
+
+      if (typeof renderFlota === "function") renderFlota();
+      if (typeof renderRampa === "function") { try { renderRampa(); } catch(e) {} }
+      if (typeof poblarSelectorSimulador === "function") { try { poblarSelectorSimulador(); } catch(e) {} }
+      if (typeof guardarEnNube === "function") { try { guardarEnNube(flota); } catch(e) {} }
     };
 
     window.editarFechaSalida = function(idAvion) {
       if (!flota || !Array.isArray(flota)) return;
-      var target = String(idAvion).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+      var target = String(idAvion).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
       var av = flota.find(function(a) {
-        var m = a.matricula ? String(a.matricula).replace(/[^A-Za-z0-9]/g, "").toUpperCase() : "";
-        var id = a.id ? String(a.id).replace(/[^A-Za-z0-9]/g, "").toUpperCase() : "";
+        var m = a.matricula ? String(a.matricula).replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
+        var id = a.id ? String(a.id).replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
         return m === target || id === target;
       });
       if (!av) return;
 
-      var actual = av.fechaSalidaManto || "Indefinido";
+      var actual = av.fechaSalidaManto || 'Indefinido';
       var nueva = prompt('Modificar fecha estimada de salida/entrega para ' + av.matricula + ':\n(Ej: 25/11/2026, 2026-11-25 o escribe "Indefinido")', actual);
       if (nueva === null) return;
       nueva = nueva.trim();
-      if (!nueva) nueva = "Indefinido";
+      if (!nueva) nueva = 'Indefinido';
 
       av.fechaSalidaManto = nueva;
-      av.fechaSalidaManual = true;
+      av.fechaSalidaManual = true; // ESCUDO: No permite que el Excel la cambie
 
-      guardarDatos();
-      guardarEnNube(flota).then(function() {
-        alert('✅ Fecha de entrega actualizada a "' + nueva + '" y sincronizada en todos los dispositivos.');
-      });
+      try { localStorage.setItem("BAAV1_FLOTA_DATA", JSON.stringify(flota)); } catch(e) {}
+      try { if (typeof CLAVE_STORE !== "undefined") localStorage.setItem(CLAVE_STORE, JSON.stringify(flota)); } catch(e) {}
+
+      if (typeof renderFlota === "function") renderFlota();
+      if (typeof guardarEnNube === "function") {
+        guardarEnNube(flota).then(function() {
+          alert('✅ Fecha de entrega actualizada a "' + nueva + '" y sincronizada en todos los dispositivos.');
+        });
+      }
     };
 
     function renderFlota() {
@@ -566,36 +553,28 @@
 
       for (var i = 0; i < flota.length; i++) {
         var a = flota[i];
-        a.divAsig = obtenerDivAsignada(a);
+        if (!a) continue;
 
-        var asigNum = parseNum(a.asignadas) || 0;
-        var volNum = parseNum(a.voladasMes) || 0;
-        var hrsActNum = parseNum(a.horasActuales) || 0;
-        var proxFaseNum = parseNum(a.proximaFase) || 0;
+        var asigNum = Number(a.asignadas) || 0;
+        var volNum = Number(a.voladasMes || a.voladas) || 0;
+        var dispMes = Number(a.dispMes || (asigNum - volNum)) || 0;
+        if (dispMes < 0) dispMes = 0;
+        dispMes = dispMes.toFixed(1);
 
-        totAsig += asigNum;
-        totVol += volNum;
-        var sp = CONFIG[a.tipoSpecs] || { nombre: a.modelo, maxPax: 8, velKT: 180 };
-
-        var remFaseNum = obtenerRemanenteFase(a);
-        a.remFase = remFaseNum;
+        var pctMes = asigNum > 0 ? Math.min(100, Math.round((volNum / asigNum) * 100)) : 0;
+        var totCelula = (Number(a.horasActuales || a.tot || a.celula) || 0).toFixed(1);
+        var proxFase = (Number(a.proximaFase) || 0).toFixed(1);
+        var remFaseNum = Number(a.remFase || a.rem) || 0;
         var remFase = remFaseNum.toFixed(1);
-
-        var dispMesNum = Math.max(0, asigNum - volNum);
-        a.dispMes = Math.round(dispMesNum * 10) / 10;
-        var dispMes = dispMesNum.toFixed(1);
-        var pctMes = asigNum > 0 ? Math.min(100, (volNum / asigNum) * 100) : 0;
 
         var pillFase = "pill-green";
         if (remFaseNum <= 5.0) pillFase = "pill-red";
-        else if (remFaseNum <= 15.0) pillFase = "pill-amber";
+        else if (remFaseNum <= 20.0) pillFase = "pill-amber";
 
-        // Pastilla morada idéntica a la versión original
-        var divTag = a.divAsig ? '<span class="pill pill-purple" style="margin-left:4px;">Div ' + a.divAsig + '</span>' : '';
+        var sp = (typeof CONFIG !== "undefined" && CONFIG[a.tipoSpecs || a.modelo]) ? CONFIG[a.tipoSpecs || a.modelo] : { nombre: a.modelo || "Aeronave", maxPax: 7, velKT: 200 };
 
         var card = document.createElement("div");
         card.className = "card";
-
         var btnAccion = esDeBAMAV1(a) ?
           '<button type="button" onclick="event.stopPropagation(); toggleUbicacionAvion(\'' + a.matricula + '\')" class="pill pill-green" style="border:none; cursor:pointer; font-weight:800; font-size:10px; padding:4px 8px;">🔺 A BOGOTÁ</button>' :
           '<button type="button" onclick="event.stopPropagation(); toggleUbicacionAvion(\'' + a.matricula + '\')" class="pill pill-amber" style="border:none; cursor:pointer; font-weight:800; font-size:10px; padding:4px 8px;">🔻 A BAMAV-1</button>';
@@ -604,10 +583,9 @@
           '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">' +
             '<div>' +
               '<div style="font-weight:900; font-size:15px; color:#f8fafc;">' + a.matricula + ' <span style="font-size:11px; font-weight:normal; color:#94a3b8;">(' + sp.nombre + ')</span></div>' +
-              '<div style="margin-top:3px;">' +
+              '<div style="margin-top:2px;">' +
                 '<span class="pill pill-green">' + a.estado + '</span>' +
-                '<span class="pill pill-blue" style="margin-left:4px;">📍 ' + a.pernocta + '</span>' +
-                divTag +
+                '<span class="pill pill-blue" style="margin-left:4px;">📍 ' + a.pernocta + (a.divAsig ? ' (' + a.divAsig + ')' : '') + '</span>' +
               '</div>' +
             '</div>' +
             '<div>' + btnAccion + '</div>' +
@@ -621,21 +599,25 @@
                 '<span onclick="event.stopPropagation(); editarFechaSalida(\'' + a.matricula + '\')" style="cursor:pointer; background:#1e293b; padding:2px 8px; border-radius:4px; border:1px solid #38bdf8; color:#38bdf8; font-weight:700;" title="Tocar para cambiar fecha">Entrega: ' + (a.fechaSalidaManto || 'Indefinido') + ' ✏️</span>' +
               '</div>' +
             '</div>' : '') +
-          ((remFaseNum <= 5.0 && !esDeBAMAV1(a)) ?
-            '<div style="font-size:10px; color:#f87171; background:rgba(239, 68, 68, 0.15); border-left:2px solid #ef4444; padding:4px 8px; border-radius:4px; margin-top:6px; font-weight:700;">⚠️ ALERTA S-3: Remanente crítico de fase (' + remFase + ' h)</div>' : '') +
+          ((a.remFase <= 5.0 && !esDeBAMAV1(a)) ?
+            '<div style="font-size:10px; color:#f87171; background:rgba(239, 68, 68, 0.15); border-left:2px solid #ef4444; padding:4px 8px; border-radius:4px; margin-top:6px; font-weight:700;">⚠️ ALERTA S-3: Remanente crítico de fase (' + a.remFase.toFixed(1) + ' h)</div>' : '') +
           '<div style="background:#0f172a; padding:8px 10px; border-radius:8px; border:1px solid #1e293b; margin-top:6px;">' +
             '<div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">' +
               '<span style="color:#94a3b8;">Cupo: <b style="color:#f1f5f9;">' + asigNum.toFixed(1) + ' h</b></span>' +
               '<span style="color:#fbbf24;">Voladas: <b style="color:#f59e0b;">' + volNum.toFixed(1) + ' h</b></span>' +
               '<span style="color:#34d399; font-weight:800;">Restan: ' + dispMes + ' h</span>' +
             '</div>' +
-            '<div class="bar-bg"><div class="bar-fill" style="width:' + pctMes + '%; background:' + (dispMesNum <= 3.0 ? '#f43f5e' : '#10b981') + ';"></div></div>' +
+            '<div class="bar-bg"><div class="bar-fill" style="width:' + pctMes + '%; background:' + (dispMes <= 3.0 ? '#f43f5e' : '#10b981') + ';"></div></div>' +
             '<div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8;">' +
-              '<span>Célula: <b>' + hrsActNum.toFixed(1) + ' h</b> (Próx: ' + proxFaseNum.toFixed(1) + ' h)</span>' +
+              '<span>Célula: <b>' + totCelula + ' h</b> (Próx: ' + proxFase + ' h)</span>' +
               '<span class="pill ' + pillFase + '">Rem: ' + remFase + ' h</span>' +
             '</div>' +
           '</div>';
 
+        // REGLA OPERACIONAL INFALIBLE:
+        // 1. Si es de BAMAV-1 / Hangar -> Contenedor Hangar
+        // 2. Si dice BOGOTA (con o sin tilde, con o sin división) -> BASE BOGOTÁ
+        // 3. Solo si pernocta físicamente fuera de Bogotá -> DESTACADAS EN DIVISIÓN
         var pTexto = normalizarTexto(a.pernocta);
         if (esDeBAMAV1(a)) {
           contHangar.appendChild(card);
@@ -650,9 +632,21 @@
 
       document.getElementById("badgeCountBogota").innerText = cBog;
       document.getElementById("badgeCountDiv").innerText = cDiv;
-      document.getElementById("txtTotalAsig").innerText = totAsig.toFixed(1) + " h";
-      document.getElementById("txtTotalVol").innerText = totVol.toFixed(1) + " h";
-      document.getElementById("txtTotalDisp").innerHTML = Math.max(0, totAsig - totVol).toFixed(1) + ' <span style="font-size:12px; color:#94a3b8; font-weight:normal;">h disponibles</span>';
+      var totAsig = 0, totVol = 0;
+      for (var bIdx = 0; bIdx < flota.length; bIdx++) {
+        var it = flota[bIdx];
+        if (it) {
+          totAsig += Number(it.asignadas) || 0;
+          totVol += Number(it.voladasMes || it.voladas) || 0;
+        }
+      }
+      var totDisp = Math.max(0, totAsig - totVol);
+      var elAsig = document.getElementById("txtTotalAsig");
+      var elVol = document.getElementById("txtTotalVol");
+      var elDisp = document.getElementById("txtTotalDisp");
+      if (elAsig) elAsig.innerText = totAsig.toFixed(1) + " h";
+      if (elVol) elVol.innerText = totVol.toFixed(1) + " h";
+      if (elDisp) elDisp.innerHTML = totDisp.toFixed(1) + ' <span style="font-size:12px; color:#94a3b8; font-weight:normal;">h disponibles</span>';
     }
 
     function toggleHangar() {
@@ -662,201 +656,208 @@
       document.getElementById("txtToggleHangar").innerText = hangarOculto ? "▼ Mostrar" : "▲ Ocultar";
     }
 
-    // ==================== MENÚS DESPLEGABLES DE AUTOCOMPLETADO ====================
-    function cerrarTodosAutocompletados() {
-      var listas = document.querySelectorAll(".suggestions-list");
-      for (var i = 0; i < listas.length; i++) {
-        listas[i].classList.remove("show");
-      }
-    }
-
-    document.addEventListener("click", function(e) {
-      if (!e.target.closest(".autocomplete-container")) {
-        cerrarTodosAutocompletados();
-      }
-    });
-
-    function alCambiarAvionSimulador() {
-      var selId = document.getElementById("simSelAvion").value;
-      if (selId) {
-        var av = flota.find(function(x) { return x.id === selId; });
-        if (av) {
-          var div = obtenerDivAsignada(av);
-          var elUni = document.getElementById("simUnidad");
-          if (div && elUni && !elUni.value.trim()) {
-            elUni.value = "DIV " + div;
-          }
-        }
-      }
-      calcularSimulacionRapida();
-    }
-
-    function mostrarSugerenciasObs(val) {
-      var box = document.getElementById("sugerenciasObs");
-      if (!box) return;
-      var q = normalizarTexto(val);
-
-      var coincidencias = PLANTILLAS_MISIONES.filter(function(item) {
-        if (!q) return true;
-        return normalizarTexto(item.texto).indexOf(q) !== -1 || normalizarTexto(item.unidad).indexOf(q) !== -1;
-      });
-
-      if (!coincidencias.length) {
-        box.classList.remove("show");
-        return;
-      }
-
-      var html = "";
-      for (var i = 0; i < Math.min(8, coincidencias.length); i++) {
-        var it = coincidencias[i];
-        html += '<div class="suggestion-item" onclick="seleccionarPlantillaObs(' + i + ', \'' + normalizarTexto(val) + '\')">' +
-                  '<div style="flex:1; padding-right:8px;">' + it.texto + '</div>' +
-                  '<span class="pill pill-purple">' + it.unidad + '</span>' +
-                '</div>';
-      }
-      box.innerHTML = html;
-      box.classList.add("show");
-      window._ultimasCoincidenciasObs = coincidencias;
-    }
-
-    function seleccionarPlantillaObs(idx) {
-      var lista = window._ultimasCoincidenciasObs || PLANTILLAS_MISIONES;
-      var item = lista[idx];
-      if (!item) return;
-
-      document.getElementById("simObsMision").value = item.texto;
-      if (item.unidad) document.getElementById("simUnidad").value = item.unidad;
-      var elPax = document.getElementById("simPax");
-      if (elPax && !elPax.value && item.pax) elPax.value = item.pax;
-      var elCarga = document.getElementById("simCarga");
-      if (elCarga && !elCarga.value && item.carga) elCarga.value = item.carga;
-
-      cerrarTodosAutocompletados();
-      calcularSimulacionRapida();
-    }
-
-    function mostrarSugerenciasUnidad(val) {
-      var box = document.getElementById("sugerenciasUnidad");
-      if (!box) return;
-      var q = normalizarTexto(val);
-
-      var matches = UNIDADES_LISTA.filter(function(u) {
-        if (!q) return true;
-        return normalizarTexto(u.cod).indexOf(q) !== -1 || normalizarTexto(u.desc).indexOf(q) !== -1;
-      });
-
-      if (!matches.length) {
-        box.classList.remove("show");
-        return;
-      }
-
-      var html = "";
-      for (var i = 0; i < matches.length; i++) {
-        var u = matches[i];
-        html += '<div class="suggestion-item" onclick="seleccionarUnidadApoyo(\'' + u.cod + '\')">' +
-                  '<div><b style="color:#c084fc; margin-right:6px;">' + u.cod + '</b> <span style="font-size:11px; color:#94a3b8;">' + u.desc + '</span></div>' +
-                '</div>';
-      }
-      box.innerHTML = html;
-      box.classList.add("show");
-    }
-
-    function seleccionarUnidadApoyo(cod) {
-      document.getElementById("simUnidad").value = cod;
-      var elObs = document.getElementById("simObsMision");
-      if (elObs && !elObs.value.trim()) {
-        if (cod === "COEJC") elObs.value = "Movimiento aéreo Sr. Comandante del Ejército Nacional";
-        else if (cod === "SECEJ") elObs.value = "Movimiento aéreo Sr. Segundo Comandante del Ejército";
-        else if (cod === "DAVAA") elObs.value = "Movimiento aéreo Sr. Comandante DAVAA";
-        else if (cod.indexOf("DIV") === 0) elObs.value = "Transporte de personal y material en apoyo a la " + cod;
-      }
-      cerrarTodosAutocompletados();
-      calcularSimulacionRapida();
-    }
-
-    function mostrarSugerenciasRuta(val) {
-      var box = document.getElementById("sugerenciasRuta");
-      if (!box) return;
-      var partes = val.trim().split(/[\s\-]+/);
-      var ultima = normalizarTexto(partes[partes.length - 1] || "");
-      if (ultima.length < 2) {
-        box.classList.remove("show");
-        return;
-      }
-
-      var matches = [];
-      var cods = Object.keys(AEROPUERTOS);
-      for (var i = 0; i < cods.length; i++) {
-        var c = cods[i];
-        var nom = normalizarTexto(AEROPUERTOS[c].nombre);
-        if (c.indexOf(ultima) !== -1 || nom.indexOf(ultima) !== -1) {
-          matches.push({ oaci: c, nombre: AEROPUERTOS[c].nombre });
-          if (matches.length >= 7) break;
-        }
-      }
-
-      if (!matches.length) {
-        box.classList.remove("show");
-        return;
-      }
-
-      var html = "";
-      for (var j = 0; j < matches.length; j++) {
-        var m = matches[j];
-        html += '<div class="suggestion-item" onclick="seleccionarAeropuertoRuta(\'' + m.oaci + '\')">' +
-                  '<div><b style="color:#f59e0b; font-family:monospace; margin-right:6px;">' + m.oaci + '</b><span>' + m.nombre + '</span></div>' +
-                  '<span class="pill pill-blue">OACI</span>' +
-                '</div>';
-      }
-      box.innerHTML = html;
-      box.classList.add("show");
-    }
-
-    function seleccionarAeropuertoRuta(oaci) {
-      var inp = document.getElementById("simInputRuta");
-      var partes = inp.value.trim().split(/\s+/).filter(Boolean);
-      if (partes.length > 0) {
-        partes[partes.length - 1] = oaci;
-      } else {
-        partes = [oaci];
-      }
-      inp.value = partes.join(" ") + " ";
-      cerrarTodosAutocompletados();
-      inp.focus();
-      calcularSimulacionRapida();
-    }
-
-    // SIMULADOR S-3: POBLAR AERONAVES ACL
+    // PROGRAMACIÓN S-3: mostrar únicamente aeronaves ubicadas en Bogotá.
+    // El selector usa el ID de la aeronave porque calcularSimulacionRapida()
+    // busca la aeronave seleccionada mediante ese mismo ID.
     function poblarSelectorSimulador() {
       var sel = document.getElementById("simSelAvion");
       if (!sel) return;
+
       var selVal = sel.value;
-      sel.innerHTML = '<option value="">-- Seleccionar Aeronave ACL --</option>';
+      sel.innerHTML = '<option value="">-- Seleccionar Aeronave en Bogotá --</option>';
 
       var disponibles = flota.filter(function(a) {
-        return !esDeBAMAV1(a) && normalizarTexto(a.estado) === "ACL";
+        if (!a) return false;
+        var remanente = Number(a.remFase || a.rem || 0);
+        return !esDeBAMAV1(a) && remanente > 0.5;
       });
-
-      var badgeACL = document.getElementById("badgeTotalACL");
-      if (badgeACL) {
-        badgeACL.innerText = disponibles.length + " DISPONIBLES ACL";
-      }
 
       disponibles.forEach(function(a) {
-        var rem = obtenerRemanenteFase(a).toFixed(1);
-        var disp = Math.max(0, (parseNum(a.asignadas) || 0) - (parseNum(a.voladasMes) || 0)).toFixed(1);
-        var dAsig = obtenerDivAsignada(a);
-        var divTxt = dAsig ? " [Div " + dAsig + "]" : "";
         var opt = document.createElement("option");
         opt.value = a.id;
-        opt.innerText = a.matricula + " (" + a.modelo + ")" + divTxt + " - Rem: " + rem + " h | Cupo: " + disp + " h";
+        opt.innerText = a.matricula + " (" + (a.modelo || "Aeronave") + ") - Rem: " +
+          Number(a.remFase || a.rem || 0).toFixed(1) + " h | Cupo: " +
+          Number(a.dispMes || a.disp || 0).toFixed(1) + " h";
         sel.appendChild(opt);
       });
-      if (selVal) sel.value = selVal;
+
+      if (selVal && disponibles.some(function(a) { return String(a.id) === String(selVal); })) {
+        sel.value = selVal;
+      } else {
+        sel.value = "";
+        calcularSimulacionRapida();
+      }
+
+      var badge = document.getElementById("badgeTotalACL");
+      if (badge) badge.innerText = disponibles.length + " DISPONIBLES EN BOGOTÁ";
     }
 
     var misionesS3 = JSON.parse(localStorage.getItem("BAAV1_MISIONES_S3_PROD")) || [];
     var misionActualTemp = null;
+    var indiceMisionEnEdicion = -1;
+    var textoOrdenEditadoManualmente = false;
+    var catalogoAltosMandosS3 = [
+      "MG. Carlos Alberto Rincón Arango, Director General de Sanidad Militar",
+      "MG. Erik Rodríguez Aparicio, Comandante General de las Fuerzas Militares",
+      "MG. Carlos Enrique Carrasquilla Gómez, Jefe de Estado Mayor Conjunto de las Fuerzas Militares",
+      "MG. José Bertulfo Soto Sánchez, Comandante del Ejército Nacional",
+      "BG. Federico Alberto Mejía Torres, Jefe del Departamento Conjunto de Planificación y Transformación",
+      "BG. Óscar Leonel Murillo Díaz, Director de la Escuela Superior de Guerra General Rafael Reyes Prieto",
+      "BG. Javier Hernando Africano López, Inspector General del Ejército Nacional",
+      "BG. Rodolfo Morales Franco, Segundo Comandante del Ejército Nacional",
+      "BG. Carlos Ernesto Marmolejo Cumbe, Subjefe de Estado Mayor de Operaciones Conjuntas",
+      "BG. Edilberto Cortés Moncada, Jefe de Estado Mayor de Operaciones",
+      "BG. Eduardo Alberto Arias Rojas, Jefe de la Jefatura Estado Mayor Generador de Fuerza",
+      "BG. Luz Adriana Tabares Trujillo, Jefe de Estado Mayor de Planeación y Políticas",
+      "BG. Yor William Cotua Muñoz, Comandante de la División de Aviación Asalto Aéreo",
+      "BG. José Benjamín Perdomo Álvarez, Comandante de la Primera División",
+      "BG. César Augusto Martínez Páez, Comandante de la Segunda División",
+      "BG. Samuel Salinas Valencia, Comandante de la Tercera División",
+      "BG. Mario Geovanni Contreras Guineme, Comandante de la Cuarta División",
+      "BG. Juan Oduber Rendón Pérez, Comandante de la Quinta División",
+      "BG. Juan José Guzmán Ramírez, Comandante de la Sexta División",
+      "BG. Carlos Eduardo Caycedo Bocanegra, Comandante de la Séptima División",
+      "BG. William Fernando Caicedo Benavides, Comandante de la Octava División",
+      "BG. Omar Yesid Moreno Sandoval, Comandante del Comando Conjunto de Operaciones Especiales",
+      "BG. Fransy Ayala Sánchez, Subjefe de Estado Mayor Jurídico Institucional",
+      "BG. Óscar del Cristo Díaz Montiel, Comandante del Comando de Educación y Doctrina",
+      "BG. Alirio Aponte Sepúlveda, Asesor Principal de Actividades de la Coalición en el Comando Sur de los Estados Unidos de América",
+      "BG. Carlos Alberto Padilla Cepeda, Comisión al exterior",
+      "BG. Martha Rocío David Bastidas, Comandante del Comando de Reclutamiento y Control de Reservas",
+      "BG. Édgar Rodríguez Pérez, Comandante del Comando de Personal",
+      "BG. Sergio Armando Guzmán Jaimes, Comandante de la Fuerza de Tarea OMEGA",
+      "BG. Raúl Perilla Monroy, Comandante de la División de Fuerzas Especiales",
+      "BG. Alex Jefferson Mena Mena, Comandante del Comando Contra el Narcotráfico y Amenazas Transnacionales",
+      "BG. William Roberto Medina Díaz, Jefe del Departamento de Inteligencia y Contrainteligencia",
+      "BG. César Augusto Suárez Giraldo, Jefe del Departamento Conjunto de Inteligencia y Contrainteligencia",
+      "BG. Rafael Hernando Jiménez Jiménez, Jefe del Departamento de Comunicaciones",
+      "BG. Javier Humberto Cómbita Guzmán, Comandante de la Segunda Brigada",
+      "BG. Gabriel Andrés Majé Gómez, Comandante de la Tercera Brigada",
+      "BG. Milton César Escobar Gallego, Comandante de la Vigésima Tercera Brigada",
+      "BG. Diego Jaramillo Muñoz, Comandante de la Vigésima Novena Brigada",
+      "BG. Néstor Favian Nieto Rivera, Comandante de la Trigésima Brigada",
+      "CR. Jorge Adrián Guerra Rivas, Jefe de la Jefatura de Estado Mayor de Inteligencia",
+      "CR. Juan Fernando Carmona Cardona, Comandante del Comando de Ingenieros",
+      "CR. Carlos Andrés Rodríguez Martínez, Jefe de Estado Mayor División de Aviación Asalto Aéreo",
+      "CR. Carlos Eduardo Luque Ochoa, Director de la Escuela Militar de Cadetes General José María Córdova",
+      "CR. Alex Guillermo Tarazona Zambrano, Comandante del Centro Nacional de Entrenamiento",
+      "CR. Johny Hernando Bautista Beltrán, Jefe del Departamento de Planeación",
+      "CR. Leonardo Mauricio Bastos Martínez, Agregado a Comando General de las Fuerzas Militares",
+      "CR. Wilson Miguel Zarabanda Fuentes, Comandante de la Cuarta Brigada",
+      "CR. Jairo Antonio Castillo Colorado, Comandante de la Novena Brigada",
+      "CR. Juan Gabriel Giraldo Castañeda, Comandante de la Décima Tercera Brigada",
+      "CR. Douglas Saavedra Hernández, Comandante de la Décima Octava Brigada",
+      "CR. Farid Felipe Fonseca Bahamón, Comandante de la Vigésima Segunda Brigada de Selva",
+      "CR. Manuel Enrique Zafra Mejía, Comandante de la Vigésima Séptima Brigada",
+      "CR. Carlos Arturo Hincapié Medina, Comandante de la Fuerza de Tarea Hércules",
+      "CR. Geovanni Andrés Cortés Molina, Comandante de la Fuerza de Tarea Vulcano"
+    ];
+    var catalogoObservacionesS3 = {
+      "MTM-C2": ["Transporte de autoridades militares"].concat(catalogoAltosMandosS3.map(function(persona) { return "Transporte del señor " + persona; }), ["Transporte de señores Generales del Estado Mayor","Transporte de personal en cumplimiento de requerimientos del Comando","Transporte de personal y material"]),
+      "MA-OCI-SA": ["Transporte de personal y material","Transporte de personal","Transporte de material","Transporte de personal y material, relevo de tripulaciones"],
+      "MA-OCI": ["Transporte de personal y material (Sistema C-UAS)","Transporte de personal (Transporte de féretros)","Movimiento de aeronave por término de requerimiento"].concat(catalogoAltosMandosS3.map(function(persona) { return "Transporte del señor " + persona; }), ["Transporte de personal y material","Transporte de personal"]),
+      "MA-OCI-E": ["Entrenamiento recurrente","Entrenamiento continuado","Entrenamiento continuado 01 P. (Lanzamiento de paracaidistas - Línea Estática)","Entrenamiento de misión","Evaluación de pericia","Entrenamiento de repaso","Recobro de autonomía"],
+      "R-RA": ["Vuelo de reconocimiento de área"],
+      "MA-OCI-M": ["Vuelo de prueba limitado","Vuelo de prueba","Vuelo de comprobación"]
+    };
+    function normalizarTextoBusquedaS3(texto) {
+      return (texto || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+    }
+    function obtenerCandidatasObservacionS3(entrada, tarea) {
+      var base = catalogoObservacionesS3[tarea] || [];
+      var reglas = [
+        {claves:["prueba","pruebas","vuelo de prueba","limitado"], texto:"Vuelo de prueba limitado"},
+        {claves:["reconocimiento","reconocer","reco","area","vuelo de area"], texto:"Vuelo de reconocimiento de área"},
+        {claves:["material","carga","repuestos","equipo","equipos"], texto:"Transporte de personal y material"},
+        {claves:["personal","pasajero","pasajeros","pax"], texto:"Transporte de personal"},
+        {claves:["feretro","feretros","transporte de feretros"], texto:"Transporte de personal (Transporte de féretros)"},
+        {claves:["paracaidista","paracaidistas","linea estatica","estatica","lanzamiento de paracaidistas","01 p"], texto:"Entrenamiento continuado 01 P. (Lanzamiento de paracaidistas - Línea Estática)"},
+        {claves:["cuas","c uas","sistema cuas"], texto:"Transporte de personal y material (Sistema C-UAS)"},
+        {claves:["entrenamiento","entrena","recurrente"], texto:"Entrenamiento recurrente"},
+        {claves:["continuado","continuada"], texto:"Entrenamiento continuado"},
+        {claves:["evaluacion","pericia"], texto:"Evaluación de pericia"},
+        {claves:["repaso"], texto:"Entrenamiento de repaso"},
+        {claves:["autonomia"], texto:"Recobro de autonomía"},
+        {claves:["comprobacion"], texto:"Vuelo de comprobación"}
+      ];
+      var q = normalizarTextoBusquedaS3(entrada);
+      var resultados = [];
+      function agregar(texto) { if (texto && resultados.indexOf(texto) === -1) resultados.push(texto); }
+      if (!q) return base.slice(0, 8);
+      reglas.forEach(function(regla) {
+        var coincide = regla.claves.some(function(clave) {
+          var k = normalizarTextoBusquedaS3(clave);
+          return k.indexOf(q) !== -1 || q.indexOf(k) !== -1;
+        });
+        if (coincide) agregar(regla.texto);
+      });
+      base.forEach(function(texto) {
+        var n = normalizarTextoBusquedaS3(texto);
+        if (n.indexOf(q) !== -1 || q.split(" ").some(function(p) { return p.length > 2 && n.indexOf(p) !== -1; })) agregar(texto);
+      });
+      // También permite buscar autoridades por apellido, nombre o grado.
+      catalogoAltosMandosS3.forEach(function(persona) {
+        if (normalizarTextoBusquedaS3(persona).indexOf(q) !== -1 && (tarea === "MTM-C2" || tarea === "MA-OCI")) {
+          agregar("Transporte del señor " + persona);
+        }
+      });
+      return resultados.slice(0, 10);
+    }
+    function ocultarSugerenciasObservacion() {
+      var lista = document.getElementById("listaSugerenciasObservacion");
+      if (lista) lista.style.display = "none";
+    }
+    function seleccionarSugerenciaObservacion(texto) {
+      var campo = document.getElementById("simObsMision");
+      if (!campo) return;
+      campo.value = normalizarObservacionConUnidad(texto, document.getElementById("simUnidad").value);
+      ocultarSugerenciasObservacion();
+      calcularSimulacionRapida();
+      campo.focus();
+    }
+    function actualizarSugerenciasObservacion() {
+      var tarea = document.getElementById("simTarea").value;
+      var campo = document.getElementById("simObsMision");
+      var lista = document.getElementById("listaSugerenciasObservacion");
+      if (!lista || !campo) return;
+      lista.innerHTML = "";
+      var opciones = obtenerCandidatasObservacionS3(campo.value, tarea);
+      if (!opciones.length || !campo.value.trim()) { lista.style.display = "none"; return; }
+      opciones.forEach(function(texto) {
+        var opcion = document.createElement("div");
+        opcion.textContent = texto;
+        opcion.style.cssText = "padding:9px 11px; color:#e2e8f0; font-size:12px; cursor:pointer; border-bottom:1px solid #1e293b;";
+        opcion.onmousedown = function(e) { e.preventDefault(); seleccionarSugerenciaObservacion(texto); };
+        lista.appendChild(opcion);
+      });
+      lista.style.display = "block";
+    }
+    function normalizarObservacionConUnidad(texto, unidad) {
+      var base = (texto || "").trim();
+      var patronApoyo = /\s+en apoyo\s+(?:a\s+la|al|a)\s+(COEJC|SEJEC|JEMOP|CEIGE|DAVAA|BRIAV32|BRIAV25|BIGAM)\.?$/i;
+      // Elimina todos los sufijos de unidad previos para evitar duplicarlos al editar o cambiar la unidad.
+      while (patronApoyo.test(base)) {
+        base = base.replace(patronApoyo, "").trim();
+      }
+      base = base.replace(/[.]+$/, "");
+      if (!base) return "";
+      if (!unidad) return base;
+      var unidadesFemeninas = ["DAVAA","BRIAV32","BRIAV25"];
+      var articulo = unidadesFemeninas.indexOf(unidad) !== -1 ? "a la " : "al ";
+      return base + " en apoyo " + articulo + unidad;
+    }
+    function completarUnidadObservacion() {
+      var campo = document.getElementById("simObsMision");
+      if (campo && campo.value.trim()) campo.value = normalizarObservacionConUnidad(campo.value, document.getElementById("simUnidad").value);
+    }
+    function actualizarUnidadObservacion() { completarUnidadObservacion(); }
+    function guardarMisionesS3() { localStorage.setItem("BAAV1_MISIONES_S3_PROD", JSON.stringify(misionesS3)); }
+    function regenerarMensajeOrden() {
+      var campo = document.getElementById("textoOrdenEditable");
+      if (campo) campo.value = generarTextoOrdenRadioperador();
+      textoOrdenEditadoManualmente = false;
+    }
+    function actualizarMensajeOrden() { if (!textoOrdenEditadoManualmente) regenerarMensajeOrden(); }
 
     function renderListaMisionesS3() {
       var cont = document.getElementById("listaMisionesProgramadas");
@@ -883,10 +884,11 @@
             '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">' +
               '<div>' +
                 '<span style="font-weight:900; font-size:13px; color:#38bdf8;">' + m.matricula + ' (' + m.modelo + ')</span>' +
-                (m.unidad ? '<span class="pill pill-purple" style="margin-left:6px;">' + m.unidad + '</span>' : '') +
+                '<div style="font-size:10px; color:#34d399; font-weight:800; margin-top:2px;">Unidad: ' + (m.unidad || 'Sin seleccionar') + '</div>' +
+                '<div style="font-size:10px; color:#fbbf24; font-weight:800; margin-top:2px;">Tarea: ' + (m.tarea || 'Sin seleccionar') + '</div>' +
                 '<div style="font-size:11px; color:#f8fafc; font-weight:700; margin-top:2px;">' + m.rutaStr + '</div>' +
               '</div>' +
-              '<button onclick="eliminarMisionS3(' + idx + ')" class="btn-outline" style="border-color:#f43f5e; color:#f87171; padding:2px 6px; font-size:10px;">✕ Quitar</button>' +
+              '<div style="display:flex; gap:5px;"><button onclick="editarMisionS3(' + idx + ')" class="btn-outline" style="border-color:#38bdf8; color:#38bdf8; padding:2px 6px; font-size:10px;">✏️ Editar</button><button onclick="eliminarMisionS3(' + idx + ')" class="btn-outline" style="border-color:#f43f5e; color:#f87171; padding:2px 6px; font-size:10px;">✕ Quitar</button></div>' +
             '</div>' +
             (m.obs ? '<div style="font-size:11px; color:#fbbf24; background:rgba(245,158,11,0.1); border-left:2px solid #f59e0b; padding:4px 8px; border-radius:4px; margin-bottom:6px;"><b>Obs:</b> ' + m.obs + '</div>' : '') +
             '<div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; background:#131d31; padding:6px 8px; border-radius:6px;">' +
@@ -899,24 +901,58 @@
           cont.appendChild(card);
         })(i);
       }
+      actualizarMensajeOrden();
+    }
+
+    function editarMisionS3(idx) {
+      var m = misionesS3[idx];
+      if (!m) return;
+      indiceMisionEnEdicion = idx;
+      document.getElementById("simUnidad").value = m.unidad || "";
+      document.getElementById("simTarea").value = m.tarea || "";
+      actualizarSugerenciasObservacion();
+      var avion = flota.find(function(a) { return a.matricula === m.matricula; });
+      document.getElementById("simSelAvion").value = avion ? avion.id : "";
+      document.getElementById("simETD").value = m.etd || "08:00";
+      document.getElementById("simPax").value = m.pax || 0;
+      document.getElementById("simCarga").value = m.carga || "";
+      document.getElementById("simObsMision").value = m.obs || "";
+      document.getElementById("simInputRuta").value = (m.rutaStr || "").replace(/➔/g, " ");
+      cambiarVista("simulador");
+      calcularSimulacionRapida();
+      var boton = document.querySelector("#simResultado button");
+      if (boton) boton.textContent = "💾 Guardar cambios del vuelo";
+      document.getElementById("simResultado").scrollIntoView({behavior:"smooth",block:"center"});
     }
 
     function agregarMisionALaOrden() {
       if (!misionActualTemp) return;
-      misionesS3.push(misionActualTemp);
-      localStorage.setItem("BAAV1_MISIONES_S3_PROD", JSON.stringify(misionesS3));
+      if (indiceMisionEnEdicion >= 0) {
+        misionesS3[indiceMisionEnEdicion] = misionActualTemp;
+        indiceMisionEnEdicion = -1;
+      } else {
+        misionesS3.push(misionActualTemp);
+      }
+      guardarMisionesS3();
+      textoOrdenEditadoManualmente = false;
       misionActualTemp = null;
       document.getElementById("simInputRuta").value = "";
       document.getElementById("simCarga").value = "";
       document.getElementById("simObsMision").value = "";
-      document.getElementById("simUnidad").value = "";
       document.getElementById("simResultado").style.display = "none";
+      document.getElementById("simUnidad").value = "";
+      document.getElementById("simTarea").value = "";
+      document.getElementById("simSelAvion").value = "";
+      document.getElementById("simETD").value = "08:00";
+      document.getElementById("simPax").value = "";
+      actualizarSugerenciasObservacion();
       renderListaMisionesS3();
     }
 
     function eliminarMisionS3(idx) {
       misionesS3.splice(idx, 1);
-      localStorage.setItem("BAAV1_MISIONES_S3_PROD", JSON.stringify(misionesS3));
+      guardarMisionesS3();
+      textoOrdenEditadoManualmente = false;
       renderListaMisionesS3();
     }
 
@@ -924,6 +960,7 @@
       if (confirm("¿Vaciar todas las aeronaves de la orden de vuelo?")) {
         misionesS3 = [];
         localStorage.removeItem("BAAV1_MISIONES_S3_PROD");
+        textoOrdenEditadoManualmente = false;
         renderListaMisionesS3();
       }
     }
@@ -955,10 +992,12 @@
     }
 
     function generarTextoOrdenRadioperador() {
+      // Ordenar misiones cronológicamente por hora de salida (ETD)
       misionesS3.sort(function(a, b) {
         return (a.etd || "").localeCompare(b.etd || "");
       });
 
+      // Fecha de mañana calculada automáticamente
       var manana = new Date();
       manana.setDate(manana.getDate() + 1);
 
@@ -972,6 +1011,7 @@
       for (var i = 0; i < misionesS3.length; i++) {
         var m = misionesS3[i];
 
+        // Traducir ICAO a ciudades (ej: Bogotá - Tolemaida - San José - Bogotá)
         var tokensRuta = m.rutaStr.replace(/➔/g, " ").split(/\s+/).filter(Boolean);
         var ciudadesRuta = [];
         for (var k = 0; k < tokensRuta.length; k++) {
@@ -979,21 +1019,25 @@
         }
         var rutaFormateada = ciudadesRuta.join(" - ");
 
+        // Formato matrícula sin guión (EJC 1101)
         var matLimpia = m.matricula.replace("-", " ");
 
+        // Pax con 2 dígitos (08, 02, etc.)
         var paxNum = parseInt(m.pax) || 0;
         var paxStr = paxNum < 10 ? "0" + paxNum : String(paxNum);
 
+        // Carga
         var cargaStr = m.carga ? m.carga : "00 lbs.";
-        var obsStr = m.obs ? m.obs : "Transporte de personal y material.";
-        var unidadStr = m.unidad ? m.unidad : "";
 
-        txt += "✅Unidad: " + unidadStr + "\n";
+        // Motivo / Observación
+        var obsStr = m.obs ? m.obs : "Transporte de personal y material.";
+
+        txt += "✅Unidad: " + (m.unidad || "PENDIENTE") + "\n";
         var modeloSigla = m.siglaMilitar || obtenerSiglaMilitar(m) || m.modelo;
         txt += matLimpia + " " + modeloSigla + " *" + m.etd + "*\n";
         txt += "Ruta: " + rutaFormateada + ".\n";
-        txt += "Realizará " + obsStr.trim().replace(/\.$/, "") + ".\n";
-        txt += "Tarea: \n";
+        txt += "Realizará " + normalizarObservacionConUnidad(obsStr, m.unidad) + ".\n";
+        txt += "Tarea: " + (m.tarea || "PENDIENTE") + "\n";
         txt += "Pax: " + paxStr + "\n";
         txt += "Carga: " + cargaStr + "\n\n";
       }
@@ -1007,14 +1051,16 @@
 
     function enviarWhatsAppRadioperador() {
       if (!misionesS3.length) return;
-      var texto = generarTextoOrdenRadioperador();
+      var campoTexto = document.getElementById("textoOrdenEditable");
+      var texto = campoTexto ? campoTexto.value : generarTextoOrdenRadioperador();
       var url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
       window.open(url, "_blank");
     }
 
     function copiarTextoRadioperador() {
       if (!misionesS3.length) return;
-      var texto = generarTextoOrdenRadioperador();
+      var campoTexto = document.getElementById("textoOrdenEditable");
+      var texto = campoTexto ? campoTexto.value : generarTextoOrdenRadioperador();
       navigator.clipboard.writeText(texto).then(function() {
         alert("✅ Orden de vuelo copiada al portapapeles lista para pegar en WhatsApp.");
       });
@@ -1026,8 +1072,7 @@
       var etdVal = document.getElementById("simETD").value || "08:00";
       var paxVal = parseInt(document.getElementById("simPax").value) || 0;
       var cargaVal = (document.getElementById("simCarga") ? document.getElementById("simCarga").value.trim() : "");
-      var obsVal = (document.getElementById("simObsMision") ? document.getElementById("simObsMision").value.trim() : "");
-      var unidadVal = (document.getElementById("simUnidad") ? document.getElementById("simUnidad").value.trim().toUpperCase() : "");
+      var obsVal = (document.getElementById("simObsMision") ? normalizarObservacionConUnidad(document.getElementById("simObsMision").value.trim(), document.getElementById("simUnidad").value) : "");
       var contRes = document.getElementById("simResultado");
 
       if (!selAvionId || !rawRuta) {
@@ -1089,6 +1134,8 @@
       totalHorasMision = Math.round(totalHorasMision * 10) / 10;
 
       misionActualTemp = {
+        unidad: document.getElementById("simUnidad").value,
+        tarea: document.getElementById("simTarea").value,
         matricula: avion.matricula,
         modelo: sp.nombre,
         siglaMilitar: obtenerSiglaMilitar(avion),
@@ -1096,7 +1143,6 @@
         pax: paxVal,
         carga: cargaVal,
         obs: obsVal,
-        unidad: unidadVal,
         rutaStr: tokens.join(" ➔ "),
         dist: distTotalNM,
         tiempoH: totalHorasMision,
@@ -1108,10 +1154,9 @@
         alertaPax = '<div style="background:rgba(244,63,94,0.15); border-left:3px solid #f43f5e; padding:6px 10px; border-radius:4px; font-size:11px; color:#fda4af; margin-top:8px;">⚠️ <b>ALERTA DE CAPACIDAD:</b> PAX (' + paxVal + ') superan configuración máxima de ' + sp.nombre + ' (' + sp.maxPax + ' PAX).</div>';
       }
 
-      var dispActual = Math.max(0, (parseNum(avion.asignadas) || 0) - (parseNum(avion.voladasMes) || 0));
       var alertaCupo = "";
-      if (totalHorasMision > dispActual) {
-        alertaCupo = '<div style="background:rgba(244,63,94,0.15); border-left:3px solid #f43f5e; padding:6px 10px; border-radius:4px; font-size:11px; color:#fda4af; margin-top:6px;">⚠️ <b>ALERTA DE CUPO:</b> Misión (' + totalHorasMision + ' h) excede el cupo disponible (' + dispActual.toFixed(1) + ' h).</div>';
+      if (totalHorasMision > avion.dispMes) {
+        alertaCupo = '<div style="background:rgba(244,63,94,0.15); border-left:3px solid #f43f5e; padding:6px 10px; border-radius:4px; font-size:11px; color:#fda4af; margin-top:6px;">⚠️ <b>ALERTA DE CUPO:</b> Misión (' + totalHorasMision + ' h) excede el cupo disponible (' + avion.dispMes.toFixed(1) + ' h).</div>';
       }
 
       var htmlTramos = "";
@@ -1146,18 +1191,18 @@
         alertaCupo +
         '<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; font-size:11px; color:#94a3b8; background:#0f172a; padding:8px 10px; border-radius:6px; margin-bottom:10px;">' +
           '<span>Distancia: <b style="color:#f1f5f9;">' + distTotalNM + ' NM</b></span>' +
-          (unidadVal ? '<span>Unidad: <b style="color:#c084fc;">' + unidadVal + '</b></span>' : '') +
           '<span>PAX: <b style="color:#f1f5f9;">' + paxVal + '</b></span>' +
           (cargaVal ? '<span>Carga: <b style="color:#f1f5f9;">' + cargaVal + '</b></span>' : '') +
           '<span>Aeronave: <b style="color:#f1f5f9;">' + avion.matricula + '</b></span>' +
         '</div>' +
-        '<button onclick="agregarMisionALaOrden()" style="width:100%; background:#38bdf8; border:none; color:#000; font-weight:900; padding:11px; border-radius:8px; cursor:pointer; font-size:12px; text-transform:uppercase;">➕ Agregar a la Orden de Vuelo</button>';
+        '<button onclick="agregarMisionALaOrden()" style="width:100%; background:#38bdf8; border:none; color:#000; font-weight:900; padding:11px; border-radius:8px; cursor:pointer; font-size:12px; text-transform:uppercase;">' + (indiceMisionEnEdicion >= 0 ? '💾 Guardar cambios del vuelo' : '➕ Agregar a la Orden de Vuelo') + '</button>';
 
       contRes.style.display = "block";
     }
 
     function pad(n) { return n < 10 ? "0" + n : n; }
 
+    // RAMPA (SOLO ACTIVAS)
     function renderRampa() {
       var cont = document.getElementById("selectorRampa");
       if (!cont) return;
@@ -1165,7 +1210,7 @@
 
       for (var i = 0; i < flota.length; i++) {
         var a = flota[i];
-        if (esDeBAMAV1(a)) continue;
+        if (esDeBAMAV1(a)) continue; // EXCLUIR BAMAV-1
 
         (function(avion) {
           var sp = CONFIG[avion.tipoSpecs] || { nombre: avion.modelo };
@@ -1173,8 +1218,8 @@
           b.className = "btn-outline";
           b.style.cssText = "padding:10px; text-align:left; border-radius:10px; cursor:pointer;" + (avionSeleccionado === avion.id ? " border-color:#f59e0b; background:#1e293b;" : "");
           b.onclick = function() { avionSeleccionado = avion.id; renderRampa(); };
-          b.innerHTML = '<div style="font-weight:900; font-size:13px; color:#f1f5f9;">' + avion.matricula + '</div>' +
-                        '<div style="font-size:10px; color:#94a3b8;">' + sp.nombre + ' • <span style="color:#38bdf8;">' + avion.pernocta + '</span></div>';
+          b.innerHTML = "<div style=\"font-weight:900; font-size:13px; color:#f1f5f9;\">" + avion.matricula + "</div>" +
+                        "<div style=\"font-size:10px; color:#94a3b8;\">" + sp.nombre + " • <span style=\"color:#38bdf8;\">" + avion.pernocta + "</span></div>";
           cont.appendChild(b);
         })(a);
       }
@@ -1190,17 +1235,15 @@
       for (var i = 0; i < flota.length; i++) {
         if (flota[i].id === avionSeleccionado) { a = flota[i]; break; }
       }
-      var h = parseNum(document.getElementById("rampaHoras").value) || 0;
+      var h = parseFloat(document.getElementById("rampaHoras").value) || 0;
       var r = document.getElementById("rampaRuta").value || "Vuelo de Operaciones";
 
       if (!a || h <= 0) {
         alert("Por favor selecciona una aeronave activa en rampa.");
         return;
       }
-      a.voladasMes = Math.round(((parseNum(a.voladasMes) || 0) + h) * 10) / 10;
-      a.horasActuales = Math.round(((parseNum(a.horasActuales) || 0) + h) * 10) / 10;
-      a.dispMes = Math.max(0, Math.round(((parseNum(a.asignadas) || 0) - a.voladasMes) * 10) / 10);
-      a.remFase = Math.max(0, Math.round((obtenerRemanenteFase(a) - h) * 10) / 10);
+      a.voladasMes += h;
+      a.horasActuales += h;
 
       var d = new Date();
       var hora = pad(d.getHours()) + ":" + pad(d.getMinutes());
@@ -1209,7 +1252,6 @@
 
       guardarDatos();
       renderHistorial();
-      guardarEnNube(flota);
       alert("✅ Registradas +" + h.toFixed(1) + " h a " + a.matricula);
     }
 
@@ -1245,6 +1287,7 @@
       if (vista === "rampa") renderRampa();
     }
 
+    // IMPORTADOR EXCEL AUTOMÁTICO CON NORMALIZACIÓN
     function importarParteExcel(event) {
       var file = event.target.files[0];
       if (!file) return;
@@ -1254,102 +1297,80 @@
         try {
           var data = new Uint8Array(e.target.result);
           var workbook = XLSX.read(data, { type: "array" });
+          var sheetName = workbook.SheetNames[0];
+          var worksheet = workbook.Sheets[sheetName];
+          var rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
 
           var actualizados = 0;
+          for (var i = 0; i < rows.length; i++) {
+            var r = rows[i];
+            if (!r || r.length < 5) continue;
 
-          for (var sIdx = 0; sIdx < workbook.SheetNames.length; sIdx++) {
-            var sheetName = workbook.SheetNames[sIdx];
-            var worksheet = workbook.Sheets[sheetName];
-            var rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-
-            for (var i = 0; i < rows.length; i++) {
-              var r = rows[i];
-              if (!r || r.length < 5) continue;
-
-              var colaNorm = "";
-              for (var colIdx = 0; colIdx < Math.min(6, r.length); colIdx++) {
-                var celdaLimpia = String(r[colIdx]).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-                if (/^EJC\d{4}$/.test(celdaLimpia)) {
-                  colaNorm = celdaLimpia;
-                  break;
-                }
+            var cola = "";
+            for (var colIdx = 0; colIdx < Math.min(4, r.length); colIdx++) {
+              var celda = String(r[colIdx]).trim().toUpperCase();
+              if (/^EJC[- ]?\d{4}$/.test(celda)) {
+                cola = celda.replace(" ", "-");
+                break;
               }
-              if (!colaNorm) continue;
+            }
+            if (!cola) continue;
 
-              for (var j = 0; j < flota.length; j++) {
-                var matFlotaNorm = flota[j].matricula.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-                if (matFlotaNorm === colaNorm) {
-                  var a = flota[j];
+            for (var j = 0; j < flota.length; j++) {
+              if (flota[j].matricula.replace(" ", "-") === cola) {
+                var a = flota[j];
 
-                  var estado = String(r[3] || a.estado).trim().toUpperCase();
-                  if (estado && estado.length <= 6) a.estado = estado;
+                var estado = String(r[3] || a.estado).trim().toUpperCase();
+                if (estado) a.estado = estado;
 
-                  var tot = parseNum(r[6]);
-                  if (!isNaN(tot) && tot > 0) a.horasActuales = Math.round(tot * 10) / 10;
+                var tot = parseFloat(r[6]);
+                if (!isNaN(tot)) a.horasActuales = Math.round(tot * 10) / 10;
 
-                  var prox = parseNum(r[7]);
-                  if (!isNaN(prox) && prox > 0) a.proximaFase = Math.round(prox * 10) / 10;
+                var prox = parseFloat(r[7]);
+                if (!isNaN(prox)) a.proximaFase = Math.round(prox * 10) / 10;
 
-                  var tipoInsp = String(r[8] || "").trim();
-                  if (tipoInsp) a.tipoInsp = tipoInsp;
+                var tipoInsp = String(r[8] || "").trim();
+                if (tipoInsp) a.tipoInsp = tipoInsp;
 
-                  var remExcel = parseNum(r[9]);
-                  if (!isNaN(remExcel) && remExcel >= 0) {
-                    a.remFase = Math.round(remExcel * 10) / 10;
-                    if (Math.abs((a.proximaFase || 0) - (a.horasActuales || 0)) < 0.05 && a.remFase > 0) {
-                      a.proximaFase = Math.round((a.horasActuales + a.remFase) * 10) / 10;
-                    }
-                  } else if (!isNaN(prox) && !isNaN(tot)) {
-                    a.remFase = Math.max(0, Math.round((a.proximaFase - a.horasActuales) * 10) / 10);
-                  }
+                var asig = parseFloat(r[10]);
+                if (!isNaN(asig)) a.asignadas = Math.round(asig * 10) / 10;
 
-                  var asig = parseNum(r[10]);
-                  if (!isNaN(asig) && asig >= 0) a.asignadas = Math.round(asig * 10) / 10;
+                var vol = parseFloat(r[11]);
+                if (!isNaN(vol)) a.voladasMes = Math.round(vol * 10) / 10;
 
-                  var vol = parseNum(r[11]);
-                  if (!isNaN(vol) && vol >= 0) a.voladasMes = Math.round(vol * 10) / 10;
+                var disp = parseFloat(r[12]);
+                if (!isNaN(disp)) a.dispMes = Math.round(disp * 10) / 10;
 
-                  var disp = parseNum(r[12]);
-                  if (!isNaN(disp) && disp >= 0) {
-                    a.dispMes = Math.round(disp * 10) / 10;
-                  } else {
-                    a.dispMes = Math.max(0, Math.round(((a.asignadas || 0) - (a.voladasMes || 0)) * 10) / 10);
-                  }
-
-                  var rawPernocta = String(r[16] || "").trim();
-                  var normPernocta = normalizarTexto(rawPernocta);
-                  if (a.manualBAMAV1 === true) {
-                    a.pernocta = "BAMAV-1";
-                  } else if (normPernocta.indexOf("BOGOTA") !== -1) {
-                    a.pernocta = "BOGOTÁ";
-                  } else if (normPernocta.indexOf("BAMAV") !== -1 || normPernocta.indexOf("HANGAR") !== -1) {
-                    a.pernocta = "BAMAV-1";
-                  } else if (rawPernocta && normPernocta !== "NAN") {
-                    a.pernocta = rawPernocta.toUpperCase();
-                  }
-
-                  var divRaw = String(r[17] || "").trim().toUpperCase();
-                  if (divRaw && divRaw !== "NAN" && divRaw !== "NONE") {
-                    a.divAsig = divRaw;
-                  } else {
-                    a.divAsig = obtenerDivAsignada(a);
-                  }
-
-                  var obsFase = String(r[21] || "").trim();
-                  var avance = parseNum(r[22]);
-                  var obsFinal = "";
-                  if (obsFase && obsFase.toLowerCase() !== "nan" && obsFase !== "0") {
-                    obsFinal = obsFase;
-                    if (!isNaN(avance) && avance > 0) {
-                      var pctAvance = avance <= 1 ? Math.round(avance * 100) : Math.round(avance);
-                      obsFinal += " (Avance: " + pctAvance + "%)";
-                    }
-                  }
-                  a.obs = obsFinal;
-
-                  actualizados++;
-                  break;
+                var rawPernocta = String(r[16] || "").trim();
+                var normPernocta = normalizarTexto(rawPernocta);
+                if (normPernocta.indexOf("BOGOTA") !== -1) {
+                  a.pernocta = "BOGOTÁ";
+                } else if (normPernocta.indexOf("BAMAV") !== -1 || normPernocta.indexOf("HANGAR") !== -1) {
+                  a.pernocta = "BAMAV-1";
+                } else if (rawPernocta && normPernocta !== "NAN") {
+                  a.pernocta = rawPernocta.toUpperCase();
                 }
+
+                var divRaw = String(r[17] || "").trim().toUpperCase();
+                if (divRaw && divRaw !== "NAN" && divRaw !== "NONE") {
+                  a.divAsig = divRaw;
+                } else {
+                  a.divAsig = "";
+                }
+
+                var obsFase = String(r[21] || "").trim();
+                var avance = parseFloat(r[22]);
+                var obsFinal = "";
+                if (obsFase && obsFase !== "nan" && obsFase !== "0") {
+                  obsFinal = obsFase;
+                  if (!isNaN(avance) && avance > 0) {
+                    obsFinal += " (Avance: " + Math.round(avance * 100) + "%)";
+                  }
+                }
+                if (obsFinal) a.obs = obsFinal;
+
+                actualizados++;
+                break;
               }
             }
           }
@@ -1357,7 +1378,7 @@
           guardarDatos();
           event.target.value = "";
           guardarEnNube(flota).then(function() {
-            alert("✅ Parte diario actualizado con éxito (" + actualizados + " aeronaves procesadas).\n☁️ Sincronizado en la nube para todos los dispositivos.");
+            alert("✅ Parte diario actualizado con éxito.\n☁️ Sincronizado en la nube para todos los dispositivos.");
           });
         } catch(err) {
           alert("Error al procesar el archivo Excel: " + err.message);
@@ -1372,9 +1393,13 @@
       renderHistorial();
       renderListaMisionesS3();
       poblarSelectorSimulador();
+      actualizarSugerenciasObservacion();
+      regenerarMensajeOrden();
 
+      // Sincronizar de inmediato con Firebase
       sincronizarDesdeNube(false);
 
+      // Comprobar cambios cada 10 segundos
       setInterval(function() {
         sincronizarDesdeNube(true);
       }, 10000);
